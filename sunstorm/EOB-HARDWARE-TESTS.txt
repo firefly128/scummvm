@@ -1,0 +1,52 @@
+ScummVM 2026.4 EOB / EOB2 hardware smoke tests
+
+Candidate: work/scummvm-2026.4-migration/scummvm-2026.4-sunstorm
+Machine: physical SS4 / Solaris 7 / TCX 8-bit, guarded 640x480, native 320x200
+scaled 2x with margins. Installed libraries retained. Matching release kyra.dat
+and GUI themes staged privately. Speaker gain 0 throughout test runs; mixer
+remained enabled. Original saves and installed executable were not modified.
+
+Functional PASS, both EOB1 and EOB2:
+- Intro/title rendering and native game load chooser.
+- Existing 2026.2-era saves restored.
+- Turning and stepping using real mouse events.
+- Camp / game options / save chooser menus.
+- New save in empty private slot 1, then reloaded via in-game menu.
+- Colors, cursor, party panels and scene visually inspected from framebuffer.
+- Settled old/new scene viewport captures (x0..354,y40..281) pixel-identical.
+- Eight matched old/new gameplay/startup runs all exited cleanly with status 0.
+
+Audio: AdLib software synthesis, 22050 Hz stereo, 2048-frame buffer for matched
+runs, callback mode. 20-second intervals, AUDIO_GETINFO sampled about 100ms.
+Both candidate settled-gameplay runs: no error flags, always active, ~439k
+playback frames advanced. EOB1 baseline also clean; EOB2 baseline latched an
+underrun late in its interval. A latched flag is not a count of separate gaps.
+Repeat startup/intro runs had no error flags in either version. Startup
+monitoring includes time before audio opens; long counter gaps/inactive rows
+there are initialization, not evidence of audible dropouts.
+
+Earlier exploratory runs flagged underruns during intro/startup (EOB1 used
+1024 frames borrowed from Indy; EOB2 used 2048). These were not reproduced in
+the matched warm runs. This is no proof of uninterrupted audio in long play,
+no acoustic listening assessment, and no demonstrated performance improvement.
+No MT-32 acoustic/hardware-output test was performed; these runs used AdLib.
+
+Asset note: installed 2026.2 themes are STX0.9.21, while 2026.4 needs0.9.24.
+Initial run fell back to builtin. Matching release ZIPs and explicit themepath
+were added privately. Later startup scans still warn about old installed theme
+candidates, but no theme fallback was logged in the matched candidate runs.
+A production upgrade must deploy the matching engine data/themes as a bundle.
+
+Pretest state: old Indy process was sleeping ~1886 seconds inside display
+presentation. Saves backed up locally. A guarded Solaris procfs helper aborted
+only that nanosleep; session resumed into the launcher, then exited normally.
+No game-memory state or actors were edited. Private tests disable legacy SDL
+SPARCFB_MIN_FRAME_US cap. This predates the 2026.4 test binary.
+
+Coverage limits: smoke/compatibility checks, not a full campaign, combat stress
+test, endurance test, or controlled FPS benchmark. All writes used private
+save/config paths; original EOB .000 files verified byte-for-byte unchanged.
+
+Final overlay check PASS: ScummVM2026.4 global menu displays, dismisses, and
+restores the scene viewport exactly to the pre-overlay capture. Tests exited;
+listening volume restored to104/255 (~40%) and stock TCX idle verified.
