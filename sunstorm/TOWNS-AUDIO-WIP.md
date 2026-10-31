@@ -119,3 +119,21 @@ Production-code sanitizer tests cover unity, quarter and zero attenuation,
 negative full scale, music mute, SFX independence and clipping. The Solaris
 cross-build passed; hardware deployment and gain validation are recorded in
 the local diagnostic case rather than including copyrighted audio here.
+
+Hardware validation: the installed Euphony-only playback capture matched
+66,150 consecutive stereo frames of the native resource-66 reference at
+exactly half the stored-cache amplitude. At music 128 and attenuation 64,
+this is precisely one quarter of the previous playback gain. The latest maze
+position was preserved in a separate save before restarting and restored.
+Rear routing remained port 6, gain 152.
+
+The user confirmed dialogue colors are fixed and reported 320x200 content
+at the top of a 320x240 canvas. Indy explicitly requests the original Towns
+240-line canvas. Enabling upstream's per-game `trim_fmtowns_to_200_pixels`
+option removes its extra bottom rows; the existing backend then centers the
+320x200 game at scale 2: `image=640x400 display=640x480 offset=0,40`.
+TCX scanout confirmed all-black 40-pixel bands at both top and bottom.
+This is enabled only for the private Indy case; it is not a blanket crop for
+other Towns games. Upstream explicitly retains Loom's extra rows because
+that game uses them. Existing save conversion handles the camera-height
+change; the preserved Indy save loaded successfully.
