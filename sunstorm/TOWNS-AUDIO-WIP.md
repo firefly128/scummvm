@@ -93,3 +93,29 @@ A comparison with the existing SDL_AUDIO_PRIOCNTL=ts option confirmed that
 Solaris accepted ts_upri=60 for the audio LWP, but the capture still set the
 hardware underrun flag. That startup-overlapping run is not counted as a clean
 controlled signing comparison. Normal inherited scheduling was restored.
+
+## CD / Euphony balance
+
+The user reported Euphony much louder than CD even after routing both through
+music volume. A read-only SPARC WAV diagnostic sampled 32 windows per CD track:
+track 01 RMS 2967, track 02 RMS 2358, track 08 RMS 2496, track 16 RMS 3668
+(on the signed 16-bit scale). Cached Berlin resource 66 has RMS 3051 at its
+stored render gain of 64. Restoring music volume 128 multiplies that by two,
+while a full-channel CD at music 128 is multiplied by approximately one half.
+Thus the shared slider does not itself balance the two sources. RMS is a level
+comparison, not a perceptual loudness or original hardware calibration claim.
+
+Added optional per-game `sst_towns_euphony_volume`, an attenuation factor from
+0 to 256 (default 256, unchanged gain). It applies before clipping to both
+cached Euphony and live FM fallback, independently of CD and PCM effects.
+The Indy test case uses 64, a quarter amplitude / approximately -12 dB. This
+puts Berlin resource 66 around RMS 1525 at music 128, near the sampled CD
+range of approximately 1179–1834 at that setting, assuming full CD channel
+volume. Source files and v2 cache format are unchanged. Game-controlled track
+levels and differences between compositions remain intact. The exporter now
+also explicitly initializes both music and SFX mixer categories to full level.
+
+Production-code sanitizer tests cover unity, quarter and zero attenuation,
+negative full scale, music mute, SFX independence and clipping. The Solaris
+cross-build passed; hardware deployment and gain validation are recorded in
+the local diagnostic case rather than including copyrighted audio here.

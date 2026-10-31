@@ -194,6 +194,8 @@ Player_Towns_v1::Player_Towns_v1(ScummEngine *vm, Audio::Mixer *mixer) : Player_
 	}
 
 	_cacheMixer = mixer;
+	if (ConfMan.hasKey("sst_towns_euphony_volume"))
+		_euphonyVolumeScale = CLIP<int>(ConfMan.getInt("sst_towns_euphony_volume"), 0, 256);
 	_player = new EuphonyPlayer(mixer);
 	_intf = new TownsAudioInterface(mixer, nullptr);
 }
@@ -225,7 +227,7 @@ bool Player_Towns_v1::init() {
 }
 
 void Player_Towns_v1::setMusicVolume(int vol) {
-	_player->driver()->setMusicVolume(vol);
+	_player->driver()->setMusicVolume(vol * _euphonyVolumeScale / 256);
 }
 
 void Player_Towns_v1::startSound(int sound) {

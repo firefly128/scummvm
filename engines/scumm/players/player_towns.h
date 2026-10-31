@@ -119,6 +119,7 @@ private:
 	void loadEuphonyCache();
 	Common::HashMap<Common::String, Common::Array<byte> > _euphonyFiles;
 	Audio::Mixer *_cacheMixer = nullptr;
+	int _euphonyVolumeScale = 256;
 	Audio::SoundHandle _euphonyCacheHandle;
 	bool _cachedEuphony = false, _renderingEuphony = false;
 	bool _cachedHeld = false;

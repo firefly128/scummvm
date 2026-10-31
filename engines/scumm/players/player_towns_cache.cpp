@@ -16,13 +16,14 @@ namespace Scumm {
 // returning samples to the plain mixer channel. FM music and the reserved PCM
 // effects have independent controls, matching the live player channel mask.
 class EuphonyPCMStream : public Audio::AudioStream {
- Audio::AudioStream *_source; Audio::Mixer *_mixer;
+ Audio::AudioStream *_source; Audio::Mixer *_mixer; int _volumeScale;
 public:
- EuphonyPCMStream(Audio::AudioStream *source,Audio::Mixer *mixer):_source(source),_mixer(mixer){}
+ EuphonyPCMStream(Audio::AudioStream *source,Audio::Mixer *mixer,int volumeScale):_source(source),_mixer(mixer),_volumeScale(volumeScale){}
  ~EuphonyPCMStream(){delete _source;}
  int readBuffer(int16 *buffer,const int count) override {
   int n=_source->readBuffer(buffer,count);
   int volume=_mixer->isSoundTypeMuted(Audio::Mixer::kMusicSoundType)?0:_mixer->getVolumeForSoundType(Audio::Mixer::kMusicSoundType);
+  volume = volume * _volumeScale / 256;
   for(int i=0;i<n;++i)buffer[i]=CLIP<int32>((int32)buffer[i]*volume/64,-32768,32767);
   return n;
  }
@@ -86,7 +87,7 @@ bool Player_Towns_v1::playCachedEuphony(int sound,const uint8 *data) {
  if(!wave||wave->getRate()!=22050||!wave->isStereo()) {delete wave;error("Invalid Euphony PCM format for sound %d",sound);}
  Audio::AudioStream *stream=wave;
  if(le)stream=new Audio::SubLoopingAudioStream(wave,0,Audio::Timestamp(0,ls,22050),Audio::Timestamp(0,le,22050));
- _cacheMixer->playStream(Audio::Mixer::kPlainSoundType,&_euphonyCacheHandle,new EuphonyPCMStream(stream,_cacheMixer));
+ _cacheMixer->playStream(Audio::Mixer::kPlainSoundType,&_euphonyCacheHandle,new EuphonyPCMStream(stream,_cacheMixer,_euphonyVolumeScale));
  _cachedEuphony=true;_cachedHeld=held!=0;_cacheLogicalEndMs=(uint64)logical*1000/22050;
  _eupCurrentSound=sound;_eupLooping=le!=0;_eupVolLeft=left;_eupVolRight=right;
  debug(1,"[sst-euphony] PCM sound=%d level=%d frames=%u loop=%u..%u held=%u",sound,level,frames,ls,le,held);return true;
@@ -99,7 +100,7 @@ void Player_Towns_v1::renderEuphonyCache() {
  if((!dir.exists()&&!dir.createDirectory())||!dir.isDirectory())error("Cannot create Euphony export directory");
  if(_cacheMixer->getOutputRate()!=22050)error("Euphony exporter requires 22050Hz output");
  _cacheMixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType,255);
- _cacheMixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType,255);
+ _cacheMixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType,255);
  _player->driver()->setSoundEffectVolume(64);_player->driver()->setMusicVolume(64);
  Common::DumpFile index;if(!index.open(dir.getPath().appendComponent("tracks.tsv")))error("Cannot write Euphony index");
  const char *heading="sound\tlevel\tframes\tloop_start\tloop_end\tlogical_end\theld\tkey\n";index.write(heading,strlen(heading));int total=0;
