@@ -1,0 +1,53 @@
+Heroine's Quest / ScummVM 2026.4 hardware smoke test
+
+Physical SS4 / Solaris7 / TCX640x480, 320x200 indexed game scaled2x.
+Candidate is the previously built unified 2026.4 SPARC executable. Private
+configuration and copies of all HQ saves; original save directory and config
+verified byte-for-byte unchanged after tests. Installed executable unchanged.
+
+Runtime dependencies: HQ standalone SDL/audio library kept first; unified
+multigame runtime library directory added afterward for libvorbisfile and
+other linked decoders. Initial attempt failed to load libvorbisfile.so.3;
+adding the existing runtime dependency path resolved it. Matching2026.4
+themes used from the private EOB test data folder. A production bundle must
+include all linked dependencies, not just the old standalone HQ library set.
+
+PASS:
+- AGS detects HQ and starts the game.
+- Existing prepared audio.vox/speech.vox recognized;4443/4443 original WAV
+  assets checked,0 decoded replacements. Existing palette lookup loaded.
+- Latest copied save slot1 restored into the indoor temple scene.
+- Indoor walking and character scaling visually verified.
+- Custom control panel, save chooser, load chooser, editable save name.
+- New save written to private slot2; restored via the custom load menu.
+- Outdoor Fornsigtuna benchmark fixture restored through private slot98.
+  The prior98 bytes were backed up locally; only the test copy was replaced.
+- Native snow optimization explicitly reports active with30particles.
+- Outdoor walking, animated snow and village graphics visually inspected.
+- Room transition through arch reached the castle scene and displayed the
+  normal exhaustion dialogue; no script/actor state was patched.
+- Shared ScummVM2026.4 menu rendered. Mouse Resume button worked, with game
+  colors and dialogue restored afterward.
+- Both20-second gameplay audio samples remained active with no error flags:
+  indoor179readings,439256playback frames; outdoor182readings,440108frames.
+- Normal quit logged ENGINE HAS SHUTDOWN. Guardian released the display;
+  stock timing/DAC idle verified. Speaker gain restored104/255(~40%).
+
+Limits / observations:
+- Startup took several minutes validating the existing sprite/audio caches.
+  No matched2026.2 startup/performance benchmark was run; this is not evidence
+  of a new slowdown or an FPS improvement.
+- Initial startup latched an audio error during initialization; gameplay
+  monitors cleared it and both completed without another error flag.
+- Engine logs include Audio stream did not support seeking on restored
+  looping audio. Exact music resume offsets were not validated, and this
+  warning was not compared against the older executable.
+- Speakers muted at hardware gain0 while mixer/music/SFX processing stayed
+  enabled. No acoustic listening assessment or speech-specific playback test.
+- No full campaign, combat or long endurance validation. Screenshot captures
+  preceded audio measurement; hardware error flags are not a waveform test.
+- Shared menu took time to paint; first immediate capture preceded its
+  presentation, so a later settled capture was used for inspection.
+
+Evidence: game.log, audio-summary.json, indoor/outdoor audio logs, copied
+original saves, new-test-save.002, framebuffer PNGs, launcher/config scripts.

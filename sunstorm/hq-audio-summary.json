@@ -1,0 +1,16 @@
+{
+  "indoor": {
+    "readings": 179,
+    "error_readings": 0,
+    "inactive_readings": 0,
+    "playback_frame_advance": 439256.0,
+    "largest_observed_counter_gap_ms": 289.2
+  },
+  "outdoor": {
+    "readings": 182,
+    "error_readings": 0,
+    "inactive_readings": 0,
+    "playback_frame_advance": 440108.0,
+    "largest_observed_counter_gap_ms": 149.9
+  }
+}
