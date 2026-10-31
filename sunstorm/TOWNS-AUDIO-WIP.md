@@ -1,8 +1,7 @@
 # Towns audio work in progress (2026-10-31)
 
-Paused at the user's request while they develop a throughput test harness.
-The remaining audible stutter is **not resolved**. These commits preserve
-working changes and diagnostics for that next stage.
+Development resumed through the diagnostic harness. The remaining audible
+stutter is **not resolved**. Tests use private game cases and preserved saves.
 
 ## Changes and validation
 
@@ -10,7 +9,7 @@ working changes and diagnostics for that next stage.
   The Indy FM-Towns resources 29, 40, 54 and 66 render deterministically;
   repeated native exports were byte-identical. Cache keys include resource
   content, output rate and track level. Missing variants fall back to synthesis.
-  Loop boundaries, logical end, SFX volume/mute and original save fields are
+  Loop boundaries, logical end, volume/mute and original save fields are
   retained. No generated game audio is included in the repository.
 - The resident bank uses roughly 15 MB. The original clothes-change fanfare
   caused a 1.62-second synthesis callback; cached playback removed that stall.
@@ -55,11 +54,42 @@ Berlin checkpoint shorten reproduction. Peaceful checkpoint replies are
 
 The user's latest audio preference supersedes older notes: keep audio ON at
 approximately 60%, through rear headphone and line-out outputs connected to
-their mixer; internal speaker OFF. Do not toggle gain for tests. Do not issue
-remote controls while the user is playing.
+their mixer; internal speaker OFF. Do not toggle gain for tests. The user has authorized taking control and restarting for these tests.
 
 No binaries, game assets, generated audio, credentials or private saves are
 included. The separate earlier AGS changes preserve the palette around video,
 allow an opt-in AVI replacement for Theora, and avoid scanning known Ogg video
 through unsupported fallback decoders. SQ2 gameplay was tested successfully;
 its converted intro still has a known playback-performance limitation.
+
+## Harness candidate, 2026-10-31
+
+The next candidate preserves background indices while masking and mapping the
+separate 16-color Towns text layer to the active 256-color palette. It also
+classifies v1 FM/Euphony music as music and reserved PCM effect channels as SFX;
+cached Euphony now follows music volume/mute. The private test configuration uses
+music 128 and SFX 255, rear outputs port 6, hardware gain 152. The Berlin
+item-offer text is readable in the hardware capture; broader dialogue color
+coverage remains to be checked.
+
+The PCM mixer additionally batches held samples across the actual Towns
+19300 Hz rational clock. Sanitized randomized comparisons passed 80,000 blocks
+per cache mode, including 67,916 optimized blocks per mode. Six SPARC benchmark
+cases retained identical checksums: one low-rate voice saved 59% CPU, two saved
+47%, and four-voice fallback was effectively unchanged. These are component
+measurements, not whole-game speed claims.
+
+The full candidate cross-build and verified harness deployment passed. A fresh
+35-second motorcycle capture had no software queue empty observations and no
+new hardware underrun flag. A quiet 45-second Berlin signing replay still set
+the hardware underrun flag and eventually observed two empty queues. Device
+writes paused for 264 ms at the underrun while mixer calls were much shorter
+(median 14.1 ms, maximum 70.3 ms; measured mutex waits <=12 us). ScummVM's
+software queue was still nonempty at that hardware underrun. Audio-device
+feeding and process scheduling therefore require further investigation.
+The normal user launcher is still unchanged. No RT scheduling is enabled.
+
+A comparison with the existing SDL_AUDIO_PRIOCNTL=ts option confirmed that
+Solaris accepted ts_upri=60 for the audio LWP, but the capture still set the
+hardware underrun flag. That startup-overlapping run is not counted as a clean
+controlled signing comparison. Normal inherited scheduling was restored.

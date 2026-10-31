@@ -31,3 +31,22 @@ with tempfile.TemporaryDirectory(prefix="towns-audio-test-") as folder:
     (tmp / "queue-test.cpp").write_text(queue)
     subprocess.run(flags + [str(tmp / "queue-test.cpp"), "-o", str(tmp / "queue-test")], check=True)
     subprocess.run([str(tmp / "queue-test")], check=True)
+
+    def extract(source, marker, end_marker):
+        start = source.index(marker)
+        return source[start:source.index(end_marker, start)].rstrip()
+    gfx = (repo / "engines/scumm/gfx_towns.cpp").read_text()
+    text = extract(gfx, "bool TownsScreen::updateIndexedTextPalette()", "void TownsScreen::update()")
+    start = gfx.index("template<typename dstPixelType, typename srcPixelType")
+    text += "\n" + gfx[start:gfx.index("\n}\n", start) + 3]
+    cache = (repo / "engines/scumm/players/player_towns_cache.cpp").read_text()
+    music = extract(cache, "class EuphonyPCMStream", "static int trackLevel")
+    for name, marker, production in [
+            ("text-palette", "// PRODUCTION_TEXT_COMPOSITOR", text),
+            ("music-volume", "// PRODUCTION_EUPHONY_STREAM", music)]:
+        fixture = (here / (name + "-test.in.cpp")).read_text().replace(marker, production)
+        test_source = tmp / (name + "-test.cpp")
+        test_source.write_text(fixture)
+        binary = tmp / (name + "-test")
+        subprocess.run(flags + [str(test_source), "-o", str(binary)], check=True)
+        subprocess.run([str(binary)], check=True)

@@ -609,10 +609,15 @@ private:
 		bool enabled = false;
 		bool ready = false;
 		uint16 *bltTmpPal= nullptr;
+		uint8 indexedTextPal[16] = {};
 	} _layers[2];
 
 	template<typename dstPixelType, typename srcPixelType, int scaleW, int scaleH, bool col4bit> void transferRect(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
 	template<typename dstPixelType> void updateScreenBuffer();
+	bool updateIndexedTextPalette();
+	bool _indexedTextPaletteValid = false;
+	uint8 _indexedSystemPalette[768] = {};
+	uint8 _indexedTextPalette[48] = {};
 
 #ifdef USE_RGB_COLOR
 	void update16BitPalette();

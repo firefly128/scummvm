@@ -21,6 +21,7 @@
 
 #include "common/endian.h"
 #include "common/config-manager.h"
+#include "graphics/paletteman.h"
 
 #include "scumm/scumm.h"
 #include "scumm/charset.h"
@@ -401,8 +402,8 @@ void TownsScreen::setupLayer(int layer, int width, int height, int scaleW, int s
 	l->palette = (uint8 *)pal;
 	l->hScroll = 0;
 
-	if (l->palette && _pixelFormat.bytesPerPixel == 1)
-		warning("TownsScreen::setupLayer(): Layer palette usage requires 16 bit graphics setting.\nLayer palette will be ignored.");
+	if (layer == 1)
+		_indexedTextPaletteValid = false;
 
 	delete[] l->pixels;
 	l->pixels = new uint8[l->pitch * l->height]();
@@ -610,7 +611,45 @@ void TownsScreen::scrollLayer(int layer, int offset, int top, int bottom, bool f
 	addDirtyRect(0, top, _width, bottom - top);
 }
 
+bool TownsScreen::updateIndexedTextPalette() {
+	TownsScreenLayer &text = _layers[1];
+	if (_pixelFormat.bytesPerPixel != 1 || !text.ready ||
+		text.numCol != 16 || !text.palette)
+		return false;
+	uint8 palette[768];
+	_system->getPaletteManager()->grabPalette(palette, 0, 256);
+	if (_indexedTextPaletteValid &&
+		!memcmp(palette, _indexedSystemPalette, sizeof(palette)) &&
+		!memcmp(text.palette, _indexedTextPalette, sizeof(_indexedTextPalette)))
+		return false;
+	bool changed = !_indexedTextPaletteValid;
+	for (int c = 0; c < 16; ++c) {
+		uint32 bestDistance = 0xffffffff;
+		uint8 best = 0;
+		for (int i = 0; i < 256; ++i) {
+			int r = (int)text.palette[c * 3] - palette[i * 3];
+			int g = (int)text.palette[c * 3 + 1] - palette[i * 3 + 1];
+			int b = (int)text.palette[c * 3 + 2] - palette[i * 3 + 2];
+			uint32 distance = 3 * r * r + 6 * g * g + b * b;
+			if (distance < bestDistance) { bestDistance = distance; best = i; }
+		}
+		if (text.indexedTextPal[c] != best) changed = true;
+		text.indexedTextPal[c] = best;
+	}
+	memcpy(_indexedSystemPalette, palette, sizeof(palette));
+	memcpy(_indexedTextPalette, text.palette, sizeof(_indexedTextPalette));
+	_indexedTextPaletteValid = true;
+	return changed;
+}
+
 void TownsScreen::update() {
+	// The 8-bit display shares one hardware palette. Map the independent
+	// 16-color text layer to matching room colors; leave scene indices intact.
+	if (updateIndexedTextPalette()) {
+		_dirtyRects.clear();
+		_dirtyRects.push_back(Common::Rect(_width - 1, _height - 1));
+		_numDirtyRects = kFullRedraw;
+	}
 	if (_dirtyRects.empty()) return; /* SST: skip lockScreen+composite when nothing changed */
 #ifdef USE_RGB_COLOR
 	/* SST: when system surface is 1bpp (sparcfb native backend), bypass the
@@ -693,9 +732,8 @@ template<typename dstPixelType, typename srcPixelType, int scaleW, int scaleH, b
 				}
 			} else {
 				if (col || l->onBottom) {
-					/* SST: srcCol4bit (4-bit-mask) only meaningful for 16-bit dst —
-					 * for 8-bit dst we always want full 8-bit values. */
-					/* if (srcCol4bit) col = col & 0x0f; */
+					if (srcCol4bit && l->numCol == 16 && l->palette)
+						col = l->indexedTextPal[col & 0x0f];
 					*dst10a = col;
 					if (scaleW == 2)
 						*++dst10a = col;

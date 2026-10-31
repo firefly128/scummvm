@@ -194,6 +194,66 @@ void PCMDevice_Base::readPrepared(int32 *buffer, uint32 size, const int32 **wave
    tables[audibleCount++] = waves[j];
   }
  }
+ // The Towns PCM clock runs slower than the FM render clock. Preserve its
+ // exact rational phase, but mix each held sample span only once. Restrict
+ // this to a small voice count, where finding span boundaries is profitable.
+ const bool heldSampleClock = (_intRate >= _extRate * 2 &&
+  _intRate <= (1U << 20) && advancingCount <= 2 && audibleCount > 0);
+ if (heldSampleClock) {
+  uint32 produced = 0;
+  while (produced < size) {
+   _timer += _extRate;
+   if (_timer >= _intRate) {
+    _timer -= _intRate;
+    for (int j = 0; j < advancingCount; ++j) {
+     PCMChannel_Base *c = advancing[j];
+     c->_pos += c->_step;
+     if (c->_pos >= c->_dataEnd) {
+      assert(c->_loopStart != c->_dataEnd);
+      c->_pos = c->_loopStart;
+      c->_dataEnd = c->_loopStart + c->_loopLen;
+     }
+    }
+   }
+   // Cap the search so interval arithmetic stays within 32 bits. A cap
+   // merely splits an otherwise longer constant span; it changes no samples.
+   uint32 ticksUntilChange = 2048;
+   for (int j = 0; j < advancingCount; ++j) {
+    PCMChannel_Base *c = advancing[j];
+    if (!c->_step) continue;
+    uint32 limit = (c->_dataEnd - c->_pos - 1) / c->_step + 1;
+    if (limit < ticksUntilChange) ticksUntilChange = limit;
+    if (c->_activeOutput) {
+     limit = (2047 - (c->_pos & 2047)) / c->_step + 1;
+     if (limit < ticksUntilChange) ticksUntilChange = limit;
+    }
+   }
+   uint32 run = (ticksUntilChange * _intRate - 1 - _timer) / _extRate + 1;
+   if (run > size - produced) run = size - produced;
+   int32 left = 0, right = 0;
+   for (int j = 0; j < audibleCount; ++j) {
+    PCMChannel_Base *c = audible[j];
+    const uint32 pos = c->_pos >> 11;
+    if (!tables[j] || pos >= c->_sourceLength) error("Prepared PCM invalid voice");
+    const uint32 index = valueMode ? (uint8)c->_data[pos] : pos;
+    left += tables[j][index * 2];
+    right += tables[j][index * 2 + 1];
+   }
+   left = (left * _deviceVolume) >> 7;
+   right = (right * _deviceVolume) >> 7;
+   for (uint32 n = 0; n < run; ++n) {
+    buffer[(produced + n) * 2] += left;
+    buffer[(produced + n) * 2 + 1] += right;
+   }
+   const uint32 phase = _timer + (run - 1) * _extRate;
+   const uint32 ticks = phase / _intRate;
+   _timer = phase % _intRate;
+   for (int j = 0; j < advancingCount; ++j)
+    advancing[j]->_pos += advancing[j]->_step * ticks;
+   produced += run;
+  }
+  return;
+ }
  for (uint32 i = 0; i < size; ++i) {
   _timer += _extRate;
   while (_timer >= _intRate) {

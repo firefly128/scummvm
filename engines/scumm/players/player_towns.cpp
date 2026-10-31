@@ -214,10 +214,9 @@ bool Player_Towns_v1::init() {
 
 	_player->driver()->reserveSoundEffectChannels(8);
 
-	// Treat all 6 fm channels and all 8 pcm channels as sound effect channels
-	// since music seems to exist as CD audio only in the games which use this
-	// MusicEngine implementation.
-	_intf->setSoundEffectChanMask(-1);
+	// These games also use FM Euphony music. Keep the six FM channels on
+	// music volume and the eight reserved PCM effect channels on SFX volume.
+	_intf->setSoundEffectChanMask(0x3fc0);
 
 	setVolumeCD(255, 255);
 	loadEuphonyCache();

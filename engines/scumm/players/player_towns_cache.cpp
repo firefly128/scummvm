@@ -12,9 +12,9 @@
 #include "scumm/players/player_towns.h"
 #include "scumm/resource.h"
 namespace Scumm {
-// Rendering at 64/255 leaves headroom; apply the live SFX volume before
-// returning samples to the plain mixer channel. Towns v1 marks its FM voices
-// as SFX too, so this matches the existing player's volume/mute controls.
+// Rendering at gain 64 leaves headroom; apply the live music volume before
+// returning samples to the plain mixer channel. FM music and the reserved PCM
+// effects have independent controls, matching the live player channel mask.
 class EuphonyPCMStream : public Audio::AudioStream {
  Audio::AudioStream *_source; Audio::Mixer *_mixer;
 public:
@@ -22,7 +22,7 @@ public:
  ~EuphonyPCMStream(){delete _source;}
  int readBuffer(int16 *buffer,const int count) override {
   int n=_source->readBuffer(buffer,count);
-  int volume=_mixer->isSoundTypeMuted(Audio::Mixer::kSFXSoundType)?0:_mixer->getVolumeForSoundType(Audio::Mixer::kSFXSoundType);
+  int volume=_mixer->isSoundTypeMuted(Audio::Mixer::kMusicSoundType)?0:_mixer->getVolumeForSoundType(Audio::Mixer::kMusicSoundType);
   for(int i=0;i<n;++i)buffer[i]=CLIP<int32>((int32)buffer[i]*volume/64,-32768,32767);
   return n;
  }
@@ -98,7 +98,7 @@ void Player_Towns_v1::renderEuphonyCache() {
  _renderingEuphony=true;Common::FSNode dir(ConfMan.getPath("sst_euphony_render_all"));
  if((!dir.exists()&&!dir.createDirectory())||!dir.isDirectory())error("Cannot create Euphony export directory");
  if(_cacheMixer->getOutputRate()!=22050)error("Euphony exporter requires 22050Hz output");
- _cacheMixer->setVolumeForSoundType(Audio::Mixer::kSFXSoundType,255);
+ _cacheMixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType,255);
  _cacheMixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType,255);
  _player->driver()->setSoundEffectVolume(64);_player->driver()->setMusicVolume(64);
  Common::DumpFile index;if(!index.open(dir.getPath().appendComponent("tracks.tsv")))error("Cannot write Euphony index");
