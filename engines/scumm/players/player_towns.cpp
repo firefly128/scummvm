@@ -20,6 +20,8 @@
  */
 
 
+#include "common/system.h"
+#include "common/config-manager.h"
 #include "scumm/sound.h"
 #include "scumm/players/player_towns.h"
 
@@ -191,11 +193,13 @@ Player_Towns_v1::Player_Towns_v1(ScummEngine *vm, Audio::Mixer *mixer) : Player_
 		_soundOverride = new SoundOvrParameters[_numSoundMax]();
 	}
 
+	_cacheMixer = mixer;
 	_player = new EuphonyPlayer(mixer);
 	_intf = new TownsAudioInterface(mixer, nullptr);
 }
 
 Player_Towns_v1::~Player_Towns_v1() {
+	_cacheMixer->stopHandle(_euphonyCacheHandle);
 	delete _intf;
 	delete _player;
 	delete[] _soundOverride;
@@ -216,6 +220,7 @@ bool Player_Towns_v1::init() {
 	_intf->setSoundEffectChanMask(-1);
 
 	setVolumeCD(255, 255);
+	loadEuphonyCache();
 
 	return true;
 }
@@ -225,6 +230,11 @@ void Player_Towns_v1::setMusicVolume(int vol) {
 }
 
 void Player_Towns_v1::startSound(int sound) {
+	if (!_renderingEuphony && ConfMan.hasKey("sst_euphony_render_all")) {
+		renderEuphonyCache();
+		_vm->quitGame();
+		return;
+	}
 	uint8 *ptr = _vm->getResourceAddress(rtSound, sound);
 	assert(ptr);
 
@@ -232,6 +242,8 @@ void Player_Towns_v1::startSound(int sound) {
 		ptr += 2;
 
 	int type = ptr[13];
+	const uint32 startTime = g_system->getMillis();
+	debug(1, "[sst-towns] start sound=%d type=%d", sound, type);
 
 	if (type == 0) {
 		uint8 velocity = 0;
@@ -257,6 +269,7 @@ void Player_Towns_v1::startSound(int sound) {
 	} else if (type == 2) {
 		playCdaTrack(sound, ptr + 6);
 	}
+	debug(1, "[sst-towns] started sound=%d elapsed-ms=%u", sound, g_system->getMillis() - startTime);
 
 	if (_vm->_game.version == 3)
 		_soundOverride[sound].vLeft = _soundOverride[sound].vRight = _soundOverride[sound].note = 0;
@@ -272,12 +285,16 @@ void Player_Towns_v1::stopSound(int sound) {
 		_eupCurrentSound = 0;
 		_eupLooping = false;
 		_player->stop();
+		_cacheMixer->stopHandle(_euphonyCacheHandle);
+		_cachedEuphony = false;
 	}
 
 	stopPcmTrack(sound);
 }
 
 void Player_Towns_v1::stopAllSounds() {
+	_cacheMixer->stopHandle(_euphonyCacheHandle);
+	_cachedEuphony = false;
 	_cdaCurrentSound = 0;
 	_vm->_sound->stopCD();
 
@@ -292,7 +309,7 @@ int Player_Towns_v1::getSoundStatus(int sound) const {
 	if (sound == _cdaCurrentSound)
 		return _vm->_sound->pollCD();
 	if (sound == _eupCurrentSound)
-		return _player->isPlaying() ? 1 : 0;
+		return euphonyPlaying() ? 1 : 0;
 	return Player_Towns::getSoundStatus(sound);
 }
 
@@ -363,7 +380,7 @@ void Player_Towns_v1::saveLoadWithSerializer(Common::Serializer &s) {
 	s.syncAsByte(_cdaVolLeft, VER(81));
 	s.syncAsByte(_cdaVolRight, VER(81));
 
-	if (!_eupLooping && !_player->isPlaying())
+	if (!_eupLooping && !euphonyPlaying())
 		_eupCurrentSound = 0;
 
 	s.syncAsByte(_eupCurrentSound, VER(81));
@@ -492,6 +509,12 @@ void Player_Towns_v1::stopSoundSuspendLooping(int sound) {
 }
 
 void Player_Towns_v1::playEuphonyTrack(int sound, const uint8 *data) {
+	debug(1, "[sst-towns] euphony sound=%d", sound);
+	_cacheMixer->stopHandle(_euphonyCacheHandle);
+	_cachedEuphony = false;
+	_player->stop();
+	if (!_renderingEuphony && playCachedEuphony(sound, data))
+		return;
 	const uint8 *pos = data + 16;
 	const uint8 *src = pos + data[14] * 48;
 	const uint8 *trackData = src + 150;

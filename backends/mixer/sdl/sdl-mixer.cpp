@@ -360,9 +360,9 @@ int SdlMixerManager::resumeAudio() {
 }
 
 /* SST queue-mode pump.  Called from OSystem_SDL::delayMillis (main thread).
- * Keeps SDL's internal audio queue topped up to ~300 ms so the audio LWP's
- * sole job is memcpy-from-queue + write-to-/dev/audio (~10us).  Total work
- * per pump call is bounded: <=8 mixCallback invocations of ~50us each. */
+ * Feeds the configured queue depth. Mixing can take milliseconds on slow
+ * machines, and the device continues draining while each chunk is mixed.
+ * Bound each refill to eight chunks so the game regains control. */
 void SdlMixerManager::pump() {
 #if !SDL_VERSION_ATLEAST(3, 0, 0)
 	if (!_queueMode || !_isAudioOpen || _queueDevId == 0 || !_queueBuf)
@@ -372,25 +372,32 @@ void SdlMixerManager::pump() {
 	Uint32 bps = (Uint32)_obtained.freq * _obtained.channels * 2;
 	if (bps == 0) return;
 
-	static Uint32 target_ms = 0;
-	if (target_ms == 0) {
-		const char *e = getenv("SCUMM_AUDIO_QUEUE_MS");
-		int requested = e ? atoi(e) : 300;
-		if (requested < 50) requested = 50;
-		if (requested > 1000) requested = 1000;
-		target_ms = (Uint32)requested;
-	}
+	const char *queueEnv = getenv("SCUMM_AUDIO_QUEUE_MS");
+	int requested = queueEnv ? atoi(queueEnv) : 300;
+	if (requested < 50) requested = 50;
+	if (requested > 1000) requested = 1000;
+	const Uint32 target_ms = (Uint32)requested;
 	Uint32 target_bytes = (Uint32)((uint64)target_ms * bps / 1000);
 	Uint32 queued = SDL_GetQueuedAudioSize(_queueDevId);
 
+	static Uint32 lastPump = 0, maxGap = 0, maxMix = 0, emptyEntry = 0, emptyMix = 0;
+	const Uint32 now = SDL_GetTicks();
+	if (lastPump) maxGap = MAX(maxGap, now - lastPump);
+	lastPump = now;
+	if (!queued) ++emptyEntry;
 	int chunks = 0;
 	while (queued < target_bytes && chunks < 8) {
+		const Uint32 mixStart = SDL_GetTicks();
 		callbackHandler(_queueBuf, _queueBufSize);
+		maxMix = MAX(maxMix, SDL_GetTicks() - mixStart);
+		if (!SDL_GetQueuedAudioSize(_queueDevId)) ++emptyMix;
 		if (SDL_QueueAudio(_queueDevId, _queueBuf, _queueBufSize) != 0) {
 			warning("SST: SDL_QueueAudio failed: %s", SDL_GetError());
 			break;
 		}
-		queued += _queueBufSize;
+		// The old estimate retained audio consumed during callbackHandler().
+		// Query the real depth so a slow refill does not leave the queue short.
+		queued = SDL_GetQueuedAudioSize(_queueDevId);
 		chunks++;
 	}
 
@@ -403,8 +410,9 @@ void SdlMixerManager::pump() {
 	if (dbg) {
 		static int n = 0;
 		if ((++n % 100) == 0) {
-			fprintf(stderr, "SST pump: queued=%u target=%u chunks_added=%d status=%d\n",
-			        queued, target_bytes, chunks, (int)SDL_GetAudioDeviceStatus(_queueDevId));
+			fprintf(stderr, "SST pump: queued=%u target=%u chunks_added=%d status=%d empty_entry=%u empty_mix=%u max_gap_ms=%u max_mix_ms=%u\n",
+			        queued, target_bytes, chunks, (int)SDL_GetAudioDeviceStatus(_queueDevId), emptyEntry, emptyMix, maxGap, maxMix);
+			emptyEntry = emptyMix = maxGap = maxMix = 0;
 			fflush(stderr);
 		}
 	}

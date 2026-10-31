@@ -128,6 +128,8 @@ public:
 	void setLoopStatus(bool loop);
 
 	bool isPlaying() {return _playing; }
+	uint32 completedLoops() const { return _completedLoops; }
+	bool isPaused() const { return _paused; }
 
 	int configPart_enable(int part, int val);
 	int configPart_setType(int part, int val);
@@ -222,6 +224,7 @@ private:
 	uint8 _defaultTempo;
 	int _trackTempo;
 
+	uint32 _completedLoops = 0;
 	bool _loop;
 	bool _playing;
 	bool _endOfTrack;

@@ -1562,6 +1562,11 @@ Common::Error ScummEngine::init() {
 	}
 
 	readIndexFile();
+	if (_townsPlayer && ConfMan.hasKey("sst_euphony_render_all")) {
+		_townsPlayer->startSound(1);
+		return Common::kNoError;
+	}
+
 
 	// Create the debugger now that _numVariables has been set
 	setDebugger(new ScummDebugger(this));
@@ -1686,7 +1691,7 @@ void ScummEngine::setupScumm(const Common::Path &macResourceFile) {
 	}
 
 	// On some systems it's not safe to run CD audio games from the CD.
-	if (_game.features & GF_AUDIOTRACKS && !Common::File::exists("CDDA.SOU")) {
+	if (_game.features & GF_AUDIOTRACKS && !Common::File::exists("CDDA.SOU") && !ConfMan.hasKey("sst_euphony_render_all")) {
 		uint track;
 
 		// Usually we check if track 1 is present, but the FM Towns demos use
@@ -2772,6 +2777,8 @@ int ScummEngine::getTalkSpeed() {
 #pragma mark -
 
 Common::Error ScummEngine::go() {
+	if (ConfMan.hasKey("sst_euphony_render_all"))
+		return Common::kNoError;
 #ifdef ENABLE_SCUMM_7_8
 	if (_game.id == GID_REBEL1) {
 		ScummEngine_v7 *vm7 = (ScummEngine_v7 *)this;
@@ -3098,8 +3105,8 @@ void ScummEngine::waitForTimer(int quarterFrames, bool freezeMacGui) {
 			g_sst_iter = g_sst_call = 0;
 			g_sst_t_cd = g_sst_t_pe = g_sst_t_shake = g_sst_t_towns = g_sst_t_us = g_sst_t_dly = g_sst_t_total = 0;
 		}
-	}
 #endif
+	}
 
 	// Set the last wait time as the expected end time, which may be different
 	// from the actual time. This helps the main loop maintain consistent timing.

@@ -177,19 +177,48 @@ void PCMDevice_Base::readBufferOriginal(int32 *buffer, uint32 bufferSize) {
 	}
 }
 
-void PCMDevice_Base::readPrepared(int32 *buffer,uint32 size,const int32 **waves){
- for(uint32 i=0;i<size;i++){
-  _timer+=_extRate;
-  while(_timer>=_intRate){_timer-=_intRate;for(int j=0;j<8;j++)_channels[j]->updateOutput();}
-  int32 left=0,right=0;
-  for(int j=0;j<_numChannels;j++)if(_channels[j]->_activeOutput){
-   PCMChannel_Base *c=_channels[j];const uint32 pos=c->_pos>>11;
-   if(!waves[j]||pos>=c->_sourceLength)error("Prepared PCM invalid voice");
-   const uint32 sampleIndex=_prepared->valueMode()?(uint8)c->_data[pos]:pos;
-   left+=waves[j][sampleIndex*2];right+=waves[j][sampleIndex*2+1];
-   if(!c->isPlaying())c->deactivate();
+void PCMDevice_Base::readPrepared(int32 *buffer, uint32 size, const int32 **waves) {
+ // Eligibility excludes a non-looping voice ending within this block. Voice
+ // activity therefore stays constant, while positions and loop ends advance
+ // exactly as updateOutput() does. Avoid checking eight virtual voices for
+ // every output sample when only one or two voices are playing.
+ PCMChannel_Base *advancing[8], *audible[8];
+ const int32 *tables[8];
+ int advancingCount = 0, audibleCount = 0;
+ const bool valueMode = _prepared->valueMode();
+ for (int j = 0; j < _numChannels; ++j) {
+  PCMChannel_Base *c = _channels[j];
+  if (c->isPlaying()) advancing[advancingCount++] = c;
+  if (c->_activeOutput) {
+   audible[audibleCount] = c;
+   tables[audibleCount++] = waves[j];
   }
-  buffer[i*2]+=(left*_deviceVolume)>>7;buffer[i*2+1]+=(right*_deviceVolume)>>7;
+ }
+ for (uint32 i = 0; i < size; ++i) {
+  _timer += _extRate;
+  while (_timer >= _intRate) {
+   _timer -= _intRate;
+   for (int j = 0; j < advancingCount; ++j) {
+    PCMChannel_Base *c = advancing[j];
+    c->_pos += c->_step;
+    if (c->_pos >= c->_dataEnd) {
+     assert(c->_loopStart != c->_dataEnd);
+     c->_pos = c->_loopStart;
+     c->_dataEnd = c->_loopStart + c->_loopLen;
+    }
+   }
+  }
+  int32 left = 0, right = 0;
+  for (int j = 0; j < audibleCount; ++j) {
+   PCMChannel_Base *c = audible[j];
+   const uint32 pos = c->_pos >> 11;
+   if (!tables[j] || pos >= c->_sourceLength) error("Prepared PCM invalid voice");
+   const uint32 sampleIndex = valueMode ? (uint8)c->_data[pos] : pos;
+   left += tables[j][sampleIndex * 2];
+   right += tables[j][sampleIndex * 2 + 1];
+  }
+  buffer[i * 2] += (left * _deviceVolume) >> 7;
+  buffer[i * 2 + 1] += (right * _deviceVolume) >> 7;
  }
 }
 void PCMDevice_Base::readBuffer(int32 *buffer,uint32 size){
@@ -197,6 +226,7 @@ void PCMDevice_Base::readBuffer(int32 *buffer,uint32 size){
  const uint64 ticks=((uint64)_timer+(uint64)size*_extRate)/_intRate;
  if(ready)for(int i=0;i<8;i++){
   PCMChannel_Base *c=_channels[i];if(!c->isActive()&&!c->isPlaying())continue;any=true;
+  if(c->isActive()&&!c->isPlaying())ready=false; // Preserve the original final-sample/deactivate behavior.
   if(_prepared->trace()&&traceBlocks<8)warning("PREPARED_TRACE voice=%d length=%u active=%d playing=%d vol=%u",i,c->_sourceLength,c->isActive(),c->isPlaying(),c->_vol);
   if(_prepared->valueMode()&&c->_data&&c->_sourceLength){
    uint32 gain=((1<<i)&_pcmSfxChanMask)?_sfxVolume:_musicVolume;waves[i]=_prepared->lookupValues(i,c->_vol,c->_panLeft,c->_panRight,gain);
@@ -204,7 +234,7 @@ void PCMDevice_Base::readBuffer(int32 *buffer,uint32 size){
    uint32 gain=((1<<i)&_pcmSfxChanMask)?_sfxVolume:_musicVolume;
    waves[i]=_prepared->lookup(c->_sourceDigest,c->_data,c->_sourceLength,c->_vol,c->_panLeft,c->_panRight,gain,_deviceVolume);
   }
-  if(!waves[i]||(c->_loopStart==c->_dataEnd&&(uint64)c->_pos+ticks*c->_step>=c->_dataEnd))ready=false;
+  if(!waves[i]||((c->_loopStart==c->_dataEnd||!c->_loopLen)&&(uint64)c->_pos+ticks*c->_step>=c->_dataEnd))ready=false;
  }
  if(any)traceBlocks++;
  if(ready&&!any&&_prepared->valueMode()){

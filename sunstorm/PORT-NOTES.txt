@@ -52,11 +52,14 @@ Build:
 Deployment:
   No replacement or restart of the user's running Indy session is part of
   this source migration. Runtime validation is a separate next stage.
-  For future tests mute hardware gain, restore 104/255 afterward; preserve
-  user saves and use private config/save directories.
+  Latest user audio preference: keep rear headphone/line-out playback ON at
+  approximately 60%, internal speaker OFF. Preserve user saves and use private
+  config/save directories. See TOWNS-AUDIO-WIP.md for current test status.
 
 Validation result:
   Full cross-build PASS; final incremental build and link PASS.
   ELF32 big-endian SPARC SYSV executable; stripped size and SHA256 in
   build-result.json. Cursor sanitizer checks PASS. PCM adapter/cache source
-  preservation PASS. Runtime/game validation has not been run.
+  preservation PASS. Subsequent EOB/EOB2 and Heroine’s Quest validation passed;
+  see their hardware test notes. Current SQ2 and unresolved Towns audio results
+  are recorded in TOWNS-AUDIO-WIP.md.

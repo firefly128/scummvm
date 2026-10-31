@@ -23,6 +23,8 @@
 #define SCUMM_PLAYERS_PLAYER_TOWNS_H
 
 #include "scumm/scumm.h"
+#include "audio/mixer.h"
+#include "common/hashmap.h"
 #include "scumm/imuse/imuse.h"
 #include "scumm/imuse/drivers/fmtowns.h"
 #include "audio/softsynth/fmtowns_pc98/towns_euphony.h"
@@ -110,6 +112,17 @@ private:
 	void stopSoundSuspendLooping(int sound);
 
 	void playEuphonyTrack(int sound, const uint8 *data);
+	Common::String euphonyCacheKey(int sound, int level);
+	bool playCachedEuphony(int sound, const uint8 *data);
+	bool euphonyPlaying() const;
+	void renderEuphonyCache();
+	void loadEuphonyCache();
+	Common::HashMap<Common::String, Common::Array<byte> > _euphonyFiles;
+	Audio::Mixer *_cacheMixer = nullptr;
+	Audio::SoundHandle _euphonyCacheHandle;
+	bool _cachedEuphony = false, _renderingEuphony = false;
+	bool _cachedHeld = false;
+	uint32 _cacheLogicalEndMs = 0;
 	void playCdaTrack(int sound, const uint8 *data, bool skipTrackVelo = false);
 
 	struct SoundOvrParameters {

@@ -123,6 +123,7 @@ int EuphonyPlayer::startTrack(const uint8 *data, int trackSize, int barLen) {
 	if (_playing)
 		return 2;
 
+	_completedLoops = 0;
 	_musicPos = _musicStart = data;
 	_defaultBarLength = _barLength = barLen;
 	_musicTrackSize = trackSize;
@@ -369,6 +370,7 @@ bool EuphonyPlayer::parseEvent() {
 	}
 
 	_endOfTrack = false;
+	++_completedLoops;
 	_musicPos = _musicStart;
 	_parseToBar = _bar = _beat = 0;
 	_barLength = _defaultBarLength;

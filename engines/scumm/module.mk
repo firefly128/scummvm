@@ -67,6 +67,7 @@ MODULE_OBJS := \
 	players/player_pce.o \
 	players/player_sid.o \
 	players/player_towns.o \
+	players/player_towns_cache.o \
 	players/player_v1.o \
 	players/player_v2.o \
 	players/player_v2a.o \
