@@ -56,6 +56,17 @@ public:
 	virtual int resumeAudio() = 0;
 
 	/**
+	 * SST: pump the audio queue from the engine main thread.  Default is
+	 * a no-op (callback-mode mixer managers don't need this).  When queue
+	 * mode is enabled (e.g. on single-CPU Solaris 7 boxes where the SDL
+	 * audio LWP gets preempted for whole TS quanta and can't refill
+	 * /dev/audio in time), the SDL mixer manager fills the SDL audio
+	 * queue from this method instead of waiting for the audio LWP to
+	 * call back.  Pump is called from OSystem_SDL::delayMillis().
+	 */
+	virtual void pump() {}
+
+	/**
 	 * Returns true if this is a null device and won't output any audio.
 	 */
 	virtual bool isNullDevice() const { return false; }

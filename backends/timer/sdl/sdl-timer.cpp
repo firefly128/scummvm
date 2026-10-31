@@ -49,7 +49,7 @@ SdlTimerManager::SdlTimerManager() {
 #endif
 
 	// Creates the timer callback
-	_timerID = SDL_AddTimer(10, &timer_handler, this);
+	_timerID = SDL_AddTimer(50, &timer_handler, this);
 }
 
 SdlTimerManager::~SdlTimerManager() {

@@ -30,17 +30,8 @@ Music *g_music;
 
 Music::Music() {
 	g_music = this;
-	Audio::MidiPlayer::createDriver();
-
-	int ret = _driver->open();
-	if (ret == 0) {
-		if (_nativeMT32)
-			_driver->sendMT32Reset();
-		else
-			_driver->sendGMReset();
-
-		_driver->setTimerCallback(this, &timerCallback);
-	}
+	// Keep software MIDI synthesis out of PCM-only scenes. The driver is
+	// created on the first MIDI request, preserving the configured backend.
 }
 
 Music::~Music() {
@@ -63,6 +54,23 @@ void Music::sendToChannel(byte channel, uint32 b) {
 
 void Music::playMusic(Common::SeekableReadStream *midi, bool repeat) {
 	stop();
+
+	if (!_driver) {
+		Audio::MidiPlayer::createDriver();
+		const int ret = _driver->open();
+		if (ret != 0) {
+			warning("Could not open AGS MIDI driver: %d", ret);
+			_driver->close();
+			delete _driver;
+			_driver = nullptr;
+			return;
+		}
+		if (_nativeMT32)
+			_driver->sendMT32Reset();
+		else
+			_driver->sendGMReset();
+		_driver->setTimerCallback(this, &timerCallback);
+	}
 
 	// Load MIDI resource data
 	int midiMusicSize = midi->size();

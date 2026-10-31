@@ -1659,11 +1659,15 @@ void DarkmoonSequenceHelper::delay(uint32 ticks) {
 		processDelayedPaletteFade();
 
 	} else {
-		for (uint32 ct = 0; ct < end; ) {
-			if (ct + 18 <= end)
+		while (!_vm->shouldQuit() && !_vm->skipFlag()) {
+			int32 remaining = static_cast<int32>(end - _system->getMillis());
+			if (remaining <= 0)
+				break;
+			if (remaining >= 18)
 				hScroll();
-			ct = _system->getMillis();
-			_vm->delay(MIN<uint32>(9, end - ct));
+			remaining = static_cast<int32>(end - _system->getMillis());
+			if (remaining > 0)
+				_vm->delay(MIN<uint32>(9, remaining));
 		}
 	}
 }

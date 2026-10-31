@@ -19,12 +19,16 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_ALLOW_ALL
 #include "gui/EventRecorder.h"
 
 #include "common/util.h"
 #include "common/textconsole.h"
 
 #include "audio/mixer_intern.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
 #include "audio/rate.h"
 #include "audio/audiostream.h"
 #include "audio/timestamp.h"
@@ -331,7 +335,26 @@ void MixerImpl::playStream(
 int MixerImpl::mixCallback(byte *samples, uint len) {
 	assert(samples);
 
+	/* SST: split timing — mutex_us = time blocked on _mutex,
+	 *      mix_us = time spent inside the channel mix loop.
+	 *      active = number of channels that did mix() this call.
+	 *      Set SST_MIXER_PROFILE=1 to log every 50 calls.  */
+	static int sst_prof = -1;
+	static long sst_mtx_total = 0, sst_mix_total = 0, sst_calls = 0;
+	static long sst_mtx_max = 0, sst_mix_max = 0;
+	static int sst_active_max = 0, sst_active_total = 0;
+	struct timeval _t0, _t1, _t2;
+	long mtx_us, mix_us;
+	int active = 0;
+	if (sst_prof < 0) {
+		const char *e = getenv("SST_MIXER_PROFILE");
+		sst_prof = (e && e[0] == '1') ? 1 : 0;
+	}
+	if (sst_prof) gettimeofday(&_t0, NULL);
+
 	Common::StackLock lock(_mutex);
+
+	if (sst_prof) gettimeofday(&_t1, NULL);
 
 	int16 *buf = (int16 *)samples;
 
@@ -359,11 +382,32 @@ int MixerImpl::mixCallback(byte *samples, uint len) {
 				_channels[i] = nullptr;
 			} else if (!_channels[i]->isPaused()) {
 				tmp = _channels[i]->mix(buf, len);
+				active++;
 
 				if (tmp > res)
 					res = tmp;
 			}
 		}
+
+	if (sst_prof) {
+		gettimeofday(&_t2, NULL);
+		mtx_us = (_t1.tv_sec - _t0.tv_sec) * 1000000L + (_t1.tv_usec - _t0.tv_usec);
+		mix_us = (_t2.tv_sec - _t1.tv_sec) * 1000000L + (_t2.tv_usec - _t1.tv_usec);
+		sst_mtx_total += mtx_us;
+		sst_mix_total += mix_us;
+		sst_active_total += active;
+		if (mtx_us > sst_mtx_max) sst_mtx_max = mtx_us;
+		if (mix_us > sst_mix_max) sst_mix_max = mix_us;
+		if (active > sst_active_max) sst_active_max = active;
+		sst_calls++;
+		if ((sst_calls % 50) == 0) {
+			fprintf(stderr, "MixerImpl: 50 cb avg mtx=%ldus mix=%ldus max mtx=%ldus mix=%ldus avg_active=%d max_active=%d\n",
+			        sst_mtx_total / sst_calls, sst_mix_total / sst_calls,
+			        sst_mtx_max, sst_mix_max,
+			        sst_active_total / (int)sst_calls, sst_active_max);
+			sst_mtx_max = sst_mix_max = 0; sst_active_max = 0;
+		}
+	}
 
 	return res;
 }

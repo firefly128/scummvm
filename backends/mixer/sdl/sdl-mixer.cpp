@@ -19,6 +19,7 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_ALLOW_ALL
 #include "common/scummsys.h"
 
 #if defined(SDL_BACKEND)
@@ -28,16 +29,19 @@
 #include "common/system.h"
 #include "common/config-manager.h"
 #include "common/textconsole.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #if defined(PLAYSTATION3) || defined(PSP2) || defined(NINTENDO_SWITCH)
 #define SAMPLES_PER_SEC 48000
 #elif defined(__MINT__)
 #define SAMPLES_PER_SEC 49170
 #else
-#define SAMPLES_PER_SEC 44100
+#define SAMPLES_PER_SEC 11025
 #endif
 
-SdlMixerManager::SdlMixerManager() : _isSubsystemInitialized(false), _isAudioOpen(false) {
+SdlMixerManager::SdlMixerManager() : _isSubsystemInitialized(false), _isAudioOpen(false),
+	_queueMode(false), _queueDevId(0), _queueBuf(nullptr), _queueBufSize(0) {
 }
 
 SdlMixerManager::~SdlMixerManager() {
@@ -48,8 +52,14 @@ SdlMixerManager::~SdlMixerManager() {
 	SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(_stream));
 	SDL_DestroyAudioStream(_stream);
 #else
-	if (_isAudioOpen)
+	if (_queueMode && _queueDevId) {
+		SDL_CloseAudioDevice(_queueDevId);
+		_queueDevId = 0;
+	} else if (_isAudioOpen) {
 		SDL_CloseAudio();
+	}
+	free(_queueBuf);
+	_queueBuf = nullptr;
 #endif
 
 	if (_isSubsystemInitialized)
@@ -66,6 +76,15 @@ void SdlMixerManager::init() {
 
 	// Get the desired audio specs
 	SDL_AudioSpec desired = getAudioSpec(SAMPLES_PER_SEC);
+
+	/* SST: opt-in queue mode.  When SCUMM_AUDIO_QUEUE=1 we drive audio
+	 * from the main thread via SDL_QueueAudio() instead of running the
+	 * mixer in SDL's audio LWP.  Diagnosed as the cure for the choppy/
+	 * 300ms-burst pattern on single-CPU SS-4. */
+	{
+		const char *_sst_qmode = getenv("SCUMM_AUDIO_QUEUE");
+		_queueMode = (_sst_qmode && _sst_qmode[0] == '1');
+	}
 
 	// Start SDL Audio subsystem
 #if SDL_VERSION_ATLEAST(3, 0, 0)
@@ -97,6 +116,37 @@ void SdlMixerManager::init() {
 	// "desired" if used directly.
 	SDL_AudioSpec fmt = desired;
 
+	if (_queueMode) {
+		/* SST queue mode: open via SDL_OpenAudioDevice with NULL callback so
+		 * SDL2 internally uses its buffer-queue path.  The audio LWP becomes
+		 * a dumb queue drainer (memcpy + write to /dev/audio, ~10us). */
+		fmt.callback = nullptr;
+		fmt.userdata = nullptr;
+		_queueDevId = SDL_OpenAudioDevice(nullptr, 0, &fmt, &_obtained, 0);
+		if (_queueDevId == 0) {
+			warning("SST: SDL_OpenAudioDevice queue mode failed: %s — falling back to callback mode",
+			        SDL_GetError());
+			_queueMode = false;
+		} else {
+			_isAudioOpen = true;
+			_queueBufSize = _obtained.size;
+			if (_queueBufSize <= 0) {
+				/* compute manually if SDL didn't fill it (s16 = 2 bpc) */
+				_queueBufSize = _obtained.samples * _obtained.channels * 2;
+			}
+			_queueBuf = (byte *)malloc(_queueBufSize);
+			if (!_queueBuf)
+				error("SST: out of memory allocating audio queue buffer");
+			memset(_queueBuf, 0, _queueBufSize);
+			fprintf(stderr,
+			        "SST: audio queue mode active dev=%u freq=%d ch=%d samples=%d size=%d\n",
+			        (unsigned)_queueDevId, _obtained.freq, _obtained.channels,
+			        _obtained.samples, _queueBufSize);
+			fflush(stderr);
+		}
+	}
+
+	if (!_queueMode) {
 	// Start SDL audio with the desired specs
 	if (SDL_OpenAudio(&fmt, &_obtained) != 0) {
 		warning("Could not open audio device: %s", SDL_GetError());
@@ -119,6 +169,7 @@ void SdlMixerManager::init() {
 
 		_obtained = desired;
 	}
+	} /* end !_queueMode */
 #endif
 
 	debug(1, "Output sample rate: %d Hz", _obtained.freq);
@@ -146,7 +197,12 @@ void SdlMixerManager::init() {
 	assert(_mixer);
 	_mixer->setReady(true);
 
-	startAudio();
+	if (_queueMode) {
+		/* queue mode: start the device draining; main-thread pump() feeds it */
+		SDL_PauseAudioDevice(_queueDevId, 0);
+	} else {
+		startAudio();
+	}
 }
 
 #if !SDL_VERSION_ATLEAST(3, 0, 0)
@@ -205,7 +261,7 @@ SDL_AudioSpec SdlMixerManager::getAudioSpec(uint32 outputRate) {
 		// 2017) uses a buffer size of 1024 samples by default for a 16-bit
 		// stereo 44kHz mixer, which happens to be the next lowest power of two
 		// below 45ms.
-		samples = freq / (1000.0 / 45);
+		samples = freq / (1000.0 / 100); /* SST: SS-4 needs some cushion, not too much */
 
 	memset(&desired, 0, sizeof(desired));
 	desired.freq = freq;
@@ -265,7 +321,12 @@ void SdlMixerManager::suspendAudio() {
 	SDL_CloseAudioDevice(SDL_GetAudioStreamDevice(_stream));
 	SDL_DestroyAudioStream(_stream);
 #else
-	SDL_CloseAudio();
+	if (_queueMode && _queueDevId) {
+		SDL_CloseAudioDevice(_queueDevId);
+		_queueDevId = 0;
+	} else {
+		SDL_CloseAudio();
+	}
 #endif
 	_audioSuspended = true;
 }
@@ -280,13 +341,74 @@ int SdlMixerManager::resumeAudio() {
 	if (SDL_ResumeAudioDevice(SDL_GetAudioStreamDevice(_stream)))
 		return -1;
 #else
-	if (SDL_OpenAudio(&_obtained, nullptr) < 0) {
-		return -1;
+	if (_queueMode) {
+		SDL_AudioSpec fmt = _obtained;
+		fmt.callback = nullptr;
+		fmt.userdata = nullptr;
+		_queueDevId = SDL_OpenAudioDevice(nullptr, 0, &fmt, &_obtained, 0);
+		if (_queueDevId == 0) return -1;
+		SDL_PauseAudioDevice(_queueDevId, 0);
+	} else {
+		if (SDL_OpenAudio(&_obtained, nullptr) < 0) {
+			return -1;
+		}
+		SDL_PauseAudio(0);
 	}
-	SDL_PauseAudio(0);
 #endif
 	_audioSuspended = false;
 	return 0;
+}
+
+/* SST queue-mode pump.  Called from OSystem_SDL::delayMillis (main thread).
+ * Keeps SDL's internal audio queue topped up to ~300 ms so the audio LWP's
+ * sole job is memcpy-from-queue + write-to-/dev/audio (~10us).  Total work
+ * per pump call is bounded: <=8 mixCallback invocations of ~50us each. */
+void SdlMixerManager::pump() {
+#if !SDL_VERSION_ATLEAST(3, 0, 0)
+	if (!_queueMode || !_isAudioOpen || _queueDevId == 0 || !_queueBuf)
+		return;
+
+	/* bytes per second = freq * channels * 2 (s16 only) */
+	Uint32 bps = (Uint32)_obtained.freq * _obtained.channels * 2;
+	if (bps == 0) return;
+
+	static Uint32 target_ms = 0;
+	if (target_ms == 0) {
+		const char *e = getenv("SCUMM_AUDIO_QUEUE_MS");
+		int requested = e ? atoi(e) : 300;
+		if (requested < 50) requested = 50;
+		if (requested > 1000) requested = 1000;
+		target_ms = (Uint32)requested;
+	}
+	Uint32 target_bytes = (Uint32)((uint64)target_ms * bps / 1000);
+	Uint32 queued = SDL_GetQueuedAudioSize(_queueDevId);
+
+	int chunks = 0;
+	while (queued < target_bytes && chunks < 8) {
+		callbackHandler(_queueBuf, _queueBufSize);
+		if (SDL_QueueAudio(_queueDevId, _queueBuf, _queueBufSize) != 0) {
+			warning("SST: SDL_QueueAudio failed: %s", SDL_GetError());
+			break;
+		}
+		queued += _queueBufSize;
+		chunks++;
+	}
+
+	/* Optional debug logging gated by SCUMM_AUDIO_QUEUE_DEBUG=1. */
+	static int dbg = -1;
+	if (dbg < 0) {
+		const char *e = getenv("SCUMM_AUDIO_QUEUE_DEBUG");
+		dbg = (e && e[0] == '1') ? 1 : 0;
+	}
+	if (dbg) {
+		static int n = 0;
+		if ((++n % 100) == 0) {
+			fprintf(stderr, "SST pump: queued=%u target=%u chunks_added=%d status=%d\n",
+			        queued, target_bytes, chunks, (int)SDL_GetAudioDeviceStatus(_queueDevId));
+			fflush(stderr);
+		}
+	}
+#endif
 }
 
 #endif

@@ -181,7 +181,11 @@ Bitmap *AdjustBitmapForUseWithDisplayMode(Bitmap *bitmap, bool has_alpha) {
 		new_bitmap = BitmapHelper::CreateBitmapCopy(bitmap, compat_col_depth);
 	}
 	// In non-32-bit game truecolor bitmaps must be downgraded
-	else if (game_col_depth <= 16 && bmp_col_depth > 16) {
+	// SST: original was 'bmp_col_depth > 16' which never downgrades 16bpp
+	// sprites in an 8-bit game.  Force-8bit-color-depth games (heroines-
+	// quest etc.) ship 16/32-bit sprites that need conversion all the
+	// way down to 8bpp.  Use the right pivot: depth > game's depth.
+	else if (game_col_depth <= 16 && bmp_col_depth > game_col_depth) {
 		if (has_alpha) // if has valid alpha channel, convert it to regular transparency mask
 			new_bitmap = remove_alpha_channel(bitmap);
 		else // else simply convert bitmap
@@ -1284,6 +1288,7 @@ static bool construct_object_gfx(const ViewFrame *vf, int pic,
 			return true;
 		recycle_bitmap(actsp.Bmp, objsav.image->GetColorDepth(), objsav.image->GetWidth(), objsav.image->GetHeight());
 		actsp.Bmp->Blit(objsav.image.get(), 0, 0);
+		objsav.x = objsrc.x; objsav.y = objsrc.y;
 		return false; // image was modified
 	}
 
@@ -1488,7 +1493,8 @@ void tint_image(Bitmap *ds, Bitmap *srcimg, int red, int grn, int blu, int light
 }
 
 // Generates Character's raw bitmap and saves in actsps; updates character cache.
-bool construct_char_gfx(int charid, bool force_software) {
+bool construct_char_gfx(int charid, bool force_software, bool reuse_crop) {
+	if (!reuse_crop) _GP(charcache)[charid].cropValid = false;
 	// const bool use_hw_transform = !force_software && _G(gfxDriver)->HasAcceleratedTransform();
 
 	const CharacterInfo &chin = _GP(game).chars[charid];
@@ -1510,7 +1516,7 @@ bool construct_char_gfx(int charid, bool force_software) {
 		chsrc,
 		_GP(charcache)[charid],
 		_GP(actsps)[charid + ACTSP_OBJSOFF],
-		false,                  // characters cannot optimize by pos, probably because of z coord and view offsets (?)
+		reuse_crop,             // caller checked actual top-left, baseline and crop mode
 		force_software);
 }
 
@@ -1537,11 +1543,18 @@ void prepare_characters_for_drawing() {
 		int usebasel = chin.get_baseline();
 
         // Generate raw bitmap in ObjTexture and store parameters in ObjectCache.
-        bool actsp_modified = !construct_char_gfx(charid, false);
+        const bool crop_enabled = (chin.flags & CHF_NOWALKBEHINDS) == 0;
+        const bool reuse_crop = chsav.cropValid && chsav.cropX == atx && chsav.cropY == aty &&
+            chsav.cropBaseline == usebasel && chsav.cropEnabled == crop_enabled;
+        bool actsp_modified = !construct_char_gfx(charid, false, reuse_crop);
         // Prepare the object texture
         prepare_and_add_object_gfx(chsav, actsp, actsp_modified,
             Size(chex.width, chex.height), atx, aty, usebasel,
             (chin.flags & CHF_NOWALKBEHINDS) == 0, chin.transparency, hw_accel);
+        auto &crop_cache = _GP(charcache)[charid];
+        crop_cache.cropX = atx; crop_cache.cropY = aty;
+        crop_cache.cropBaseline = chin.get_baseline();
+        crop_cache.cropEnabled = crop_enabled; crop_cache.cropValid = true;
         // Finally, add the texture to the draw list
         add_to_sprite_list(actsp.Ddb, atx, aty, usebasel);
 	}

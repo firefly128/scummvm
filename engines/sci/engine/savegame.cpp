@@ -469,6 +469,7 @@ void LocalVariables::saveLoadWithSerializer(Common::Serializer &s) {
 }
 
 void Object::saveLoadWithSerializer(Common::Serializer &s) {
+	if (s.isLoading()) _selectorIndexCache.clear();
 	s.syncAsSint32LE(_isFreed);
 	syncWithSerializer(s, _pos);
 	s.syncAsSint32LE(_methodCount);		// that's actually a uint16

@@ -2070,15 +2070,18 @@ uint16 *LoLEngine::getCharacterOrMonsterProtectionAgainstItems(int id) {
 }
 
 void LoLEngine::delay(uint32 millis, bool doUpdate, bool) {
+	const uint32 deadline = _system->getMillis() + millis;
 	while (millis && !shouldQuit()) {
 		if (doUpdate)
 			update();
 		else
 			updateInput();
-
-		uint32 step = MIN<uint32>(millis, _tickLength);
-		_system->delayMillis(step);
-		millis -= step;
+		if (shouldQuit())
+			break;
+		const int32 remaining = static_cast<int32>(deadline - _system->getMillis());
+		if (remaining <= 0)
+			break;
+		_system->delayMillis(MIN<uint32>(remaining, _tickLength));
 	}
 }
 
@@ -3324,7 +3327,7 @@ void LoLEngine::playSpellAnimation(WSAMovie_v2 *mov, int firstFrame, int lastFra
 
 	bool fin = false;
 
-	while (!fin) {
+	while (!fin && !shouldQuit()) {
 		uint32 delayTimer = _system->getMillis() + _tickLength * frameDelay;
 
 		if (mov || callback)
@@ -3350,7 +3353,8 @@ void LoLEngine::playSpellAnimation(WSAMovie_v2 *mov, int firstFrame, int lastFra
 			if (!pal1 || !pal2) {
 				if (del) {
 					delay(step);
-					del -= step;
+					const int32 remaining = static_cast<int32>(delayTimer - _system->getMillis());
+					del = remaining > 0 ? static_cast<uint32>(remaining) : 0;
 				} else {
 					updateInput();
 				}
@@ -3362,11 +3366,12 @@ void LoLEngine::playSpellAnimation(WSAMovie_v2 *mov, int firstFrame, int lastFra
 
 			if (del) {
 				delay(step);
-				del -= step;
+				const int32 remaining = static_cast<int32>(delayTimer - _system->getMillis());
+				del = remaining > 0 ? static_cast<uint32>(remaining) : 0;
 			} else {
 				updateInput();
 			}
-		} while (del);
+		} while (del && !shouldQuit());
 
 		if (!mov)
 			continue;

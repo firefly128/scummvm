@@ -19,7 +19,9 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_getenv
 #include "ags/lib/allegro/color.h"
+#include "ags/shared/ac/sst_asset_cache.h"
 #include "ags/lib/allegro/system.h"
 #include "ags/lib/allegro/aintern.h"
 #include "ags/shared/core/types.h"
@@ -56,7 +58,78 @@ static void convertPalette(const PALETTE src, byte dest[Graphics::PALETTE_SIZE])
 	}
 }
 
+/* SST: optional fixed 6:6:6 RGB cube + 40 grays palette.  Toggled
+ * via SPARCFB_CUBE_PALETTE=1 at scummvm launch.  When active, both
+ * the framebuffer hardware palette AND _G(current_palette) are held
+ * to the cube — set_palette/set_palette_range below are no-ops.  This
+ * fixes the "Crystal Shard logo renders as forest brown" issue:
+ * without this, AGS loads room 0's dark palette before the intro
+ * draws and sst_quantize_to_8bit (in surface.cpp) picks night-forest
+ * indices for the logo's bright pixels. */
+bool sst_cube_palette_active = false;
+static bool sst_cube_palette_mode_resolved = false;
+static bool sst_last_palette_conversion_required = false;
+static void sst_fill_cube_palette(color *pal) {
+	pal[0].r = pal[0].g = pal[0].b = 0; pal[0].filler = 0;
+	int idx = 1;
+	for (int r = 0; r < 6; ++r) {
+		for (int g = 0; g < 6; ++g) {
+			for (int b = 0; b < 6; ++b) {
+				if (r == 0 && g == 0 && b == 0) continue;
+				if (idx >= 217) break;
+				pal[idx].r = (byte)(r * 63 / 5);
+				pal[idx].g = (byte)(g * 63 / 5);
+				pal[idx].b = (byte)(b * 63 / 5);
+				pal[idx].filler = 0;
+				++idx;
+			}
+		}
+	}
+	for (int i = 217; i < 256; ++i) {
+		byte v = (byte)((i - 217) * 63 / 38);
+		pal[i].r = pal[i].g = pal[i].b = v;
+		pal[i].filler = 0;
+	}
+}
+/* SST: Try to load a game-tuned 256-colour palette from
+ * <game-dir>/_palette.bin (saved by the precompute sample pass).
+ * If the file is absent or unreadable, fall back to the default
+ * 6:6:6 cube + grayscale.  Called from sst_resolve_cube_mode at
+ * startup, from applyPalette on every AGS palette change, and
+ * explicitly from the precompute dialog after it generates the
+ * file.  The 8-bit RGB bytes from disk are right-shifted by 2 to
+ * fit AGS's 6-bit DAC representation. */
+void sst_install_palette_from_file_or_cube() {
+	if (!sst_cube_palette_active) return;
+	byte rgb[768];
+	if (AGS::Shared::SSTAssetCache::LoadPalette(rgb)) {
+		for (int i = 0; i < 256; i++) {
+			_G(current_palette)[i].r = rgb[i*3+0] >> 2;
+			_G(current_palette)[i].g = rgb[i*3+1] >> 2;
+			_G(current_palette)[i].b = rgb[i*3+2] >> 2;
+			_G(current_palette)[i].filler = 0;
+		}
+	} else {
+		sst_fill_cube_palette(_G(current_palette));
+	}
+}
+void sst_resolve_cube_mode() {
+	bool required = AGS::Shared::SSTAssetCache::RequiresPaletteConversion();
+	if (sst_cube_palette_mode_resolved && required == sst_last_palette_conversion_required) return;
+	const char *e = getenv("SPARCFB_CUBE_PALETTE");
+	/* Native high-colour conversion is automatic; retain explicit overrides. */
+	sst_cube_palette_active = e ? (e[0] == '1') : required;
+	sst_last_palette_conversion_required = required;
+	if (sst_cube_palette_active) sst_install_palette_from_file_or_cube();
+	sst_cube_palette_mode_resolved = true;
+}
+
 static void applyPalette() {
+	sst_resolve_cube_mode();
+	if (sst_cube_palette_active) {
+		/* Hold the chosen palette — overwrite anything AGS poked. */
+		sst_install_palette_from_file_or_cube();
+	}
 	if (g_system->getScreenFormat().bytesPerPixel == 1) {
 		byte pal[Graphics::PALETTE_SIZE];
 		convertPalette(_G(current_palette), pal);
@@ -65,17 +138,21 @@ static void applyPalette() {
 }
 
 void set_palette(const PALETTE p) {
-	for (int idx = 0; idx < PAL_SIZE; ++idx)
-		_G(current_palette)[idx] = p[idx];
-
+	sst_resolve_cube_mode();
+	if (!sst_cube_palette_active) {
+		for (int idx = 0; idx < PAL_SIZE; ++idx)
+			_G(current_palette)[idx] = p[idx];
+	}
 	applyPalette();
 }
 
 void set_palette_range(const PALETTE p, int from, int to, int retracesync) {
-	for (int i = from; i <= to; ++i) {
-		_G(current_palette)[i] = p[i];
+	sst_resolve_cube_mode();
+	if (!sst_cube_palette_active) {
+		for (int i = from; i <= to; ++i) {
+			_G(current_palette)[i] = p[i];
+		}
 	}
-
 	applyPalette();
 }
 

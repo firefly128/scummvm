@@ -19,6 +19,8 @@
  *
  */
 
+#include "common/debug.h"
+
 #include "dgds/scene_condition.h"
 #include "dgds/dgds.h"
 #include "dgds/ads.h"
@@ -106,7 +108,8 @@ bool SceneConditions::check(const Common::Array<SceneConditions> &conds) {
 		if (cflag & kSceneCondNegate)
 			result = !result;
 
-		debug(11, "Cond: %s -> %s", c.dump("").c_str(), result ? "true": "false");
+		if (gDebugLevel >= 11)
+			debug(11, "Cond: %s -> %s", c.dump("").c_str(), result ? "true": "false");
 
 		if (!result) {
 			// Skip just past the next or, or to the end.

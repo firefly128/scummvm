@@ -19,8 +19,16 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_getenv
+#define FORBIDDEN_SYMBOL_EXCEPTION_FILE
+#define FORBIDDEN_SYMBOL_EXCEPTION_fopen
+#define FORBIDDEN_SYMBOL_EXCEPTION_fclose
+#define FORBIDDEN_SYMBOL_EXCEPTION_fwrite
+#define FORBIDDEN_SYMBOL_EXCEPTION_snprintf
+#include <stdio.h>
 #include "ags/lib/allegro/gfx.h"
 #include "ags/lib/allegro/color.h"
+#include "ags/shared/ac/sst_asset_cache.h"
 #include "ags/lib/allegro/flood.h"
 #include "ags/ags.h"
 #include "ags/globals.h"
@@ -167,15 +175,153 @@ BITMAP::DrawInnerArgs::DrawInnerArgs(BITMAP *_dstBitmap, const BITMAP *srcBitmap
 	shouldDraw = true;
 }
 
+/* SST: convert a >1bpp source rect to a fresh 8bpp BITMAP via
+ * per-pixel bestfit_color against _G(current_palette).  Returns a
+ * new BITMAP that the caller must destroy_bitmap().  Returns NULL
+ * on empty rect or alloc failure. */
+static BITMAP *sst_quantize_to_8bit(const BITMAP *src, const Common::Rect &srcRect) {
+	const int sw = srcRect.width();
+	const int sh = srcRect.height();
+	if (sw <= 0 || sh <= 0) return nullptr;
+	BITMAP *temp = create_bitmap_ex(8, sw, sh);
+	if (!temp) return nullptr;
+	const ::Graphics::ManagedSurface &srcSurf = src->getSurface();
+	const byte srcBpp = srcSurf.format.bytesPerPixel;
+	const int sx0 = srcRect.left;
+	const int sy0 = srcRect.top;
+	uint8 a, r, g, b;
+	/* SST: alpha cutoff for treating a pixel as transparent.
+	 * Default 128 (50%) was the original cutoff — works for AGS
+	 * title-screen tinted overlays behind menu text.  HQ's night
+	 * village layers a full-screen alpha-blended dark tint on top
+	 * of the room bg; that overlay sits at ~alpha 160-200 and
+	 * renders opaquely at threshold=128, hiding the bg + objects.
+	 * Tunable via SPARCFB_ALPHA_THRESHOLD env (0..255).  Set higher
+	 * to make more partial-alpha pixels transparent (kills night
+	 * overlays); lower to keep them opaque (preserves title-screen
+	 * tinted backgrounds). */
+	static int s_alpha_thresh = -1;
+	if (s_alpha_thresh < 0) {
+		const char *e = getenv("SPARCFB_ALPHA_THRESHOLD");
+		s_alpha_thresh = e ? atoi(e) : 128;
+		if (s_alpha_thresh < 0) s_alpha_thresh = 0;
+		if (s_alpha_thresh > 256) s_alpha_thresh = 256;
+	}
+	byte palette6[768];
+	for (int i = 0; i < 256; ++i) {
+		palette6[i*3] = _G(current_palette)[i].r;
+		palette6[i*3+1] = _G(current_palette)[i].g;
+		palette6[i*3+2] = _G(current_palette)[i].b;
+	}
+	const byte *nearest = AGS::Shared::SSTAssetCache::GetColourLookup(palette6);
+	for (int yi = 0; yi < sh; ++yi) {
+		const byte *srow = (const byte *)srcSurf.getBasePtr(sx0, sy0 + yi);
+		byte *drow = (byte *)temp->getSurface().getBasePtr(0, yi);
+		for (int xi = 0; xi < sw; ++xi) {
+			uint32 sv = 0;
+			switch (srcBpp) {
+			case 1: sv = srow[xi]; break;
+			case 2: sv = ((const uint16 *)srow)[xi]; break;
+			case 4: sv = ((const uint32 *)srow)[xi]; break;
+			}
+			srcSurf.format.colorToARGB(sv, a, r, g, b);
+			if ((int)a < s_alpha_thresh || (r == 255 && g == 0 && b == 255)) {
+				drow[xi] = 0;
+			} else {
+				drow[xi] = nearest ? nearest[((r >> 2) << 12) | ((g >> 2) << 6) | (b >> 2)]
+					: (byte)bestfit_color(_G(current_palette), r >> 2, g >> 2, b >> 2);
+			}
+		}
+	}
+	return temp;
+}
+
 void BITMAP::draw(const BITMAP *srcBitmap, const Common::Rect &srcRect,
                   int dstX, int dstY, bool horizFlip, bool vertFlip,
                   bool skipTrans, int srcAlpha, int tintRed, int tintGreen,
                   int tintBlue) {
+	/* SST: optional per-call draw trace.  SPARCFB_DEBUG_DRAW=N logs
+	 * the first N BITMAP::draw calls so we can correlate what AGS
+	 * submits in a scene vs. what actually paints.  Disabled by
+	 * default (env unset or 0).  warning() goes to scummvm stderr. */
+	{
+		static int s_draw_log_count = 0;
+		static int s_draw_log_limit = -1;
+		if (s_draw_log_limit < 0) {
+			const char *e = getenv("SPARCFB_DEBUG_DRAW");
+			s_draw_log_limit = e ? atoi(e) : 0;
+		}
+		if (s_draw_log_count < s_draw_log_limit) {
+			s_draw_log_count++;
+			warning("[sst-draw %d] src=%dx%d/%dbpp rect=(%d,%d)-(%d,%d) -> dst=(%d,%d) ours=%dx%d/%dbpp sT=%d sA=%d",
+			        s_draw_log_count, srcBitmap->w, srcBitmap->h, srcBitmap->format.bytesPerPixel,
+			        srcRect.left, srcRect.top, srcRect.right, srcRect.bottom,
+			        dstX, dstY, w, h, format.bytesPerPixel, skipTrans?1:0, srcAlpha);
+		}
+	}
+
+	/* SST: bg-sprite dump for diagnostic.  SPARCFB_DUMP_BG=N writes
+	 * up to N UNIQUE 320x200 8bpp sprites drawn at dst=(0,0) — those
+	 * are the room background blits — to /tmp/sst-bg-NNN.bin (raw
+	 * 320x200 pal8 bytes, no header).  Decode on host against the
+	 * active _palette.bin.  Dedupes via 8-row sparse checksum so
+	 * identical bgs across frames don't waste slots. */
+	{
+		static int s_dump_bg_count = 0;
+		static int s_dump_bg_limit = -1;
+		static uint32 s_dump_bg_last_sig = 0;
+		if (s_dump_bg_limit < 0) {
+			const char *e = getenv("SPARCFB_DUMP_BG");
+			s_dump_bg_limit = e ? atoi(e) : 0;
+		}
+		/* Match any 8bpp sprite at dst=(0,0) with screen-like or
+		 * room-buffer dimensions.  HQ uses 640x200 internal bg
+		 * buffers; menu screens use 320x200 directly.  Dump both. */
+		const int sw = srcBitmap->w, sh = srcBitmap->h;
+		const bool sst_dump_size_ok =
+		    sh == 200 && (sw == 320 || sw == 640) &&
+		    srcBitmap->format.bytesPerPixel == 1 &&
+		    dstX == 0 && dstY == 0;
+		if (s_dump_bg_count < s_dump_bg_limit && sst_dump_size_ok) {
+			const ::Graphics::ManagedSurface &dsurf = srcBitmap->getSurface();
+			/* Sparse 8-row signature for quick dedupe — sample over
+			 * full src width (sw), works for 320 and 640. */
+			uint32 sig = 0xdeadbeef;
+			for (int row = 0; row < 200; row += 25) {
+				const byte *rrow = (const byte *)dsurf.getBasePtr(0, row);
+				for (int x = 0; x < sw; x += 8) {
+					sig = sig * 31 + rrow[x];
+				}
+			}
+			if (sig != s_dump_bg_last_sig) {
+				s_dump_bg_last_sig = sig;
+				char dpath[64];
+				snprintf(dpath, sizeof(dpath), "/tmp/sst-bg-%03d-%dx%d.bin", s_dump_bg_count, sw, sh);
+				FILE *dfp = fopen(dpath, "wb");
+				if (dfp) {
+					for (int yi = 0; yi < 200; yi++) {
+						fwrite(dsurf.getBasePtr(0, yi), 1, sw, dfp);
+					}
+					fclose(dfp);
+					warning("[sst-dump-bg %d] wrote %s (sig=%08x)", s_dump_bg_count, dpath, sig);
+				}
+				s_dump_bg_count++;
+			}
+		}
+	}
+
 
 	// A restricted number of 8bit games (e.g. Snow Problem) contain (leftover?) 32bit resources.
 	// We can ignore these to prevent conversion on load (and triggering the assertion)
 	if (format.bytesPerPixel == 1 && srcBitmap->format.bytesPerPixel != 1) {
-		warning("Attempt to draw >1BPP surface onto 1BPP surface, ignoring");
+		/* SST: force-8bit games hit this for engine-internal bitmaps
+		 * that bypass PrepareSpriteForUse.  Quantize, recurse. */
+		BITMAP *sst_q = sst_quantize_to_8bit(srcBitmap, srcRect);
+		if (!sst_q) return;
+		this->draw(sst_q, Common::Rect(0, 0, sst_q->w, sst_q->h),
+		           dstX, dstY, horizFlip, vertFlip,
+		           skipTrans, srcAlpha, tintRed, tintGreen, tintBlue);
+		destroy_bitmap(sst_q);
 		return;
 	}
 
@@ -231,6 +377,32 @@ void BITMAP::draw(const BITMAP *srcBitmap, const Common::Rect &srcRect,
 
 void BITMAP::stretchDraw(const BITMAP *srcBitmap, const Common::Rect &srcRect,
                          const Common::Rect &dstRect, bool skipTrans, int srcAlpha) {
+	{
+		static int s_stretch_log_count = 0;
+		static int s_stretch_log_limit = -1;
+		if (s_stretch_log_limit < 0) {
+			const char *e = getenv("SPARCFB_DEBUG_DRAW");
+			s_stretch_log_limit = e ? atoi(e) : 0;
+		}
+		if (s_stretch_log_count < s_stretch_log_limit) {
+			s_stretch_log_count++;
+			warning("[sst-stretch %d] src=%dx%d/%dbpp rect=(%d,%d)-(%d,%d) -> dstRect=(%d,%d)-(%d,%d) ours=%dx%d/%dbpp sT=%d sA=%d",
+			        s_stretch_log_count, srcBitmap->w, srcBitmap->h, srcBitmap->format.bytesPerPixel,
+			        srcRect.left, srcRect.top, srcRect.right, srcRect.bottom,
+			        dstRect.left, dstRect.top, dstRect.right, dstRect.bottom,
+			        w, h, format.bytesPerPixel, skipTrans?1:0, srcAlpha);
+		}
+	}
+	if (format.bytesPerPixel == 1 && srcBitmap->format.bytesPerPixel != 1) {
+		/* SST: same quantize+recurse as BITMAP::draw, here so the
+		 * stretched character portrait / scaled sprites also render. */
+		BITMAP *sst_q = sst_quantize_to_8bit(srcBitmap, srcRect);
+		if (!sst_q) return;
+		this->stretchDraw(sst_q, Common::Rect(0, 0, sst_q->w, sst_q->h),
+		                  dstRect, skipTrans, srcAlpha);
+		destroy_bitmap(sst_q);
+		return;
+	}
 	assert(format.bytesPerPixel == 2 || format.bytesPerPixel == 4 ||
 	       (format.bytesPerPixel == 1 && srcBitmap->format.bytesPerPixel == 1));
 	auto args = DrawInnerArgs(this, srcBitmap, srcRect, dstRect, skipTrans, srcAlpha, false, false, -1, -1, -1, true);

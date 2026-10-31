@@ -75,7 +75,10 @@ namespace AGS {
 AGSEngine *g_vm;
 
 AGSEngine::AGSEngine(OSystem *syst, const AGSGameDescription *gameDesc) : Engine(syst),
-	_gameDescription(gameDesc), _randomSource("AGS"), _events(nullptr), _music(nullptr),
+	_gameDescription(gameDesc), _randomSource("AGS"),
+    _sstMaskWords(ConfMan.hasKey("sst_hq_mask_words") && ConfMan.getBool("sst_hq_mask_words")),
+    _sstVerifyMaskWords(ConfMan.hasKey("sst_hq_verify_mask_words") && ConfMan.getBool("sst_hq_verify_mask_words")),
+    _events(nullptr), _music(nullptr),
 	_gfxDriver(nullptr), _globals(nullptr), _forceTextAA(false) {
 	g_vm = this;
 

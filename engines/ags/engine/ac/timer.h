@@ -39,7 +39,9 @@ using AGS_Clock = std::conditional <
 
 template<typename TDur>
 inline int64_t ToMilliseconds(TDur dur) {
-	return std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
+	// The compatibility clock stores milliseconds; its duration::count()
+	// is a placeholder, so read the stored duration directly.
+	return static_cast<uint32>(std::chrono::duration_cast<std::chrono::milliseconds>(dur));
 }
 
 // Sleeps for time remaining until the next game frame, updates next frame timestamp
@@ -51,6 +53,25 @@ extern int setTimerFps(int new_fps);
 extern bool isTimerFpsMaxed();
 // If more than N frames, just skip all, start a fresh.
 extern void skipMissedTicks();
+
+// Opt-in wall-clock pacing for the slow native SPARC renderer.
+bool RealtimePacingEnabled();
+bool ShouldRenderGameFrame();
+void RecordGameFrameRendered();
+
+// Transition images may be dropped, but the terminal state is always drawn.
+class TransitionClock {
+public:
+ explicit TransitionClock(uint32 interval = 0);
+ ~TransitionClock();
+ int Step(int current, int count) const;
+ void Wait(int completed) const;
+ bool Enabled() const { return _enabled; }
+private:
+ uint32 _start, _interval;
+ bool _enabled;
+};
+
 
 } // namespace AGS3
 

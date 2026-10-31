@@ -1650,8 +1650,11 @@ void ScummEngine::updatePalette() {
 	if (_game.features & GF_16BIT_COLOR)
 		return;
 
-	if (_palDirtyMax == -1)
-		return;
+	/* SST: force full palette push every call.  sparcfb native backend
+	 * pushes directly to BT458 RAMDAC and only ever sees palette through
+	 * this setPalette() path. */
+	_palDirtyMin = 0;
+	_palDirtyMax = 255;
 
 	byte paletteColors[3 * 256];
 	byte *p = paletteColors;
@@ -1734,7 +1737,9 @@ void ScummEngine::updatePalette() {
 			_16BitPalette[i] = get16BitColor(p[0], p[1], p[2]);
 			p += 3;
 		}
-		return;
+		/* SST: do NOT return early — also push 8-bit palette to backend
+		 * (sparcfb native uses the BT458 8-bit RAMDAC, not _16BitPalette). */
+		/* fallthrough */
 	}
 #endif
 #endif

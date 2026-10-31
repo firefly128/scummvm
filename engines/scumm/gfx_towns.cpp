@@ -611,9 +611,18 @@ void TownsScreen::scrollLayer(int layer, int offset, int top, int bottom, bool f
 }
 
 void TownsScreen::update() {
+	if (_dirtyRects.empty()) return; /* SST: skip lockScreen+composite when nothing changed */
 #ifdef USE_RGB_COLOR
-	update16BitPalette();
-	updateScreenBuffer<uint16>();
+	/* SST: when system surface is 1bpp (sparcfb native backend), bypass the
+	 * _16BitPalette conversion and write 8-bit indices directly.  The 8-bit
+	 * dispatcher uses the !USE_RGB_COLOR-style code path inside
+	 * updateScreenBuffer (selects srcCol4bit based on layer numCol). */
+	if (_pixelFormat.bytesPerPixel == 1) {
+		updateScreenBuffer<uint8>();
+	} else {
+		update16BitPalette();
+		updateScreenBuffer<uint16>();
+	}
 #else
 	updateScreenBuffer<uint8>();
 #endif
@@ -684,8 +693,9 @@ template<typename dstPixelType, typename srcPixelType, int scaleW, int scaleH, b
 				}
 			} else {
 				if (col || l->onBottom) {
-					if (srcCol4bit)
-						col = col & 0x0f;
+					/* SST: srcCol4bit (4-bit-mask) only meaningful for 16-bit dst —
+					 * for 8-bit dst we always want full 8-bit values. */
+					/* if (srcCol4bit) col = col & 0x0f; */
 					*dst10a = col;
 					if (scaleW == 2)
 						*++dst10a = col;
@@ -714,6 +724,10 @@ template<typename dstPixelType, typename srcPixelType, int scaleW, int scaleH, b
 template void TownsScreen::transferRect<uint16, uint16, 1, 1, false>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
 template void TownsScreen::transferRect<uint16, uint16, 2, 2, false>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
 template void TownsScreen::transferRect<uint16, uint8, 1, 1, true>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
+/* SST: also need uint8 dst instantiations when system reports 1bpp */
+template void TownsScreen::transferRect<uint8, uint8, 2, 2, false>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
+template void TownsScreen::transferRect<uint8, uint8, 1, 1, false>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
+template void TownsScreen::transferRect<uint8, uint8, 1, 1, true>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
 #else
 template void TownsScreen::transferRect<uint8, uint8, 2, 2, false>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
 template void TownsScreen::transferRect<uint8, uint8, 1, 1, false>(uint8 *dst, int pitch, TownsScreenLayer *l, int x, int y, int w, int h);
@@ -776,6 +790,7 @@ template<typename dstPixelType> void TownsScreen::updateScreenBuffer() {
 
 #ifdef USE_RGB_COLOR
 template void TownsScreen::updateScreenBuffer<uint16>();
+template void TownsScreen::updateScreenBuffer<uint8>();
 #else
 template void TownsScreen::updateScreenBuffer<uint8>();
 #endif

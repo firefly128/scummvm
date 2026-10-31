@@ -113,7 +113,7 @@ void DrawSpriteWithTransparency(Bitmap *ds, Bitmap *sprite, int x, int y, int al
 		sprite = conv_bm.get();
 	}
 
-	if ((alpha < 0xFF) && (surface_depth > 8) && (sprite_depth > 8)) {
+	if (alpha < 0xFF) {
 		set_trans_blender(0, 0, 0, alpha);
 		ds->TransBlendBlt(sprite, x, y);
 	} else {

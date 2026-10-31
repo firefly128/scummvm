@@ -19,12 +19,17 @@
  *
  */
 
+#define FORBIDDEN_SYMBOL_ALLOW_ALL
 #include "common/debug.h"
+#include "common/endian.h"
 #include "common/file.h"
+#include "common/memstream.h"
 #include "common/mutex.h"
 #include "common/textconsole.h"
 #include "common/queue.h"
 #include "common/util.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "audio/audiostream.h"
 #include "audio/decoders/flac.h"
@@ -69,10 +74,133 @@ SeekableAudioStream *SeekableAudioStream::openStreamFile(const Common::Path &bas
 	SeekableAudioStream *stream = nullptr;
 	Common::File *fileHandle = new Common::File();
 
+	/* SST: optional CD-track preload into RAM.  When SCUMM_CD_PRELOAD=1,
+	 * read the entire track file into memory before handing to the audio
+	 * decoder.  Eliminates per-mix-callback file I/O which on slow disks
+	 * can take 100-200ms per chunk for uncompressed PCM.  Capped at 64 MB
+	 * per file so a stray giant input doesn't OOM the box. */
+	static int sst_preload = -1;
+	if (sst_preload < 0) {
+		const char *e = getenv("SCUMM_CD_PRELOAD");
+		sst_preload = (e && e[0] == '1') ? 1 : 0;
+	}
+
 	for (int i = 0; i < ARRAYSIZE(STREAM_FILEFORMATS); ++i) {
 		Common::Path filename = basename.append(STREAM_FILEFORMATS[i].fileExtension);
 		fileHandle->open(filename);
 		if (fileHandle->isOpen()) {
+			if (sst_preload) {
+				int32 size = fileHandle->size();
+				if (size > 0 && size < 64 * 1024 * 1024) {
+					byte *buf = new byte[size];
+					if (buf && fileHandle->read(buf, size) == (uint32)size) {
+						fileHandle->close();
+						delete fileHandle;
+						fileHandle = nullptr;
+
+						/* SST: if SCUMM_CD_PREDOWNSAMPLE=NNN is set and the
+						 * file is a plain LE16 PCM WAV whose rate is an
+						 * integer multiple of NNN, decimate at preload time.
+						 * Replaces the mixer's per-callback simpleConvert
+						 * (huge cost on 110MHz SPARC) with a memcpy. */
+						static int sst_target = -2;
+						if (sst_target == -2) {
+							const char *e = getenv("SCUMM_CD_PREDOWNSAMPLE");
+							sst_target = (e && *e) ? atoi(e) : 0;
+						}
+
+						bool predown = false;
+						if (sst_target > 0 && size > 44 &&
+						    memcmp(buf, "RIFF", 4) == 0 &&
+						    memcmp(buf + 8, "WAVE", 4) == 0 &&
+						    memcmp(buf + 12, "fmt ", 4) == 0) {
+							uint32 fmtLen = READ_LE_UINT32(buf + 16);
+							uint16 fmtCode = READ_LE_UINT16(buf + 20);
+							uint16 channels = READ_LE_UINT16(buf + 22);
+							uint32 srcRate = READ_LE_UINT32(buf + 24);
+							uint16 bps = READ_LE_UINT16(buf + 34);
+							int32 dataOff = 12 + 8 + (int32)fmtLen;
+							if (dataOff + 8 < size &&
+							    memcmp(buf + dataOff, "data", 4) == 0) {
+								uint32 dataSize = READ_LE_UINT32(buf + dataOff + 4);
+								if ((int32)(dataOff + 8 + dataSize) > size)
+									dataSize = (uint32)(size - dataOff - 8);
+								int dec = (int)(srcRate / (uint32)sst_target);
+								if (fmtCode == 1 && bps == 16 &&
+								    (channels == 1 || channels == 2) &&
+								    dec >= 2 &&
+								    (uint32)dec * (uint32)sst_target == srcRate &&
+								    dataSize > 0) {
+									const byte *dataPtr = buf + dataOff + 8;
+									int frameBytes = (channels == 2) ? 4 : 2;
+									uint32 srcFrames = dataSize / (uint32)frameBytes;
+									uint32 dstFrames = srcFrames / (uint32)dec;
+									uint32 dstBytes = dstFrames * (uint32)frameBytes;
+									byte *dst = new byte[dstBytes];
+									if (dst) {
+										/* WAV PCM is little-endian; SPARC is BE. Read/write LE
+										 * explicitly so the math is correct on either host. */
+										const byte *src = dataPtr;
+										byte *out = dst;
+										if (channels == 2) {
+											for (uint32 f = 0; f < dstFrames; f++) {
+												int32 sumL = 0, sumR = 0;
+												for (int j = 0; j < dec; j++) {
+													uint32 idx = (f * (uint32)dec + (uint32)j) * 4;
+													sumL += (int16)READ_LE_UINT16(src + idx);
+													sumR += (int16)READ_LE_UINT16(src + idx + 2);
+												}
+												int16 avgL = (int16)(sumL / dec);
+												int16 avgR = (int16)(sumR / dec);
+												WRITE_LE_UINT16(out + f * 4,     (uint16)avgL);
+												WRITE_LE_UINT16(out + f * 4 + 2, (uint16)avgR);
+											}
+										} else {
+											for (uint32 f = 0; f < dstFrames; f++) {
+												int32 sum = 0;
+												for (int j = 0; j < dec; j++) {
+													uint32 idx = (f * (uint32)dec + (uint32)j) * 2;
+													sum += (int16)READ_LE_UINT16(src + idx);
+												}
+												int16 avg = (int16)(sum / dec);
+												WRITE_LE_UINT16(out + f * 2, (uint16)avg);
+											}
+										}
+										fprintf(stderr,
+										    "SST: predownsampled %s %u->%d Hz "
+										    "ch=%u %u->%u bytes\n",
+										    filename.toString(Common::Path::kNativeSeparator).c_str(),
+										    srcRate, sst_target, (unsigned)channels,
+										    dataSize, dstBytes);
+										fflush(stderr);
+										delete[] buf;
+										byte rawFlags = Audio::FLAG_16BITS |
+										                Audio::FLAG_LITTLE_ENDIAN |
+										                ((channels == 2) ? Audio::FLAG_STEREO : 0);
+										stream = Audio::makeRawStream(dst, dstBytes,
+										                              sst_target, rawFlags,
+										                              DisposeAfterUse::YES);
+										predown = true;
+									}
+								}
+							}
+						}
+
+						if (!predown) {
+							Common::MemoryReadStream *memStream =
+								new Common::MemoryReadStream(buf, size, DisposeAfterUse::YES);
+							fprintf(stderr, "SST: CD-track preloaded %d bytes (%s)\n",
+								(int)size,
+								filename.toString(Common::Path::kNativeSeparator).c_str());
+							fflush(stderr);
+							stream = STREAM_FILEFORMATS[i].openStreamFile(memStream, DisposeAfterUse::YES);
+						}
+						break;
+					}
+					delete[] buf;
+					/* fall through to file streaming if read failed */
+				}
+			}
 			// Create the stream object
 			stream = STREAM_FILEFORMATS[i].openStreamFile(fileHandle, DisposeAfterUse::YES);
 			fileHandle = nullptr;

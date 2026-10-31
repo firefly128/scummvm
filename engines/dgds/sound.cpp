@@ -339,8 +339,11 @@ bool Sound::loadSXSoundData(const Common::String &filename, Common::Array<SoundD
 		} else if (chunk.isSection(ID_DAT)) {
 			// TODO: Should we record the indexes?
 			/*uint16 idx = */ stream->readUint16LE();
-			/*uint16 type = */ stream->readUint16LE();
+			const uint16 type = stream->readUint16LE();
 			SoundData soundData;
+			// SX stores playback flags in the high byte of the DAT type word.
+			// Bit 1 requests repetition; the low byte is the track priority.
+			soundData._flags = (type & 0x0200) ? FLAG_LOOP : 0;
 			soundData._data = _decompressor->decompress(stream, stream->size() - stream->pos(), soundData._size);
 			dataArray.push_back(soundData);
 		}

@@ -87,28 +87,39 @@ bool walkbehinds_cropout(Bitmap *sprit, int sprx, int spry, int basel) {
 	const int maskcol = sprit->GetMaskColor();
 	const int spcoldep = sprit->GetColorDepth();
 
+	// Keep invariant bitmap/global lookups out of the per-pixel loop.
+	const int width = sprit->GetWidth(), height = sprit->GetHeight();
+	Bitmap *mask = _GP(thisroom).WalkBehindMask.get();
+	const int maskWidth = mask->GetWidth();
+	const int maskPitch = mask->GetAllegroBitmap()->pitch;
+	const uint8_t *maskPixels = mask->GetScanLine(0);
+	uint8_t *const *spriteRows = sprit->GetAllegroBitmap()->line.data();
+	const WalkBehindColumn *columns = _G(walkBehindCols).data();
+	const short *baselines = _G(croom)->walkbehind_base;
 	bool pixels_changed = false;
 	// pass along the sprite's pixels, but skip those that lie outside the mask
 	for (int x = MAX(0, 0 - sprx);
-		(x < sprit->GetWidth()) && (x + sprx < _GP(thisroom).WalkBehindMask->GetWidth()); ++x) {
+		(x < width) && (x + sprx < maskWidth); ++x) {
 		// select the WB column at this x
-		const auto &wbcol = _G(walkBehindCols)[x + sprx];
+		const auto &wbcol = columns[x + sprx];
 		// skip if no area, or sprite lies outside of all areas in this column
 		if ((!wbcol.Exists) ||
 			(wbcol.Y2 <= spry) ||
-			(wbcol.Y1 > spry + sprit->GetHeight()))
+			(wbcol.Y1 > spry + height))
 			continue;
 
 		// ensure we only check within the valid areas (between Y1 and Y2)
 		// we assume that Y1 and Y2 are always within the mask
-		for (int y = MAX(0, wbcol.Y1 - spry);
-				(y < sprit->GetHeight()) && (y + spry < wbcol.Y2); ++y) {
-			const int wb = _GP(thisroom).WalkBehindMask->GetScanLine(y + spry)[x + sprx];
+		const int firstY = MAX(0, wbcol.Y1 - spry);
+		const uint8_t *maskPixel = maskPixels + (firstY + spry) * maskPitch + x + sprx;
+		for (int y = firstY;
+				(y < height) && (y + spry < wbcol.Y2); ++y, maskPixel += maskPitch) {
+			const int wb = *maskPixel;
 			if (wb < 1) continue; // "no area"
-			if (_G(croom)->walkbehind_base[wb] <= basel) continue;
+			if (baselines[wb] <= basel) continue;
 
 			pixels_changed = true;
-			uint8_t *dst_line = sprit->GetScanLineForWriting(y);
+			uint8_t *dst_line = spriteRows[y];
 			switch (spcoldep) {
 			case 8:
 				dst_line[x] = maskcol;
@@ -129,6 +140,8 @@ bool walkbehinds_cropout(Bitmap *sprit, int sprx, int spry, int basel) {
 }
 
 void walkbehinds_recalc() {
+	// A modified mask invalidates sprites cropped against the previous mask.
+	_G(walk_behind_baselines_changed) = 1;
 	// Reset all data
 	_G(walkBehindCols).clear();
 	for (int wb = 0; wb < MAX_WALK_BEHINDS; ++wb) {

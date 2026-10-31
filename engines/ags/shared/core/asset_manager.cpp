@@ -24,6 +24,8 @@
 #include "common/std/utility.h"
 #include "ags/shared/core/platform.h"
 #include "ags/shared/core/asset_manager.h"
+#include "common/config-manager.h"
+#include "common/fs.h"
 #include "ags/shared/util/directory.h"
 #include "ags/shared/util/multi_file_lib.h"
 #include "ags/shared/util/path.h"
@@ -164,23 +166,24 @@ bool AssetManager::DoesAssetExist(const String &asset_name, const String &filter
 
 void AssetManager::FindAssets(std::vector<String> &assets, const String &wildcard,
 		const String &filter) const {
-	String pattern = StrUtil::WildcardToRegex(wildcard);
-
+	/* Use ScummVM's wildcard matcher. The std::regex shim used by
+	 * WildcardToRegex is deliberately unimplemented in this port. */
 	for (const auto *lib : _activeLibs) {
 		auto match = std::find(lib->Filters.begin(), lib->Filters.end(), filter);
-		if (match == lib->Filters.end())
-			continue; // filter does not match
-
+		if (match == lib->Filters.end()) continue;
 		if (IsAssetLibDir(lib)) {
-			for (FindFile ff = FindFile::OpenFiles(lib->BaseDir, wildcard);
-				!ff.AtEnd(); ff.Next())
-				assets.push_back(ff.Current());
+			Common::Path path(lib->BasePath.GetCStr());
+			Common::String native = path.toString('/');
+			if (native.empty() || native[0] != '/') path = ConfMan.getPath("path").join(path);
+			Common::FSList files;
+			Common::FSNode(path).getChildren(files, Common::FSNode::kListFilesOnly);
+			for (uint i = 0; i < files.size(); ++i)
+				if (files[i].getName().matchString(wildcard.GetCStr(), true))
+					assets.push_back(String(files[i].getName().c_str()));
 		} else {
-			for (const auto &a : lib->AssetInfos) {
-				if (pattern == "*" || (*pattern.GetCStr() &&
-						Common::String(a.FileName.GetCStr()).hasSuffixIgnoreCase(pattern.GetCStr() + 1)))
-					assets.push_back(a.FileName);
-			}
+			for (const auto &asset : lib->AssetInfos)
+				if (Common::String(asset.FileName.GetCStr()).matchString(wildcard.GetCStr(), true))
+					assets.push_back(asset.FileName);
 		}
 	}
 

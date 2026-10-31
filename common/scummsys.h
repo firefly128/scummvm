@@ -529,6 +529,7 @@ namespace std {
 
 #endif
 
+#define FORBIDDEN_SYMBOL_EXCEPTION_FILE
 #include "common/forbidden.h"
 
 #endif

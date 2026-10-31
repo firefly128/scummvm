@@ -1,32 +1,70 @@
 /* ScummVM - Graphic Adventure Engine
- *
- * ScummVM is the legal property of its developers, whose names
- * are too numerous to list here. Please refer to the COPYRIGHT
- * file distributed with this source distribution.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
+*
+* ScummVM is the legal property of its developers, whose names
+* are too numerous to list here. Please refer to the COPYRIGHT
+* file distributed with this source distribution.
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+*/
 
 #include "ags/lib/allegro/color.h"
+#include "ags/ags.h"
+#include "common/array.h"
+#include "ags/lib/allegro/indexed_blit.h"
 #include "ags/lib/allegro/surface.h"
 #include "ags/globals.h"
+#include "ags/shared/ac/sst_asset_cache.h"
+
+#include "ags/lib/allegro/indexed_blend.h"
 
 namespace AGS3 {
 
 template<int DestBytesPerPixel, int SrcBytesPerPixel, bool Scale>
 void BITMAP::drawInnerGeneric(DrawInnerArgs &args) {
+	// Source-alpha sprites lose their alpha channel when cached as INDEX8.
+	// A zero blend constant in source-alpha mode means use pixel alpha,
+	// not a fully transparent global opacity. Keep cached mask semantics.
+	const int indexedAlpha = (_G(_blender_mode) == kSourceAlphaBlender) ? 255 : args.srcAlpha;
+	// Cache RGB palette blends by source/destination index for this opacity.
+	// Rebuild lazily when opacity or palette changes: avoid a 256-colour
+	// nearest-match search for every pixel of every fullscreen overlay.
+	static RGB blendPalette[256];
+	static int blendAlpha = -2;
+	static uint16 blendTable[65536];
+	static uint16 blendStamp = 0;
+	const byte *nearestColours = nullptr;
+	if (DestBytesPerPixel == 1 && indexedAlpha > 0 && indexedAlpha < 255 && !args.useTint) {
+		byte palette6[768];
+		for (int i = 0; i < 256; ++i) {
+			palette6[i*3] = _G(current_palette)[i].r;
+			palette6[i*3+1] = _G(current_palette)[i].g;
+			palette6[i*3+2] = _G(current_palette)[i].b;
+		}
+		nearestColours = AGS::Shared::SSTAssetCache::GetColourLookup(palette6);
+		if (blendAlpha != indexedAlpha || memcmp(blendPalette, _G(current_palette), sizeof(blendPalette))) {
+			memcpy(blendPalette, _G(current_palette), sizeof(blendPalette));
+			blendAlpha = indexedAlpha;
+			// A generation tag invalidates cached colours without clearing 128 KB
+			// every time adjacent sprites use different opacity values.
+			blendStamp += 0x100;
+			if (blendStamp == 0) {
+				memset(blendTable, 0, sizeof(blendTable));
+				blendStamp = 0x100;
+			}
+		}
+	}
 	const int xDir = args.horizFlip ? -1 : 1;
 	byte rSrc, gSrc, bSrc, aSrc;
 	byte rDest = 0, gDest = 0, bDest = 0, aDest = 0;
@@ -60,6 +98,67 @@ void BITMAP::drawInnerGeneric(DrawInnerArgs &args) {
 	                       args.horizFlip ? args.srcArea.right - 1 : args.srcArea.left,
 	                       args.vertFlip ? args.srcArea.bottom - 1 - yCtr :
 	                       args.srcArea.top + yCtr);
+	// Cached INDEX8 backgrounds and opaque sprites need no colour decoding.
+	// Clipping above also supplies the correct source offset for negative X/Y.
+	if (DestBytesPerPixel == 1 && SrcBytesPerPixel == 1 && !Scale &&
+	    !args.horizFlip && (indexedAlpha == -1 || indexedAlpha >= 255 || args.useTint)) {
+		copyIndexedRows(destP + args.xStart, args.destArea.pitch,
+		                srcP + xCtrBppStart, args.vertFlip ? -args.src.pitch : args.src.pitch,
+		                MAX(0, xCtrWidth - xCtrStart), MAX(0, yCtrHeight - yCtr),
+		                args.skipTrans, static_cast<byte>(args.transColor));
+		return;
+	}
+	if (DestBytesPerPixel == 1 && SrcBytesPerPixel == 1 && !Scale && !args.useTint &&
+	    indexedAlpha != -1 && indexedAlpha <= 0) return;
+	if (DestBytesPerPixel == 1 && SrcBytesPerPixel == 1 && !Scale && !args.useTint &&
+	    indexedAlpha > 0 && indexedAlpha < 255) {
+		const RGB *palette = _G(current_palette);
+		const auto compute = [palette, indexedAlpha, nearestColours](byte source, byte dest) -> uint16 {
+			const RGB &sc = palette[source], &dc = palette[dest];
+			const int r = (sc.r * indexedAlpha + dc.r * (255-indexedAlpha) + 127) / 255;
+			const int g = (sc.g * indexedAlpha + dc.g * (255-indexedAlpha) + 127) / 255;
+			const int b = (sc.b * indexedAlpha + dc.b * (255-indexedAlpha) + 127) / 255;
+			return nearestColours ? nearestColours[(r << 12) | (g << 6) | b] : bestfit_color(palette, r, g, b);
+		};
+        if (args.skipTrans && ::AGS::g_vm && ::AGS::g_vm->useMaskWordScan()) {
+            const int width=MAX(0,xCtrWidth-xCtrStart),height=MAX(0,yCtrHeight-yCtr);
+            byte *out=destP+args.xStart;
+            const byte *in=srcP+xDir*xCtrBppStart;
+            const int pitch=args.vertFlip ? -args.src.pitch : args.src.pitch;
+            bool verify=::AGS::g_vm->verifyMaskWordScan() && width==320 && height==200 &&
+                xDir==1 && pitch>=width && args.destArea.pitch>=width;
+            if(verify) {
+                const uintptr sb=reinterpret_cast<uintptr>(in),db=reinterpret_cast<uintptr>(out);
+                verify=sb+pitch*(height-1)+width<=db || db+args.destArea.pitch*(height-1)+width<=sb;
+            }
+            Common::Array<byte> reference;
+            if(verify) {
+                reference.resize(width*height);
+                for(int y=0;y<height;++y)memcpy(reference.data()+y*width,out+y*args.destArea.pitch,width);
+                blendIndexedRows<true>(reference.data(),width,in,pitch,xDir,width,height,
+                    static_cast<byte>(args.transColor),blendTable,blendStamp,compute);
+            }
+            blendIndexedRows<true,true>(out,args.destArea.pitch,in,pitch,xDir,width,height,
+                static_cast<byte>(args.transColor),blendTable,blendStamp,compute);
+            if(verify) {
+                for(int y=0;y<height;++y)
+                    if(memcmp(reference.data()+y*width,out+y*args.destArea.pitch,width))
+                        error("SST mask-word scan differs from scalar blend");
+                static unsigned checked=0;
+                if(++checked%25==0)warning("SST mask-word pixels matched frames=%u alpha=%d",checked,indexedAlpha);
+            }
+        } else if (args.skipTrans)
+            blendIndexedRows<true>(destP + args.xStart, args.destArea.pitch,
+                srcP + xDir*xCtrBppStart, args.vertFlip ? -args.src.pitch : args.src.pitch,
+                xDir, MAX(0, xCtrWidth-xCtrStart), MAX(0, yCtrHeight-yCtr),
+                static_cast<byte>(args.transColor), blendTable, blendStamp, compute);
+        else
+			blendIndexedRows<false>(destP + args.xStart, args.destArea.pitch,
+				srcP + xDir*xCtrBppStart, args.vertFlip ? -args.src.pitch : args.src.pitch,
+				xDir, MAX(0, xCtrWidth-xCtrStart), MAX(0, yCtrHeight-yCtr),
+				static_cast<byte>(args.transColor), blendTable, blendStamp, compute);
+		return;
+	}
 	for (; yCtr < yCtrHeight; ++destY, ++yCtr, scaleYCtr += args.scaleY) {
 		if (Scale) {
 			int newSrcYCtr = scaleYCtr / BITMAP::SCALE_THRESHOLD;
@@ -85,7 +184,24 @@ void BITMAP::drawInnerGeneric(DrawInnerArgs &args) {
 
 			// When blitting to the same format we can just copy the color
 			if (DestBytesPerPixel == 1) {
-				*destVal = srcCol;
+				// Indexed pixels must blend in RGB space, never as palette indices.
+				// Keep opaque copies exact, including index zero on unmasked blits.
+				if (indexedAlpha == -1 || indexedAlpha >= 255 || args.useTint) {
+					*destVal = srcCol;
+				} else if (indexedAlpha > 0) {
+					uint16 &cached = blendTable[(srcCol << 8) | *destVal];
+					if ((cached & 0xff00) != blendStamp) {
+						const RGB &sc = _G(current_palette)[srcCol];
+						const RGB &dc = _G(current_palette)[*destVal];
+						const int alpha = indexedAlpha;
+						const int r = (sc.r * alpha + dc.r * (255-alpha) + 127) / 255;
+						const int g = (sc.g * alpha + dc.g * (255-alpha) + 127) / 255;
+						const int b = (sc.b * alpha + dc.b * (255-alpha) + 127) / 255;
+						cached = blendStamp | (nearestColours ? nearestColours[(r << 12) | (g << 6) | b] :
+						         bestfit_color(_G(current_palette), r, g, b));
+					}
+					*destVal = cached;
+				}
 				continue;
 			} else if ((DestBytesPerPixel == SrcBytesPerPixel) && args.srcAlpha == -1) {
 				if (DestBytesPerPixel == 4)

@@ -60,6 +60,8 @@ enum ScriptValueType {
 	kScValCodePtr       // as a pointer to element in byte-code array
 };
 
+const Common::String *InternScriptPluginMethodName(const Common::String &name);
+
 struct RuntimeScriptValue {
 public:
 	RuntimeScriptValue() {
@@ -79,7 +81,6 @@ public:
 	}
 
 	ScriptValueType Type;
-	Common::String methodName;
 	// The 32-bit value used for integer/float math and for storing
 	// variable/element offset relative to object (and array) address
 	union {
@@ -100,6 +101,7 @@ public:
 	// a separation between Script*, Dynamic* and game entity classes.
 	// Once those classes are merged, it will no longer be needed.
 	union {
+		const Common::String *MethodName; // immutable interned name for plugin functions
 		void			 *MgrPtr;  // generic object manager pointer
 		IScriptObject	 *ObjMgr;  // script object manager
 		CCStaticArray	 *ArrMgr;  // static array manager
@@ -139,7 +141,6 @@ public:
 
 	inline RuntimeScriptValue &SetUInt8(uint8_t val) {
 		Type = kScValInteger;
-		methodName.clear();
 		IValue = val;
 		Ptr = nullptr;
 		MgrPtr = nullptr;
@@ -149,7 +150,6 @@ public:
 
 	inline RuntimeScriptValue &SetInt16(int16_t val) {
 		Type = kScValInteger;
-		methodName.clear();
 		IValue = val;
 		Ptr = nullptr;
 		MgrPtr = nullptr;
@@ -159,7 +159,6 @@ public:
 
 	inline RuntimeScriptValue &SetInt32(int32_t val) {
 		Type = kScValInteger;
-		methodName.clear();
 		IValue = val;
 		Ptr = nullptr;
 		MgrPtr = nullptr;
@@ -169,7 +168,6 @@ public:
 
 	inline RuntimeScriptValue &SetFloat(float val) {
 		Type = kScValFloat;
-		methodName.clear();
 		FValue = val;
 		Ptr = nullptr;
 		MgrPtr = nullptr;
@@ -187,7 +185,6 @@ public:
 
 	inline RuntimeScriptValue &SetPluginArgument(int32_t val) {
 		Type = kScValPluginArg;
-		methodName.clear();
 		IValue = val;
 		Ptr = nullptr;
 		MgrPtr = nullptr;
@@ -197,7 +194,6 @@ public:
 
 	inline RuntimeScriptValue &SetStackPtr(RuntimeScriptValue *stack_entry) {
 		Type = kScValStackPtr;
-		methodName.clear();
 		IValue = 0;
 		RValue = stack_entry;
 		MgrPtr = nullptr;
@@ -207,7 +203,6 @@ public:
 
 	inline RuntimeScriptValue &SetData(void *data, int size) {
 		Type = kScValData;
-		methodName.clear();
 		IValue = 0;
 		Ptr = data;
 		MgrPtr = nullptr;
@@ -217,7 +212,6 @@ public:
 
 	inline RuntimeScriptValue &SetGlobalVar(RuntimeScriptValue *glvar_value) {
 		Type = kScValGlobalVar;
-		methodName.clear();
 		IValue = 0;
 		RValue = glvar_value;
 		MgrPtr = nullptr;
@@ -228,7 +222,6 @@ public:
 	// TODO: size?
 	inline RuntimeScriptValue &SetStringLiteral(const char *str) {
 		Type = kScValStringLiteral;
-		methodName.clear();
 		IValue = 0;
 		Ptr = const_cast<char *>(str);
 		MgrPtr = nullptr;
@@ -238,7 +231,6 @@ public:
 
 	inline RuntimeScriptValue &SetStaticArray(void *object, CCStaticArray *manager) {
 		Type = kScValStaticArray;
-		methodName.clear();
 		IValue = 0;
 		Ptr = object;
 		ArrMgr = manager;
@@ -248,7 +240,6 @@ public:
 
 	inline RuntimeScriptValue &SetScriptObject(void *object, IScriptObject *manager) {
 		Type = kScValScriptObject;
-		methodName.clear();
 		IValue = 0;
 		Ptr = object;
 		ObjMgr = manager;
@@ -258,7 +249,6 @@ public:
 
 	inline RuntimeScriptValue &SetPluginObject(void *object, IScriptObject *manager) {
 		Type = kScValPluginObject;
-		methodName.clear();
 		IValue = 0;
 		Ptr = object;
 		ObjMgr = manager;
@@ -277,7 +267,6 @@ public:
 
 	inline RuntimeScriptValue &SetStaticFunction(ScriptAPIFunction *pfn) {
 		Type = kScValStaticFunction;
-		methodName.clear();
 		IValue = 0;
 		SPfn = pfn;
 		MgrPtr = nullptr;
@@ -287,9 +276,8 @@ public:
 
 	inline RuntimeScriptValue &SetPluginMethod(Plugins::ScriptContainer *sc, const Common::String &method) {
 		Type = kScValPluginFunction;
-		methodName = method;
 		Ptr = sc;
-		MgrPtr = nullptr;
+		MethodName = InternScriptPluginMethodName(method);
 		IValue = 0;
 		Size = 4;
 		return *this;
@@ -297,7 +285,6 @@ public:
 
 	inline RuntimeScriptValue &SetObjectFunction(ScriptAPIObjectFunction *pfn) {
 		Type = kScValObjectFunction;
-		methodName.clear();
 		IValue = 0;
 		ObjPfn = pfn;
 		MgrPtr = nullptr;
@@ -307,7 +294,6 @@ public:
 
 	inline RuntimeScriptValue &SetCodePtr(void *ptr) {
 		Type = kScValCodePtr;
-		methodName.clear();
 		IValue = 0;
 		Ptr = ptr;
 		MgrPtr = nullptr;
@@ -321,8 +307,8 @@ public:
 
 	inline bool operator ==(const RuntimeScriptValue &rval) const {
 		if (rval.Type == kScValPluginFunction) {
-			assert(!rval.methodName.empty());
-			return (Type == kScValPluginFunction) && (rval.methodName == methodName);
+			assert(rval.MethodName && !rval.MethodName->empty());
+			return (Type == kScValPluginFunction) && (MethodName == rval.MethodName);
 		}
 
 		return ((intptr_t)Ptr + (intptr_t)IValue) == ((intptr_t)rval.Ptr + (intptr_t)rval.IValue);
@@ -417,7 +403,8 @@ public:
 	}
 
 	Plugins::PluginMethod pluginMethod() const {
-		return Plugins::PluginMethod((Plugins::PluginBase *)Ptr, methodName);
+		assert(MethodName);
+		return Plugins::PluginMethod((Plugins::PluginBase *)Ptr, *MethodName);
 	}
 
 	// Helper functions for reading or writing values from/to

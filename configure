@@ -5187,7 +5187,7 @@ POST_OBJS_FLAGS     := -Wl,--export-all-symbols -Wl,--no-whole-archive -Wl,--out
 '
 		;;
 
-	linux* | gnu* | k*bsd*-gnu*)
+	solaris* | linux* | gnu* | k*bsd*-gnu*)
 		_plugin_prefix="lib"
 		_plugin_suffix=".so"
 		append_var CXXFLAGS "-fPIC"

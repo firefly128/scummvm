@@ -489,7 +489,8 @@ bool Scene::runOps(const Common::Array<SceneOp> ops, int16 addMinuites /* = 0 */
 	for (const SceneOp &op : ops) {
 		if (!SceneConditions::check(op._conditionList))
 			continue;
-		debug(10, "Exec %s", op.dump("").c_str());
+		if (gDebugLevel >= 10)
+			debug(10, "Exec %s", op.dump("").c_str());
 		if (addMinuites) {
 			engine->getClock().addGameTime(addMinuites);
 			addMinuites = 0;
@@ -739,7 +740,8 @@ void SDSScene::loadDialogData(uint16 fileNum) {
 			filename.c_str(), fileVersion.c_str(), fileId.c_str());
 		for (const auto &dlg: _dialogs)
 			if (dlg._fileNum == fileNum)
-				debug(10, "%s", dlg.dump("").c_str());
+				if (gDebugLevel >= 10)
+					debug(10, "%s", dlg.dump("").c_str());
 	}
 
 	if (!result)
@@ -891,8 +893,10 @@ void SDSScene::drawAndUpdateHeads(Graphics::ManagedSurface &dst) {
 		tds.drawAndUpdateVisibleHeads(dst);
 	}
 
-	if (_conversation.isForDlg(getVisibleDialog())) {
-		_conversation.runScript();
+	const Dialog *visibleDlg = getVisibleDialog();
+	if (_conversation.isForDlg(visibleDlg)) {
+		bool exclusive = visibleDlg->hasFlag(kDlgFlagLo8);
+		_conversation.runScript(exclusive);
 	}
 }
 
@@ -1063,7 +1067,7 @@ bool SDSScene::checkDialogActive() {
 				if (action) {
 					// Play the response voice acting script.
 					_conversation.loadData(dlg._fileNum, dlg._num, action->num, haveHeadData);
-					_conversation.runScript();
+					_conversation.runScript(false);
 
 					// Take a copy of the dialog because the actions might change the scene
 					Dialog dlgCopy = dlg;

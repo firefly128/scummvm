@@ -530,14 +530,15 @@ void KyraEngine_LoK::mainLoop() {
 
 void KyraEngine_LoK::delayUntil(uint32 timestamp, bool updateTimers, bool update, bool isMainLoop) {
 	uint32 ct = _system->getMillis();
-	while (ct < timestamp && !shouldQuit()) {
+	while (static_cast<int32>(timestamp - ct) > 0 && !shouldQuit()) {
 		if (updateTimers)
 			_timer->update();
 
 		ct = skipFlag() ? ct + _tickLength : _system->getMillis();
 
-		if (timestamp - ct >= 10)
-			delay(10, update, isMainLoop);
+		const int32 remaining = static_cast<int32>(timestamp - ct);
+		if (remaining > 0)
+			delay(MIN<uint32>(remaining, 10), update, isMainLoop);
 	}
 }
 
@@ -564,8 +565,9 @@ void KyraEngine_LoK::delay(uint32 amount, bool update, bool isMainLoop) {
 		if (_currentCharacter && _currentCharacter->sceneId == 210 && update)
 			updateKyragemFading();
 
-		if (amount > 0 && !skipFlag() && !shouldQuit())
-			_system->delayMillis(10);
+		const int32 remaining = static_cast<int32>((start + amount) - _system->getMillis());
+		if (remaining > 0 && !skipFlag() && !shouldQuit())
+			_system->delayMillis(MIN<uint32>(remaining, 10));
 
 		// FIXME: Major hackery to allow skipping the intro
 		if (_seqPlayerFlag) {
@@ -582,7 +584,7 @@ void KyraEngine_LoK::delay(uint32 amount, bool update, bool isMainLoop) {
 		if (skipFlag())
 			snd_stopVoice();
 		ct = skipFlag() ? ct + _tickLength : _system->getMillis();
-	} while (ct < start + amount && !shouldQuit());
+	} while (static_cast<int32>((start + amount) - ct) > 0 && !shouldQuit());
 }
 
 bool KyraEngine_LoK::skipFlag() const {
@@ -600,7 +602,7 @@ void KyraEngine_LoK::resetSkipFlag(bool removeEvent) {
 void KyraEngine_LoK::delayWithTicks(int ticks) {
 	uint32 nextTime = _system->getMillis() + ticks * _tickLength;
 
-	while (_system->getMillis() < nextTime) {
+	while (static_cast<int32>(nextTime - _system->getMillis()) > 0) {
 		_sprites->updateSceneAnims();
 		_animator->updateAllObjectShapes();
 
@@ -612,8 +614,9 @@ void KyraEngine_LoK::delayWithTicks(int ticks) {
 		if (skipFlag())
 			break;
 
-		if (nextTime - _system->getMillis() >= 10)
-			delay(10);
+		const int32 remaining = static_cast<int32>(nextTime - _system->getMillis());
+		if (remaining > 0)
+			delay(MIN<uint32>(remaining, 10));
 	}
 }
 

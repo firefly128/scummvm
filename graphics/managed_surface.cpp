@@ -628,8 +628,17 @@ void ManagedSurface::blitFromInner(const Surface &src, const Common::Rect &srcRe
 				destP -= destRect.left;
 				width += destRect.left;
 			}
-			if (width > 0)
-				Common::copy(srcP, srcP + width, destP);
+			if (width > 0) {
+				const uintptr sourceAddress = reinterpret_cast<uintptr>(srcP);
+				const uintptr targetAddress = reinterpret_cast<uintptr>(destP);
+				const bool disjoint = sourceAddress < targetAddress
+					? targetAddress - sourceAddress >= static_cast<uintptr>(width)
+					: sourceAddress - targetAddress >= static_cast<uintptr>(width);
+				if (disjoint)
+					memcpy(destP, srcP, width);
+				else
+					Common::copy(srcP, srcP + width, destP);
+			}
 			continue;
 		}
 
@@ -950,11 +959,46 @@ void transBlit(const Surface &src, const Common::Rect &srcRect, ManagedSurface &
 		transBlit<SRC_TYPE, DEST_TYPE>(src, srcRect, *this, destRect, transColor, flipped, srcAlpha, srcPalette, dstPalette); \
 	else
 
+// Indexed, unscaled blits need only a transparent-index test per pixel.
+// Keep palette conversion, mirroring and scaling on the general path.
+static bool transBlit8NoScale(const Surface &src, const Common::Rect &srcRect,
+		ManagedSurface &dest, const Common::Rect &destRect, uint32 transColor,
+		bool flipped, uint32 srcAlpha, const Palette *srcPalette, const Palette *dstPalette) {
+	if (!src.format.isCLUT8() || !dest.format.isCLUT8() || flipped || srcAlpha != 0xff ||
+			(srcPalette && dstPalette) || srcRect.width() != destRect.width() ||
+			srcRect.height() != destRect.height() || !srcRect.isValidRect() ||
+			srcRect.left < 0 || srcRect.top < 0 || srcRect.right > src.w || srcRect.bottom > src.h)
+		return false;
+
+	Common::Rect clipped = destRect;
+	clipped.clip(Common::Rect(0, 0, dest.w, dest.h));
+	if (!clipped.isEmpty()) {
+		const int sx = srcRect.left + clipped.left - destRect.left;
+		const int sy = srcRect.top + clipped.top - destRect.top;
+		const byte key = static_cast<byte>(transColor);
+		for (int y = 0; y < clipped.height(); ++y) {
+			const byte *source = static_cast<const byte *>(src.getBasePtr(sx, sy + y));
+			byte *target = static_cast<byte *>(dest.getBasePtr(clipped.left, clipped.top + y));
+			for (int x = 0; x < clipped.width(); ++x) {
+				const byte value = source[x];
+				if (value != key)
+					target[x] = value;
+			}
+		}
+	}
+	return true;
+}
+
 void ManagedSurface::transBlitFromInner(const Surface &src, const Common::Rect &srcRect,
 		const Common::Rect &destRect, uint32 transColor, bool flipped,
 		uint32 srcAlpha, const Palette *srcPalette, const Palette *dstPalette) {
 	if (src.w == 0 || src.h == 0 || destRect.width() == 0 || destRect.height() == 0)
 		return;
+
+	if (transBlit8NoScale(src, srcRect, *this, destRect, transColor, flipped, srcAlpha, srcPalette, dstPalette)) {
+		addDirtyRect(destRect);
+		return;
+	}
 
 	HANDLE_BLIT(1, 1, uint8,  uint8)
 	HANDLE_BLIT(1, 2, uint8,  uint16)

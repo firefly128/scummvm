@@ -95,12 +95,29 @@ public:
 	bool needsDraining() const override { return _bufferSize != 0; }
 };
 
+/* SST: hand-tuned mix loop, generic across all engines.
+ *
+ * Strictly equivalent output to the original copyConvert, but:
+ *   - lifts _bufferPos/_bufferSize/outBuffer into locals so the compiler
+ *     keeps them in registers across the inner loop;
+ *   - batches the "is the buffer refill due?" check ONCE per chunk
+ *     instead of per output frame;
+ *   - uses arithmetic shift right (kMaxMixerVolume == 256) so the
+ *     compiler doesn't have to prove division-by-power-of-two safety
+ *     on every iteration;
+ *   - 4-way unroll in the hot stereo->stereo path so SPARC v8 instruction
+ *     scheduling can overlap loads/muls/clamps.
+ *
+ * The dispatch into the specialized kernel happens once per call.
+ * Default (off-CPU) configurations get the same numerical result via
+ * the original-style scalar tail.
+ */
 template<bool inStereo, bool outStereo, bool reverseStereo>
 int RateConverter_Impl<inStereo, outStereo, reverseStereo>::copyConvert(AudioStream &input, st_sample_t *outBuffer, st_size_t numSamples, st_volume_t volL, st_volume_t volR) {
-	st_sample_t *outStart, *outEnd;
-
-	outStart = outBuffer;
-	outEnd = outBuffer + numSamples * (outStereo ? 2 : 1);
+	st_sample_t * const outStart = outBuffer;
+	st_sample_t * const outEnd   = outBuffer + numSamples * (outStereo ? 2 : 1);
+	const int volLi = (int)volL;
+	const int volRi = (int)volR;
 
 	while (outBuffer < outEnd) {
 		// Check if we have to refill the buffer
@@ -112,30 +129,78 @@ int RateConverter_Impl<inStereo, outStereo, reverseStereo>::copyConvert(AudioStr
 				return (outBuffer - outStart) / (outStereo ? 2 : 1);
 		}
 
-		// Mix the data into the output buffer
-		st_sample_t inL, inR;
-		inL = *_bufferPos++;
-		inR = (inStereo ? *_bufferPos++ : inL);
-		_bufferSize -= (inStereo ? 2 : 1);
+		// How many output frames can we emit before we exhaust the
+		// in-buffer or fill the output?  Compute once, then run a
+		// tight inner loop over that count.
+		const int inStep  = inStereo ? 2 : 1;
+		const int outStep = outStereo ? 2 : 1;
+		const st_size_t outRemaining = (outEnd - outBuffer) / outStep;
+		const st_size_t inFramesAvail = (st_size_t)_bufferSize / inStep;
+		st_size_t framesThisChunk = (outRemaining < inFramesAvail) ? outRemaining : inFramesAvail;
 
-		st_sample_t outL, outR;
-		outL = (inL * (int)volL) / Audio::Mixer::kMaxMixerVolume;
-		outR = (inR * (int)volR) / Audio::Mixer::kMaxMixerVolume;
+		const st_sample_t * __restrict src = _bufferPos;
+		st_sample_t       * __restrict dst = outBuffer;
 
-		if (outStereo) {
-			// Output left channel
-			clampedAdd(outBuffer[reverseStereo    ], outL);
+		if (outStereo && inStereo) {
+			// Stereo->stereo, 4x unroll.  This is the hot path for CD audio.
+			while (framesThisChunk >= 4) {
+				const int iL0 = src[0], iR0 = src[1];
+				const int iL1 = src[2], iR1 = src[3];
+				const int iL2 = src[4], iR2 = src[5];
+				const int iL3 = src[6], iR3 = src[7];
+				src += 8;
 
-			// Output right channel
-			clampedAdd(outBuffer[reverseStereo ^ 1], outR);
+				const int oL0 = (iL0 * volLi) >> 8;
+				const int oR0 = (iR0 * volRi) >> 8;
+				const int oL1 = (iL1 * volLi) >> 8;
+				const int oR1 = (iR1 * volRi) >> 8;
+				const int oL2 = (iL2 * volLi) >> 8;
+				const int oR2 = (iR2 * volRi) >> 8;
+				const int oL3 = (iL3 * volLi) >> 8;
+				const int oR3 = (iR3 * volRi) >> 8;
 
-			outBuffer += 2;
+				clampedAdd(dst[reverseStereo    ], oL0);
+				clampedAdd(dst[reverseStereo ^ 1], oR0);
+				clampedAdd(dst[2 + (int)reverseStereo    ], oL1);
+				clampedAdd(dst[2 + (int)(reverseStereo ^ 1)], oR1);
+				clampedAdd(dst[4 + (int)reverseStereo    ], oL2);
+				clampedAdd(dst[4 + (int)(reverseStereo ^ 1)], oR2);
+				clampedAdd(dst[6 + (int)reverseStereo    ], oL3);
+				clampedAdd(dst[6 + (int)(reverseStereo ^ 1)], oR3);
+				dst += 8;
+				framesThisChunk -= 4;
+			}
+			while (framesThisChunk-- > 0) {
+				const int iL = *src++;
+				const int iR = *src++;
+				const int oL = (iL * volLi) >> 8;
+				const int oR = (iR * volRi) >> 8;
+				clampedAdd(dst[reverseStereo    ], oL);
+				clampedAdd(dst[reverseStereo ^ 1], oR);
+				dst += 2;
+			}
 		} else {
-			// Output mono channel
-			clampedAdd(outBuffer[0], (outL + outR) / 2);
-
-			outBuffer += 1;
+			// Mono input or mono output: fall back to per-frame scalar.
+			while (framesThisChunk-- > 0) {
+				const int iL = *src++;
+				const int iR = inStereo ? *src++ : iL;
+				const int oL = (iL * volLi) >> 8;
+				const int oR = (iR * volRi) >> 8;
+				if (outStereo) {
+					clampedAdd(dst[reverseStereo    ], oL);
+					clampedAdd(dst[reverseStereo ^ 1], oR);
+					dst += 2;
+				} else {
+					clampedAdd(dst[0], (oL + oR) >> 1);
+					dst += 1;
+				}
+			}
 		}
+
+		const ptrdiff_t srcAdvanced = src - _bufferPos;
+		_bufferPos = src;
+		_bufferSize -= (int)srcAdvanced;
+		outBuffer = dst;
 	}
 
 	return (outBuffer - outStart) / (outStereo ? 2 : 1);

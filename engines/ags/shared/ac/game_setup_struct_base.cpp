@@ -19,6 +19,7 @@
  *
  */
 
+#include "ags/shared/ac/sst_asset_cache.h"
 #include "ags/shared/ac/character_info.h"
 #include "ags/shared/ac/game_setup_struct_base.h"
 #include "ags/shared/ac/game_setup_struct.h"
@@ -155,6 +156,16 @@ void GameSetupStructBase::ReadFromFile(Stream *in, GameDataVersion game_ver, Ser
 	numdlgmessage = in->ReadInt32();
 	numfonts = in->ReadInt32();
 	color_depth = in->ReadInt32();
+	/* SST: clamp game color depth to 1 byte (8bpp).  The SS-4's TCX
+	 * framebuffer is INDEX8; we want AGS's own 32->8 Blit path to run
+	 * against our cube palette so sprites quantize once at load time
+	 * instead of every frame.  See SSTAssetCache for the disk-cache
+	 * side.  Side effect: alpha-blended GUI/cursor edges drop to the
+	 * cube without dithering, which matches the rest of the surface. */
+#ifdef SPARCFB_NATIVE_BACKEND
+	SSTAssetCache::SetPaletteConversionRequired(color_depth > 1);
+	if (color_depth > 1) color_depth = 1;
+#endif
 	target_win = in->ReadInt32();
 	dialog_bullet = in->ReadInt32();
 	hotdot = static_cast<uint16_t>(in->ReadInt16());

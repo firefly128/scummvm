@@ -144,6 +144,9 @@ struct ObjectCache {
 	short lightlev = 0, zoom = 0;
 	bool  mirrored = 0;
 	int   x = 0, y = 0;
+	// Actual geometry used when cropping a cached character against scenery.
+	bool cropValid = false, cropEnabled = false;
+	int cropX = 0, cropY = 0, cropBaseline = 0;
 
 	ObjectCache() = default;
 	ObjectCache(int pic_, int tintr_, int tintg_, int tintb_, int tint_amnt_, int tint_light_,
@@ -263,7 +266,7 @@ bool GfxDriverSpriteEvtCallback(int evt, int data);
 // * force_software option forces HW renderers to  construct the image
 // in software mode as well.
 bool construct_object_gfx(int objid, bool force_software);
-bool construct_char_gfx(int charid, bool force_software);
+bool construct_char_gfx(int charid, bool force_software, bool reuse_crop = false);
 // Returns a cached character image prepared for the render
 Shared::Bitmap *get_cached_character_image(int charid);
 // Returns a cached object image prepared for the render

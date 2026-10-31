@@ -20,6 +20,7 @@
  */
 
 #include "common/std/thread.h"
+#include "common/config-manager.h"
 #include "ags/engine/ac/timer.h"
 #include "ags/shared/core/platform.h"
 #include "ags/engine/ac/sys_events.h"
@@ -75,11 +76,12 @@ void WaitForNextFrame() {
 	}
 
 	// jump ahead if we're lagging
-	if (_G(next_frame_timestamp) < (now - MAXIMUM_FALL_BEHIND * frameDuration)) {
+	if (static_cast<int32>(now - _G(next_frame_timestamp)) >
+	    static_cast<int32>(RealtimePacingEnabled() ? 1000 : MAXIMUM_FALL_BEHIND * static_cast<uint32>(frameDuration))) {
 		_G(next_frame_timestamp) = now;
 	}
 
-	if (_G(next_frame_timestamp) > now) {
+	if (static_cast<int32>(_G(next_frame_timestamp) - now) > 0) {
 		auto frame_time_remaining = _G(next_frame_timestamp) - now;
 		std::this_thread::sleep_for(frame_time_remaining);
 	}
@@ -97,6 +99,72 @@ void WaitForNextFrame() {
 void skipMissedTicks() {
 	_G(last_tick_time) = AGS_Clock::now();
 	_G(next_frame_timestamp) = AGS_Clock::now();
+}
+
+
+bool RealtimePacingEnabled() {
+ return ConfMan.hasKey("sst_ags_realtime") && ConfMan.getBool("sst_ags_realtime");
+}
+
+static uint32 lastRenderFinished = 0;
+static bool haveRenderedFrame = false;
+
+void RecordGameFrameRendered() {
+ lastRenderFinished = AGS_Clock::now();
+ haveRenderedFrame = true;
+}
+
+bool ShouldRenderGameFrame() {
+ static unsigned skipped = 0;
+ if (!RealtimePacingEnabled() || _G(framerate_maxed)) {
+  skipped = 0;
+  haveRenderedFrame = false;
+  return true;
+ }
+ const uint32 frame = static_cast<uint32>(GetFrameDuration());
+ const uint32 now = AGS_Clock::now();
+ const int32 late = static_cast<int32>(now - _G(next_frame_timestamp));
+ // Run every simulation tick, including scripts, input and audio. Only the
+ // expensive picture is omitted while catching up. Bound display starvation.
+ // If simulation itself cannot sustain the target FPS, tick-based skipping
+ // must not starve a cheap screen forever. Render within 100 ms of the
+ // last completed picture, even while retaining simulation debt.
+ if (late >= static_cast<int32>(frame) && skipped < 16 && haveRenderedFrame &&
+     static_cast<uint32>(now - lastRenderFinished) < 100) {
+  ++skipped;
+  return false;
+ }
+ skipped = 0;
+ return true;
+}
+
+TransitionClock::TransitionClock(uint32 interval)
+ : _start(g_system->getMillis()),
+   _interval(interval ? interval : static_cast<uint32>(GetFrameDuration())),
+   _enabled(RealtimePacingEnabled()) {
+ if (!_interval) _interval = 1;
+}
+
+TransitionClock::~TransitionClock() {
+ // Blocking transitions do not accumulate simulation debt for the next room.
+ if (_enabled) skipMissedTicks();
+}
+
+int TransitionClock::Step(int current, int count) const {
+ if (!_enabled) return current;
+ const uint32 elapsed = g_system->getMillis() - _start;
+ const uint32 due = elapsed / _interval;
+ return due >= static_cast<uint32>(count) ? count : MAX(current, static_cast<int>(due));
+}
+
+void TransitionClock::Wait(int completed) const {
+ if (!_enabled) {
+  WaitForNextFrame();
+  return;
+ }
+ const uint32 elapsed = g_system->getMillis() - _start;
+ const uint32 deadline = static_cast<uint32>(completed) * _interval;
+ if (elapsed < deadline) g_system->delayMillis(deadline - elapsed);
 }
 
 } // namespace AGS3

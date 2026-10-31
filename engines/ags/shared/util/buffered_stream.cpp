@@ -69,7 +69,7 @@ void BufferedStream::FillBufferFromPosition(soff_t position) {
 
 void BufferedStream::FlushBuffer(soff_t position) {
 	size_t sz = _buffer.size() > 0 ? FileStream::Write(_buffer.data(), _buffer.size()) : 0u;
-	_buffer.clear(); // will start from the clean buffer next time
+	_buffer.resize(0); // retain capacity for the next block of small writes
 	_bufferPosition += sz;
 	if (position != _bufferPosition) {
 		FileStream::Seek(position, kSeekBegin);
@@ -147,6 +147,9 @@ int32_t BufferedStream::ReadByte() {
 
 size_t BufferedStream::Write(const void *buffer, size_t size) {
 	const uint8_t *from = static_cast<const uint8_t*>(buffer);
+	// Common::Array::resize reserves exactly the requested size. Reserve
+	// the block once instead of allocating and copying on every scalar write.
+	_buffer.reserve(BufferSize);
 	while (size > 0) {
 		if (_position < _bufferPosition || // seek'd before buffer pos
 			_position > _bufferPosition + _buffer.size() || // seek'd beyond buffer pos

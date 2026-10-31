@@ -89,8 +89,7 @@ void RawDrawFrameTransparent(int frame, int translev) {
 		quit("!RawDrawFrameTransparent: invalid parameter (transparency must be 0-99, frame a valid BG frame)");
 
 	PBitmap bg = _GP(thisroom).BgFrames[frame].Graphic;
-	if (bg->GetColorDepth() <= 8)
-		quit("!RawDrawFrameTransparent: 256-colour backgrounds not supported");
+	// SST: indexed backgrounds support palette-aware alpha blending.
 
 	if (frame == _GP(play).bg_frame)
 		quit("!RawDrawFrameTransparent: cannot draw current background onto itself");
