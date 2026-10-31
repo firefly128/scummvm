@@ -54,3 +54,9 @@ Deployment:
   this source migration. Runtime validation is a separate next stage.
   For future tests mute hardware gain, restore 104/255 afterward; preserve
   user saves and use private config/save directories.
+
+Validation result:
+  Full cross-build PASS; final incremental build and link PASS.
+  ELF32 big-endian SPARC SYSV executable; stripped size and SHA256 in
+  build-result.json. Cursor sanitizer checks PASS. PCM adapter/cache source
+  preservation PASS. Runtime/game validation has not been run.
