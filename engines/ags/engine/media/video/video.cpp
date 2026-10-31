@@ -19,7 +19,9 @@
  *
  */
 
+#include "common/config-manager.h"
 #include "graphics/palette.h"
+#include "graphics/paletteman.h"
 #include "video/avi_decoder.h"
 #include "video/flic_decoder.h"
 #include "video/mpegps_decoder.h"
@@ -54,6 +56,27 @@ namespace AGS3 {
 
 using AGS::Shared::AssetManager;
 
+class SSTVideoPlaybackState {
+public:
+	SSTVideoPlaybackState(bool indexed, const char *name, uint32 duration) :
+		_indexed(indexed), _name(name), _start(g_system->getMillis()), _duration(duration), frames(0) {
+		if (_indexed)
+			g_system->getPaletteManager()->grabPalette(_palette, 0, 256);
+	}
+	~SSTVideoPlaybackState() {
+		if (_indexed)
+			g_system->getPaletteManager()->setPalette(_palette, 0, 256);
+		warning("[sst-video-cache] %s frames=%u elapsed-ms=%u duration-ms=%u palette-restored=%d",
+			_name, frames, g_system->getMillis() - _start, _duration, _indexed);
+	}
+	uint32 frames;
+private:
+	bool _indexed;
+	const char *_name;
+	uint32 _start, _duration;
+	byte _palette[768];
+};
+
 static bool play_video(Video::VideoDecoder *decoder, const char *name, int flags, VideoSkipType skip, bool showError) {
 	std::unique_ptr<Stream> video_stream(_GP(AssetMgr)->OpenAsset(name));
 	if (!video_stream) {
@@ -76,6 +99,7 @@ static bool play_video(Video::VideoDecoder *decoder, const char *name, int flags
 	bool enableVideo = (flags & kVideo_EnableVideo) != 0;
 	bool enableAudio = (flags & kVideo_EnableAudio) != 0;
 	bool clut8Screen = scr.format.isCLUT8();
+	SSTVideoPlaybackState playback(clut8Screen, name, decoder->getDuration().msecs());
 
 	if (!enableAudio)
 		decoder->setVolume(0);
@@ -87,6 +111,8 @@ static bool play_video(Video::VideoDecoder *decoder, const char *name, int flags
 		if (decoder->needsUpdate()) {
 			// Get the next video frame and draw onto the screen
 			const Graphics::Surface *frame = decoder->decodeNextFrame();
+			if (frame)
+				++playback.frames;
 			if (clut8Screen && decoder->hasDirtyPalette())
 				scr.setPalette(decoder->getPalette(), 0, 256);
 
@@ -158,6 +184,20 @@ bool play_mpeg_video(const char *name, int flags, VideoSkipType skip, bool showE
 }
 
 bool play_theora_video(const char *name, int flags, VideoSkipType skip, bool showError) {
+	// Optional offline conversion for machines with indexed framebuffers.
+	// Keep original assets intact and use a same-basename AVI only when the
+	// user enables this policy and the replacement is actually available.
+	if (ConfMan.hasKey("sst_prefer_avi_video") && ConfMan.getBool("sst_prefer_avi_video")) {
+		Common::String replacement(name);
+		if (replacement.size() >= 4 && replacement.hasSuffix(".ogv")) {
+			replacement = replacement.substr(0, replacement.size() - 4) + ".avi";
+			if (_GP(AssetMgr)->DoesAssetExist(replacement.c_str())) {
+				warning("[sst-video-cache] playing %s for %s", replacement.c_str(), name);
+				if (play_avi_video(replacement.c_str(), flags, skip, false))
+					return true;
+			}
+		}
+	}
 #if !defined (USE_THEORADEC)
 	if (showError)
 		Display("This games uses Theora videos but ScummVM has been compiled without Theora support");

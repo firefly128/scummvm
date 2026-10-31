@@ -161,6 +161,7 @@ void pause_sound_if_necessary_and_play_video(const char *name, int flags, VideoS
 	char *filename = ags_strdup(name);
 	bool play_success = false;
 	bool wmv = false;
+	bool unsupported_theora = false;
 
 	if (strlen(filename) > 3) {
 		char *file_ext = &(filename[strlen(filename) - 3]);
@@ -175,6 +176,12 @@ void pause_sound_if_necessary_and_play_video(const char *name, int flags, VideoS
 			if (wmv)
 				debug(0, "Looking for '%s'", filename);
 			play_success = play_theora_video(filename, flags, skip, !wmv);
+#if !defined(USE_THEORADEC)
+			// A known Ogg video cannot be decoded by the AVI/MPEG fallbacks.
+			// In particular, MPEG probing may scan the entire Ogg asset before
+			// returning, without servicing input on slower machines.
+			unsupported_theora = !wmv;
+#endif
 			if (!play_success && wmv)
 				strncpy(file_ext, "mpg", 4);
 		}
@@ -198,7 +205,7 @@ void pause_sound_if_necessary_and_play_video(const char *name, int flags, VideoS
 		}
 	}
 
-	if (!play_success && !wmv) {
+	if (!play_success && !wmv && !unsupported_theora) {
 		// Unsure what the video type is, so try each in turn
 		if (!play_avi_video(name, flags, skip, false) &&
 			!play_mpeg_video(name, flags, skip, false) &&
