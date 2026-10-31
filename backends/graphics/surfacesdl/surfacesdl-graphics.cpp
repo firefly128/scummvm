@@ -3341,6 +3341,42 @@ void SurfaceSdlGraphicsManager::SDL_UpdateRects(SDL_Surface *screen, int numrect
     {
         SDL_Surface *ws = SDL_GetWindowSurface(_window->getSDLWindow());
         if (ws) {
+#if defined(SPARCFB_NATIVE_BACKEND) && !SDL_VERSION_ATLEAST(3, 0, 0)
+            if (_overlayVisible && SDL_GetHintBoolean("SDL_SPARCFB_NATIVE_OVERLAY",SDL_FALSE) &&
+                ws->format->BytesPerPixel==2 && screen->format->BytesPerPixel==2 &&
+                _overlayDrawRect.width()>0 && _overlayDrawRect.height()>0) {
+                // Match the existing overlay input geometry. Every pixel must
+                // be re-encoded when the physical DAC switches to the GUI cube.
+                const Common::Rect &area=_overlayDrawRect;
+                const bool integerScale=area.width()%screen->w==0 && area.height()%screen->h==0;
+                const bool full=SDL_GetHintBoolean("SDL_SPARCFB_NATIVE_OVERLAY_FULL",SDL_FALSE) ||
+                    !integerScale || numrects>256;
+                if(full) {
+                    SDL_FillRect(ws,nullptr,0);
+                    SDL_Rect dst={area.left,area.top,area.width(),area.height()};
+                    if(SDL_BlitScaled(screen,nullptr,ws,&dst)<0)
+                        error("Native overlay scaling failed: %s",SDL_GetError());
+                    if(SDL_UpdateWindowSurface(_window->getSDLWindow())<0)
+                        error("Native overlay presentation failed: %s",SDL_GetError());
+                    SDL_SetHint("SDL_SPARCFB_NATIVE_OVERLAY_FULL","0");
+                } else {
+                    SDL_Rect changed[256];int count=0;
+                    const int sx=area.width()/screen->w,sy=area.height()/screen->h;
+                    SDL_Rect bounds={0,0,screen->w,screen->h};
+                    for(int i=0;i<numrects;i++) {
+                        SDL_Rect src;
+                        if(!SDL_IntersectRect(&rects[i],&bounds,&src))continue;
+                        SDL_Rect dst={area.left+src.x*sx,area.top+src.y*sy,src.w*sx,src.h*sy};
+                        if(SDL_BlitScaled(screen,&src,ws,&dst)<0)
+                            error("Native overlay dirty scaling failed: %s",SDL_GetError());
+                        changed[count++]=dst;
+                    }
+                    if(count && SDL_UpdateWindowSurfaceRects(_window->getSDLWindow(),changed,count)<0)
+                        error("Native overlay dirty presentation failed: %s",SDL_GetError());
+                }
+                return;
+            }
+#endif
             /* SST: when ws is INDEX8 (sparcfb SPARCFB_INDEX8=1) keep its
              * palette in sync so the RGB565 -> INDEX8 blit color-matches
              * against meaningful colors instead of the all-white default.

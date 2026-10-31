@@ -1576,7 +1576,7 @@ void TownsAudio_PCMChannel::clear() {
 }
 
 void TownsAudio_PCMChannel::loadDataFromWaveTable(TownsAudio_WaveTable *w) {
-	setData(w->data, w->size << 11);
+	setData(w->data, w->size << 11,0,true);
 }
 
 void TownsAudio_PCMChannel::loadData(uint8 *buffer, uint32 size) {
@@ -1586,7 +1586,7 @@ void TownsAudio_PCMChannel::loadData(uint8 *buffer, uint32 size) {
 	int8 *dst = _extData;
 	for (uint32 i = 0; i < size; i++)
 		*dst++ = *src & 0x80 ? (*src++ & 0x7f) : -*src++;
-	setData(_extData, size << 11);
+	setData(_extData, size << 11,0,true);
 }
 
 int TownsAudio_PCMChannel::initInstrument(uint8 &note, TownsAudio_WaveTable *&tables, int numTables) {

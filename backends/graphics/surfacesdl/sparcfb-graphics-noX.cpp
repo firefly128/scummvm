@@ -857,6 +857,18 @@ void SparcFbGraphicsManager::updateScreen() {
 }
 
 void SparcFbGraphicsManager::showOverlay(bool inGUI) {
+    const bool nativeBackground=_native_mode && _native_pixels && _screen &&
+        _screenFormat.bytesPerPixel==1;
+    if(nativeBackground) {
+        // Native rendering bypasses the parent's screen and palette uploads.
+        // Supply the real game image before the GUI snapshots its backdrop.
+        SurfaceSdlGraphicsManager::copyRectToScreen(_native_pixels,_native_pitch,
+            0,0,_native_width,_native_height);
+        if(_screen->format->palette)
+            SDL_SetPaletteColors(_screen->format->palette,_currentPalette,0,256);
+    }
+    SDL_SetHint("SDL_SPARCFB_NATIVE_OVERLAY",nativeBackground?"1":"0");
+    SDL_SetHint("SDL_SPARCFB_NATIVE_OVERLAY_FULL","1");
     /* Hand /dev/fb back to SDL_sparcfb for the duration of the overlay
      * so its UpdateWindowFramebuffer actually paints (parent's
      * updateScreen is what composites the overlay surface, and it
@@ -867,6 +879,7 @@ void SparcFbGraphicsManager::showOverlay(bool inGUI) {
 
 void SparcFbGraphicsManager::hideOverlay() {
     SurfaceSdlGraphicsManager::hideOverlay();
+    SDL_SetHint("SDL_SPARCFB_NATIVE_OVERLAY","0");
     /* Restore native ownership.  The native palette is still valid in
      * our shadow (_native_palette), but the BT458 may have been
      * reprogrammed by SDL_sparcfb's own LUT path during the overlay —
