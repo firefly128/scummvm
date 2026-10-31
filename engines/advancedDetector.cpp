@@ -343,6 +343,20 @@ const ExtraGuiOptions AdvancedMetaEngineBase::getExtraGuiOptions(const Common::S
 	return options;
 }
 
+Common::String AdvancedMetaEngineBase::getGameId(const char *target) const {
+	// Store a copy of the active domain
+	Common::String currDomain = ConfMan.getActiveDomainName();
+
+	// Switch to the given target domain and get it's game Id
+	ConfMan.setActiveDomain(target);
+	Common::String gameId = ConfMan.get("gameid");
+
+	// Switch back to the original domain and return the game Id
+	ConfMan.setActiveDomain(currDomain);
+
+	return gameId;
+}
+
 Common::Error AdvancedMetaEngineDetectionBase::identifyGame(DetectedGame &game, const void **descriptor) {
 	Common::Language language = Common::UNK_LANG;
 	Common::Platform platform = Common::kPlatformUnknown;
@@ -815,7 +829,7 @@ ADDetectedGames AdvancedMetaEngineDetectionBase::detectGame(const Common::FSNode
 			curFilesMatched++;
 		}
 
-		debugC(3, kDebugGlobalDetection, "Game '%s' matched %d files all files present: %d has unknown files: %d, total files: %d",
+		debugC(5, kDebugGlobalDetection, "Game '%s' matched %d files all files present: %d has unknown files: %d, total files: %d",
 				g->gameId, curFilesMatched, allFilesPresent, game.hasUnknownFiles, numFilesInEntry);
 
 		// We found at least one entry with all required files present.
@@ -941,6 +955,7 @@ PlainGameDescriptor AdvancedMetaEngineDetectionBase::findGame(const char *gameId
 }
 
 static const char *const grayList[] = {
+	"bonus.exe",
 	"game.exe",
 	"demo.exe",
 	"game",
@@ -959,6 +974,8 @@ static const char *const grayList[] = {
 	"Double-click me",
 	"engine.exe",
 	"install.exe",
+	// Some Zoombinis v2 discs use NET.EXE for a non-game Director link menu.
+	"net.exe",
 	"play.exe",
 	"start.exe",
 	"item.dat",
@@ -1147,17 +1164,12 @@ Common::Error AdvancedMetaEngineBase::createInstance(OSystem *syst, Engine **eng
 	// file transparently.
 	ConfMan.setAndFlush("guioptions", gameDescriptor.getGUIOptions());
 
-	bool showTestingWarning = false;
-
-#ifdef RELEASE_BUILD
-	showTestingWarning = true;
-#endif
-
-	if (((gameDescriptor.gameSupportLevel == kUnstableGame
-			|| (gameDescriptor.gameSupportLevel == kTestingGame
-					&& showTestingWarning)))
+	if (gameDescriptor.gameSupportLevel == kUnstableGame
 			&& !Engine::warnUserAboutUnsupportedGame())
 		return Common::kUserCanceled;
+
+	if (gameDescriptor.gameSupportLevel == kTestingGame)
+		Engine::warnUserAboutTestingMode();
 
 	if (gameDescriptor.gameSupportLevel == kWarningGame
 			&& !Engine::warnUserAboutUnsupportedGame(gameDescriptor.extra))

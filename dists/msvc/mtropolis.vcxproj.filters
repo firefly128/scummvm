@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="plugin">
-			<UniqueIdentifier>32E517E9-5CBA-4EAC-9381-AD1E344A2B2E</UniqueIdentifier>
+			<UniqueIdentifier>93C41046-8FDE-4A08-B388-737DEA01B34D</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

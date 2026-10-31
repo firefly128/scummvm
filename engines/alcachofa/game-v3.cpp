@@ -236,6 +236,10 @@ public:
 		return Point(g_system->getWidth() / 2, g_system->getHeight() - 200);
 	}
 
+	Point getObjectNameOffset() override {
+		return Point(0, -35);
+	}
+
 	const char *getMenuRoom() override {
 		return "MENUPRINCIPAL";
 	}
@@ -390,6 +394,12 @@ class GameMovieAdventureSpecialV30 : public GameWithVersion3 {
 public:
 	Span<const ScriptKernelTask> getScriptKernelTaskMap() override {
 		return { kScriptKernelTaskMapV30, ARRAYSIZE(kScriptKernelTaskMapV30) };
+	}
+
+	void onLoadedGameFiles() override {
+		GameWithVersion3::onLoadedGameFiles();
+		g_engine->script().fixNestedMenuPop(39038); // Mortadelo talking to MERACDER in BAZAAR
+		g_engine->script().fixNestedMenuPop(39130); // also ^
 	}
 
 	void updateScriptVariables() override {

@@ -255,7 +255,12 @@ void OpenGLRenderer::updateProjectionMatrix(float fov, float aspectRatio, float 
 	float ymaxValue = xmaxValue / aspectRatio;
 
 	// Corrected glFrustum call
-	glFrustum(-xmaxValue, xmaxValue, -ymaxValue, ymaxValue, nearClipPlane, farClipPlane);
+	if (_stereoEye == kStereoEyeLeft || _stereoEye == kStereoEyeRight) {
+		float stereoOffset = getStereoFrustumOffset(nearClipPlane, false);
+		glFrustum(-xmaxValue + stereoOffset, xmaxValue + stereoOffset, -ymaxValue, ymaxValue, nearClipPlane, farClipPlane);
+	} else {
+		glFrustum(-xmaxValue, xmaxValue, -ymaxValue, ymaxValue, nearClipPlane, farClipPlane);
+	}
 	glScalef(-1.0f, 1.0f, 1.0f);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -265,10 +270,20 @@ void OpenGLRenderer::updateProjectionMatrix(float fov, float aspectRatio, float 
 void OpenGLRenderer::positionCamera(const Math::Vector3d &pos, const Math::Vector3d &interest, float rollAngle) {
 	Math::Vector3d up_vec(0, 1, 0);
 
-	Math::Matrix4 lookMatrix = Math::makeLookAtMatrix(pos, interest, up_vec);
-	glMultMatrixf(lookMatrix.getData());
-	glRotatef(rollAngle, 0.0f, 0.0f, 1.0f);
-	glTranslatef(-pos.x(), -pos.y(), -pos.z());
+	if (_stereoEye == kStereoEyeLeft || _stereoEye == kStereoEyeRight) {
+		Math::Vector3d eyePos;
+		Math::Vector3d eyeInterest;
+		getStereoCamera(pos, interest, eyePos, eyeInterest);
+		Math::Matrix4 lookMatrix = Math::makeLookAtMatrix(eyePos, eyeInterest, up_vec);
+		glMultMatrixf(lookMatrix.getData());
+		glRotatef(rollAngle, 0.0f, 0.0f, 1.0f);
+		glTranslatef(-eyePos.x(), -eyePos.y(), -eyePos.z());
+	} else {
+		Math::Matrix4 lookMatrix = Math::makeLookAtMatrix(pos, interest, up_vec);
+		glMultMatrixf(lookMatrix.getData());
+		glRotatef(rollAngle, 0.0f, 0.0f, 1.0f);
+		glTranslatef(-pos.x(), -pos.y(), -pos.z());
+	}
 
 	// Apply a 2D shake effect on the projection matrix.
 	// This avoids moving the camera in the 3D world, which could cause clipping issues.
@@ -602,11 +617,28 @@ void OpenGLRenderer::useStipple(bool enabled) {
 	}
 }
 
+void OpenGLRenderer::setStereoEye(StereoEye eye) {
+	Renderer::setStereoEye(eye);
+	// Restrict stereo passes to the anaglyph channels they are allowed to touch.
+	if (eye == kStereoEyeNone)
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	else if (eye == kStereoEyeLeft)
+		glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE); // left eye -> red
+	else if (eye == kStereoEyeRight)
+		glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_TRUE); // right eye -> blue
+	else if (eye == kStereoEyeFlatAnaglyph)
+		glColorMask(GL_TRUE, GL_FALSE, GL_TRUE, GL_TRUE); // flat background -> red + blue
+}
+
 void OpenGLRenderer::useColor(uint8 r, uint8 g, uint8 b) {
+	if (_stereoEye != kStereoEyeNone)
+		applyStereoTint(r, g, b);
 	glColor4ub(r, g, b, 255);
 }
 
 void OpenGLRenderer::clear(uint8 r, uint8 g, uint8 b, bool ignoreViewport) {
+	if (_stereoEye != kStereoEyeNone)
+		applyStereoTint(r, g, b);
 	if (ignoreViewport)
 		glDisable(GL_SCISSOR_TEST);
 	glClearColor(r / 255., g / 255., b / 255., 1.0);
@@ -615,10 +647,20 @@ void OpenGLRenderer::clear(uint8 r, uint8 g, uint8 b, bool ignoreViewport) {
 		glEnable(GL_SCISSOR_TEST);
 }
 
+void OpenGLRenderer::clearDepthBuffer(bool ignoreViewport) {
+	if (ignoreViewport)
+		glDisable(GL_SCISSOR_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	if (ignoreViewport)
+		glEnable(GL_SCISSOR_TEST);
+}
+
 void OpenGLRenderer::drawFloor(uint8 color) {
 	uint8 r1, g1, b1, r2, g2, b2;
 	byte *stipple;
 	assert(getRGBAt(color, 0, r1, g1, b1, r2, g2, b2, stipple)); // TODO: move check inside this function
+	if (_stereoEye != kStereoEyeNone)
+		applyStereoTint(r1, g1, b1);
 	glColor4ub(r1, g1, b1, 255);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -629,6 +671,40 @@ void OpenGLRenderer::drawFloor(uint8 color) {
 	glVertexPointer(3, GL_FLOAT, 0, _verts);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+void OpenGLRenderer::fillViewportStippled(uint8 r1, uint8 g1, uint8 b1, uint8 r2, uint8 g2, uint8 b2, byte *stipple) {
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, _screenW, _screenH, 0, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glDepthMask(GL_FALSE);
+
+	// The unstippled color has to be set first, since that is the one the
+	// two-color stipple keeps for the pixels the pattern leaves out
+	useColor(r1, g1, b1);
+	setStippleData(stipple);
+	useStipple(true);
+	useColor(r2, g2, b2);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	copyToVertexArray(0, Math::Vector3d(0, 0, 0));
+	copyToVertexArray(1, Math::Vector3d(_screenW, 0, 0));
+	copyToVertexArray(2, Math::Vector3d(_screenW, _screenH, 0));
+	copyToVertexArray(3, Math::Vector3d(0, _screenH, 0));
+	glVertexPointer(3, GL_FLOAT, 0, _verts);
+	glDrawArrays(GL_QUADS, 0, 4);
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	useStipple(false);
+	glDepthMask(GL_TRUE);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
 }
 
 void OpenGLRenderer::flipBuffer() {}

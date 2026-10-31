@@ -23,7 +23,6 @@
 
 #include "common/savefile.h"
 #include "common/config-manager.h"
-#include "common/translation.h"
 
 #include "gui/saveload.h"
 
@@ -218,15 +217,15 @@ void MenuSystem::handleKeyDown(const Common::KeyState& kbd) {
 
 ItemID MenuSystem::findItemAt(int x, int y) {
 	for (Common::Array<Item>::iterator iter = _items.begin(); iter != _items.end(); ++iter) {
-		if ((*iter).enabled && (*iter).rect.contains(x, y - _top))
-			return (*iter).id;
+		if (iter->enabled && iter->rect.contains(x, y - _top))
+			return iter->id;
 	}
 	return kItemIdNone;
 }
 
 MenuSystem::Item *MenuSystem::getItem(ItemID id) {
 	for (Common::Array<Item>::iterator iter = _items.begin(); iter != _items.end(); ++iter) {
-		if ((*iter).id == id)
+		if (iter->id == id)
 			return &(*iter);
 	}
 	return NULL;
@@ -275,7 +274,7 @@ void MenuSystem::initMenu(MenuID menuID) {
 			loadSavegamesList();
 			setSavegameCaptions(true);
 		} else {
-			GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(_("Restore game:"), _("Restore"), false);
+			GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(false);
 			int slot = dialog->runModalWithCurrentTarget();
 			delete dialog;
 
@@ -305,7 +304,7 @@ void MenuSystem::initMenu(MenuID menuID) {
 			_savegames.push_back(SavegameItem(newSlotNum, Common::String::format("GAME %04d", _savegames.size())));
 			setSavegameCaptions(true);
 		} else {
-			GUI::SaveLoadChooser dialog(_("Save game:"), _("Save"), true);
+			GUI::SaveLoadChooser dialog(true);
 			int slot = dialog.runModalWithCurrentTarget();
 			Common::String desc = dialog.getResultString();
 			if (desc.empty()) {
@@ -354,8 +353,8 @@ void MenuSystem::initMenu(MenuID menuID) {
 	}
 
 	for (Common::Array<Item>::iterator iter = _items.begin(); iter != _items.end(); ++iter) {
-		if ((*iter).enabled)
-			drawItem((*iter).id, false);
+		if (iter->enabled)
+			drawItem(iter->id, false);
 	}
 
 	// Check if the mouse is already over an item

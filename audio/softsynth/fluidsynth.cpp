@@ -312,7 +312,7 @@ Common::Path MidiDriver_FluidSynth::getSoundFontPath(bool *exists) {
 	// Finally look for it with SearchMan
 	Common::ArchiveMemberDetailsList files;
 	SearchMan.listMatchingMembers(files, path);
-	for (Common::ArchiveMemberDetails file : files) {
+	for (const auto &file : files) {
 		Common::FSDirectory* dir = dynamic_cast<Common::FSDirectory*>(SearchMan.getArchive(file.arcName));
 		if (!dir)
 			continue;
@@ -332,6 +332,15 @@ Common::Path MidiDriver_FluidSynth::getSoundFontPath(bool *exists) {
 int MidiDriver_FluidSynth::open() {
 	if (_isOpen)
 		return MERR_ALREADY_OPEN;
+
+#if !defined(USE_FLUIDLITE) && (FS_API_VERSION > 0x0101 || \
+		(FS_API_VERSION == 0x0101 && FLUIDSYNTH_VERSION_MICRO >= 9))
+	// This function got introduced in 1.1.9
+	// Disable every audio drivers
+	// We don't use them and they can cause crashes
+	static const char *fluid_audio_drivers[] = { nullptr };
+	fluid_audio_driver_register(fluid_audio_drivers);
+#endif
 
 	fluid_set_log_function(FLUID_PANIC, logHandler, nullptr);
 	fluid_set_log_function(FLUID_ERR, logHandler, nullptr);

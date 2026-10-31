@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="scalpel">
-			<UniqueIdentifier>F9C31A96-14B0-456A-8281-34EA773A1B48</UniqueIdentifier>
+			<UniqueIdentifier>C2389C71-8648-42D4-860B-4BB4E424F0A1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scalpel\3do">
-			<UniqueIdentifier>661A60F6-C449-4BC6-9084-F1E3D9393113</UniqueIdentifier>
+			<UniqueIdentifier>EB082F5E-A2C2-4D74-A10F-B24C2AE73F1A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scalpel\drivers">
-			<UniqueIdentifier>68676620-0B7B-4FA4-8BFA-4E52D6BCD49E</UniqueIdentifier>
+			<UniqueIdentifier>7B868E1A-8B39-4B85-9F79-77507C436148</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scalpel\tsage">
-			<UniqueIdentifier>E71ABF6A-E494-4B85-BC08-E3AF015C7C89</UniqueIdentifier>
+			<UniqueIdentifier>A2203EF3-D6E9-4550-8D81-A5467CF387BB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tattoo">
-			<UniqueIdentifier>3303C1A6-1EC1-48E1-8AA0-43DD4AE79946</UniqueIdentifier>
+			<UniqueIdentifier>89866C09-D4A8-4A3E-B774-0178281A3D1F</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

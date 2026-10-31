@@ -22,7 +22,7 @@
 
 #include "freescape/freescape.h"
 #include "freescape/games/driller/driller.h"
-#include "freescape/language/8bitDetokeniser.h"
+#include "freescape/language/variables.h"
 
 namespace Freescape {
 
@@ -87,6 +87,8 @@ void DrillerEngine::loadAssetsZXFullGame() {
 
 	else
 		error("Unknown ZX spectrum variant");
+
+	_sound = loadSpeakerFxDrillerZX();
 }
 
 void DrillerEngine::drawZXUI(Graphics::Surface *surface) {
@@ -161,7 +163,7 @@ void DrillerEngine::drawZXUI(Graphics::Surface *surface) {
 		surface->fillRect(shieldBar, front);
 	}
 
-	drawCompass(surface, 103, 160, _yaw - 30, 10, 75, front);
+	drawCompass(surface, 103, 160, compassYaw() - 30, 10, 75, front);
 	drawCompass(surface, 220 - 3, 160, _pitch - 30, 10, 60, front);
 }
 

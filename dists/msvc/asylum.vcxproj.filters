@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="puzzles">
-			<UniqueIdentifier>96574E55-6359-41DC-8455-EDC04A0149D1</UniqueIdentifier>
+			<UniqueIdentifier>76AC631F-CCDB-43D6-A726-6102756D7472</UniqueIdentifier>
 		</Filter>
 		<Filter Include="resources">
-			<UniqueIdentifier>C8998514-4BE1-4D13-99ED-8D1C3821DA65</UniqueIdentifier>
+			<UniqueIdentifier>18A64882-5685-4EC8-9853-282F0F57BFC2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="system">
-			<UniqueIdentifier>CCA67BCF-5A51-40DE-B20C-9983D10ADE0A</UniqueIdentifier>
+			<UniqueIdentifier>4BE89551-AB73-4510-9D9C-A87C4A79CE18</UniqueIdentifier>
 		</Filter>
 		<Filter Include="views">
-			<UniqueIdentifier>D5414D56-ED0D-4095-A0D5-C149CF3AB0EC</UniqueIdentifier>
+			<UniqueIdentifier>6375E144-C556-4F21-B9CC-CBE3FBB7EB23</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

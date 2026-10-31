@@ -23,7 +23,7 @@
 #define NANCY_ACTION_CONVERSATION_H
 
 #include "engines/nancy/action/actionrecord.h"
-#include "engines/nancy/video.h"
+#include "engines/nancy/movieplayer.h"
 
 namespace Nancy {
 namespace Action {
@@ -36,9 +36,8 @@ namespace Action {
 // A conversation will auto-advance to a next scene when no responses are available; the next scene
 // can either be described within the Conversation data, or can be whatever's pushed onto the scene "stack".
 // Also supports branching scenes depending on a condition, though that is only used in older games.
-// Player responses can also be conditional; the original engine had special-purpose "infocheck"
-// functions, two per character ID, which were used to evaluate those conditions. We replace that with
-// the data bundled inside nancy.dat (see devtools/create_nancy).
+// Player responses can also be conditional. Up to Nancy11 the condition data comes from nancy.dat
+// (see devtools/create_nancy); from Nancy12 on it lives in per-character data scenes (S<800 + charID> / S<900 + charID>).
 class ConversationSound : public RenderActionRecord {
 public:
 	ConversationSound();
@@ -49,6 +48,11 @@ public:
 	void execute() override;
 
 	virtual bool isVideoDonePlaying() { return true; }
+	bool isViewportRelative() const override { return true; }
+
+	// Enhancement: cut the currently playing line short, as if its sound and
+	// video had just finished. Any available responses still get shown.
+	void skipLine();
 
 protected:
 	struct ConversationFlag {
@@ -98,7 +102,6 @@ protected:
 	static const byte kNoPopNextScene			= 2;
 
 	Common::String getRecordTypeName() const override { return "ConversationSound"; }
-	bool isViewportRelative() const override { return true; }
 
 	// Functions for reading captions are virtual to allow easier support for the terse Conversation variants
 	virtual void readCaptionText(Common::SeekableReadStream &stream);
@@ -109,14 +112,27 @@ protected:
 	void readTerseCaptionText(Common::SeekableReadStream &stream);
 	void readTerseResponseText(Common::SeekableReadStream &stream, ResponseStruct &response);
 
-	// Functions for handling the built-in dialogue responses found in the executable
+	// Nancy13 compact conversation format. readCelDataNancy13 is the only
+	// per-class difference: the base skips the cel-only frame fields, while
+	// ConversationCel reads them plus the XSheet.
+	void readDataNancy13(Common::SeekableReadStream &stream);
+	virtual void readCelDataNancy13(Common::SeekableReadStream &stream);
+
+	// Add conditional/goodbye responses: from nancy.dat up to Nancy11, from data scenes for Nancy12+
 	void addConditionalDialogue();
 	void addGoodbye();
+	void addConditionalDialogueNancy12();
+	void addGoodbyeNancy12();
 
 	Common::String _text;
 
 	SoundDescription _sound;
 	SoundDescription _responseGenericSound;
+
+	// Nancy14 added concatenated lines: several sound files that play back to
+	// back as a single line of dialogue. Empty for an ordinary single-sound line.
+	Common::Array<Common::String> _concatSounds;
+	uint _curConcatSound = 0;
 
 	byte _conditionalResponseCharacterID;
 	byte _goodbyeResponseCharacterID;
@@ -130,6 +146,7 @@ protected:
 
 	bool _hasDrawnTextbox;
 	int16 _pickedResponse;
+	bool _isSkipped = false;
 
 	const byte _noResponse;
 };
@@ -153,7 +170,7 @@ protected:
 	uint _videoFormat = kLargeVideoFormat;
 	uint16 _firstFrame = 0;
 	int16 _lastFrame = 0;
-	AVFDecoder _decoder;
+	MoviePlayer _decoder;
 };
 
 class ConversationCelLoader;
@@ -161,7 +178,6 @@ class ConversationCelLoader;
 // Conversation with separate cels for the body and head of the character.
 // Cels are separate images bundled inside a .cal file
 class ConversationCel : public ConversationSound {
-	friend class ConversationCelLoader;
 public:
 	ConversationCel() {}
 	virtual ~ConversationCel();
@@ -169,8 +185,12 @@ public:
 	void init() override;
 	void registerGraphics() override;
 	void updateGraphics() override;
+	void onPause(bool pause) override;
 
 	void readData(Common::SeekableReadStream &stream) override;
+
+	bool load();
+	uint getCurFrame() const { return _curFrame; }
 
 protected:
 	Common::String getRecordTypeName() const override { return "ConversationCel"; }
@@ -182,10 +202,12 @@ protected:
 	};
 
 	class RenderedCel : public RenderObject {
-		friend class ConversationCel;
 	public:
 		RenderedCel() : RenderObject(9) {}
 		bool isViewportRelative() const override { return true; }
+
+		// Nancy15 head movies: show a decoded movie frame instead of a cel
+		void setMovieFrame(const Graphics::Surface &frame);
 	};
 
 	static const byte kCelOverrideTreeRectsOff	= 1;
@@ -195,11 +217,12 @@ protected:
 	Cel &loadCel(const Common::Path &name, const Common::String &treeName);
 
 	void readXSheet(Common::SeekableReadStream &stream, const Common::String &xsheetName);
+	void readCelDataNancy13(Common::SeekableReadStream &stream) override;
 
 	Common::Array<Common::Array<Common::Path>> _celNames;
 	Common::Array<Common::String> _treeNames;
 
-	uint16 _frameTime = 0;
+	uint32 _frameTime = 0;
 	uint _videoFormat = kLargeVideoFormat;
 	uint16 _firstFrame = 0;
 	uint16 _lastFrame = 0;
@@ -209,6 +232,12 @@ protected:
 
 	Common::Array<Common::Rect> _overrideRectSrcs;
 	Common::Array<Common::Rect> _overrideRectDests;
+
+	// Nancy15 gave every cel tree a destination rect inside the XSheet. A tree that
+	// names a movie instead of a loaded cel archive (the character's head) is played
+	// into that rect; _treeMovies holds one player per such tree, null for cel trees.
+	Common::Array<Common::Rect> _treeRects;
+	Common::Array<Common::SharedPtr<MoviePlayer>> _treeMovies;
 
 	uint _curFrame = 0;
 	uint32 _nextFrameTime = 0;
@@ -253,6 +282,26 @@ public:
 
 protected:
 	Common::String getRecordTypeName() const override { return "ConversationCelTerse"; }
+};
+
+// Nancy12+ conditional dialogue record (type 35), one per response, stored in scene S<800 + charID>
+class ConversationInfoCheck : public ActionRecord {
+public:
+	void readData(Common::SeekableReadStream &stream) override;
+	Common::String getRecordTypeName() const override { return "ConversationInfoCheck"; }
+
+	Common::String _soundID; // Doubles as the CONVO text key
+	uint16 _sceneID = 0;
+};
+
+// Nancy12+ goodbye record (type 36), stored in scene S<900 + charID>; one sound and scene are picked at random
+class ConversationGoodbye : public ActionRecord {
+public:
+	void readData(Common::SeekableReadStream &stream) override;
+	Common::String getRecordTypeName() const override { return "ConversationGoodbye"; }
+
+	Common::Array<Common::String> _soundIDs;
+	Common::Array<uint16> _sceneIDs;
 };
 
 } // End of namespace Action

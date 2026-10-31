@@ -26,7 +26,8 @@
 #include "common/file.h"
 
 #include "freescape/freescape.h"
-#include "freescape/language/8bitDetokeniser.h"
+#include "freescape/language/detokeniser.h"
+#include "freescape/language/variables.h"
 #include "freescape/objects/connections.h"
 #include "freescape/objects/global.h"
 #include "freescape/objects/group.h"
@@ -170,7 +171,7 @@ Group *FreescapeEngine::load8bitGroupV1(Common::SeekableReadStream *file, byte r
 			debugC(1, kFreescapeDebugParser, "Length of condition: %d at %lx", lengthOfCondition, long(file->pos()));
 			// get the condition
 			Common::Array<uint16> conditionArray = readArray(file, lengthOfCondition);
-			operation->conditionSource = detokenise8bitCondition(conditionArray, operation->condition, isAmiga() || isAtariST());
+			operation->conditionSource = detokeniseFreescapeCondition(conditionArray, operation->condition, isAmiga() || isAtariST());
 			debugC(1, kFreescapeDebugParser, "%s", operation->conditionSource.c_str());
 			byteSizeOfObject = byteSizeOfObject - lengthOfCondition;
 		} else {
@@ -276,7 +277,7 @@ Group *FreescapeEngine::load8bitGroupV2(Common::SeekableReadStream *file, byte r
 			debugC(1, kFreescapeDebugParser, "Length of condition: %d at %lx", lengthOfCondition, long(file->pos()));
 			// get the condition
 			Common::Array<uint16> conditionArray = readArray(file, lengthOfCondition);
-			operation->conditionSource = detokenise8bitCondition(conditionArray, operation->condition, isAmiga() || isAtariST());
+			operation->conditionSource = detokeniseFreescapeCondition(conditionArray, operation->condition, isAmiga() || isAtariST());
 			debugC(1, kFreescapeDebugParser, "%s", operation->conditionSource.c_str());
 			byteSizeOfObject = byteSizeOfObject - lengthOfCondition;
 		} else {
@@ -308,7 +309,9 @@ Object *FreescapeEngine::load8bitObject(Common::SeekableReadStream *file) {
 
 	byte rawFlagsAndType = readField(file, 8);
 	debugC(1, kFreescapeDebugParser, "Raw object data flags and type: %d", rawFlagsAndType);
-	ObjectType objectType = (ObjectType)(rawFlagsAndType & 0x1F);
+	// Castle Master uses a 4-bit type field (0x0F mask); other Freescape games use 5 bits (0x1F).
+	byte typeMask = isCastle() ? 0x0F : 0x1F;
+	ObjectType objectType = (ObjectType)(rawFlagsAndType & typeMask);
 
 	if (objectType == ObjectType::kGroupType)
 		return load8bitGroup(file, rawFlagsAndType);
@@ -453,7 +456,7 @@ Object *FreescapeEngine::load8bitObject(Common::SeekableReadStream *file) {
 		Common::String conditionSource;
 		if (byteSizeOfObject) {
 			Common::Array<uint16> conditionArray = readArray(file, byteSizeOfObject);
-			conditionSource = detokenise8bitCondition(conditionArray, instructions, isAmiga() || isAtariST());
+			conditionSource = detokeniseFreescapeCondition(conditionArray, instructions, isAmiga() || isAtariST());
 			// instructions = getInstructions(conditionSource);
 			debugC(1, kFreescapeDebugParser, "%s", conditionSource.c_str());
 		}
@@ -484,7 +487,7 @@ Object *FreescapeEngine::load8bitObject(Common::SeekableReadStream *file) {
 					debugC(1, kFreescapeDebugParser, "b: %x", readField(file, 8));
 			} else {
 				Common::Array<uint16> conditionArray = readArray(file, byteSizeOfObject);
-				conditionSource = detokenise8bitCondition(conditionArray, instructions, isAmiga() || isAtariST());
+				conditionSource = detokeniseFreescapeCondition(conditionArray, instructions, isAmiga() || isAtariST());
 				debugC(1, kFreescapeDebugParser, "Entrance condition:");
 				debugC(1, kFreescapeDebugParser, "%s", conditionSource.c_str());
 			}
@@ -559,6 +562,10 @@ Object *FreescapeEngine::load8bitObject(Common::SeekableReadStream *file) {
 		assert(color > 0);
 		byte firingInterval = readField(file, 8);
 		uint16 firingRange = readPtr(file) / 2;
+		// Driller Amiga/ST stores sensor ranges in the original 64-units-per-cell
+		// coordinate space. ScummVM normalizes Driller geometry to 32 units per cell.
+		if (isDriller() && (isAmiga() || isAtariST()))
+			firingRange = firingRange / 2;
 		if (isDark())
 			firingRange = firingRange / 2;
 		byte sensorAxis = readField(file, 8);
@@ -567,7 +574,7 @@ Object *FreescapeEngine::load8bitObject(Common::SeekableReadStream *file) {
 		// grab the object condition, if there is one
 		if (byteSizeOfObject) {
 			Common::Array<uint16> conditionArray = readArray(file, byteSizeOfObject);
-			conditionSource = detokenise8bitCondition(conditionArray, instructions, isAmiga() || isAtariST());
+			conditionSource = detokeniseFreescapeCondition(conditionArray, instructions, isAmiga() || isAtariST());
 			debugC(1, kFreescapeDebugParser, "%s", conditionSource.c_str());
 		}
 		debugC(1, kFreescapeDebugParser, "End of object at %lx", long(file->pos()));
@@ -592,7 +599,7 @@ Object *FreescapeEngine::load8bitObject(Common::SeekableReadStream *file) {
 	// Unreachable
 }
 
-static const char *eclipseRoomName[] = {
+const char *const eclipseRoomName[] = {
 	"* SAHARA",
 	"HORAKHTY",
 	"NEPHTHYS",
@@ -604,7 +611,7 @@ static const char *eclipseRoomName[] = {
 	"????????"
 };
 
-static const char *eclipse2RoomName[] = {
+const char *const eclipse2RoomName[] = {
 	"\" SAHARA",
 	"ENTRANCE",
 	"\" SPHINX",
@@ -643,7 +650,9 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 	uint8 skyColor = areaFlags & 15;
 	uint8 groundColor = areaFlags >> 4;
 
-	if (groundColor == 0)
+	// In Castle Master, areaFlags holds sky/floor texture IDs, not colors.
+	// A value of 0 means no sky/floor (indoor area), not "missing color".
+	if (groundColor == 0 && !isCastle())
 		groundColor = 255;
 
 	uint8 usualBackgroundColor = 0;
@@ -652,6 +661,9 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 	uint8 inkColor = 0;
 
 	if (!(isCastle() && (isSpectrum() || isCPC() || isC64()))) {
+		// On Driller/Dark/Eclipse 8-bit targets these are four consecutive
+		// per-area color bytes. CPC stores raw 0..31 ink values here, matching
+		// the original area descriptor layout at offsets +6..+9.
 		usualBackgroundColor = readField(file, 8);
 		underFireBackgroundColor = readField(file, 8);
 		paperColor = readField(file, 8);
@@ -667,6 +679,17 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 			inkColor = 0xb;
 		}
 		skyColor = 0;
+	}
+
+	if (isCPC() && isDriller()) {
+		// Driller CPC stores the four area colors at bytes +6..+9 as raw 0..31
+		// CPC ink values. The original code copies them straight into the live
+		// pens before programming the hardware, so encode them in the Area and
+		// let the generic renderer treat them as direct CPC inks.
+		usualBackgroundColor = encodeCPCDirectColor(usualBackgroundColor);
+		underFireBackgroundColor = encodeCPCDirectColor(underFireBackgroundColor);
+		paperColor = encodeCPCDirectColor(paperColor);
+		inkColor = encodeCPCDirectColor(inkColor);
 	}
 
 	debugC(1, kFreescapeDebugParser, "Colors usual background: %d", usualBackgroundColor);
@@ -725,12 +748,20 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 			name = name + char(readField(file, 8));
 			i++;
 		}
+
+		// The 16-bit renderer keeps the hardware background black; the sky nibble is 8-bit legacy data.
+		if (isDark() && (isAmiga() || isAtariST()))
+			skyColor = 0;
 	} else if (isCastle()) {
 		byte idx = readField(file, 8);
-		if (isAmiga())
-			name = _messagesList[idx + 51];
-		else if (isSpectrum() || isCPC())
-			name = areaNumber == 255 ? "GLOBAL" : _messagesList[idx + 16];
+		if (areaNumber == 255) {
+			// The room structure is not an area, the byte above is unrelated data
+			name = "GLOBAL";
+		} else if (isAmiga() || isAtariST())
+			// The Crypt's area names sit where the DOS ones do
+			name = _messagesList[idx + (isCastleMaster2() ? 41 : 51)];
+		else if (isSpectrum() || isCPC() || isC64())
+			name = _messagesList[idx + (isCastleMaster2() ? 41 : 16)];
 		else
 			name = _messagesList[idx + 41];
 
@@ -742,7 +773,7 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 			debugC(1, kFreescapeDebugParser, "Extra colors: %x %x %x %x", extraColor[0], extraColor[1], extraColor[2], extraColor[3]);
 		}
 
-		if (isAmiga()) {
+		if (isAmiga() || isAtariST()) {
 			extraColor[0] = readField(file, 8);
 			extraColor[1] = readField(file, 8);
 			extraColor[2] = readField(file, 8);
@@ -763,6 +794,8 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 
 		if (newObject) {
 			newObject->scale(scale);
+			// Seed the sort with globals (area 255) before local objects.
+			newObject->_loadIndex = (areaNumber == 255 ? 0 : 0x4000) + object;
 			if (newObject->getType() == kEntranceType) {
 				if (entrancesByID->contains(newObject->getObjectID() & 0x7fff))
 					error("WARNING: replacing object id %d (%d)", newObject->getObjectID(), newObject->getObjectID() & 0x7fff);
@@ -828,7 +861,7 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 		// get the condition
 		if (lengthOfCondition > 0) {
 			Common::Array<uint16> conditionArray = readArray(file, lengthOfCondition);
-			Common::String conditionSource = detokenise8bitCondition(conditionArray, instructions, isAmiga() || isAtariST());
+			Common::String conditionSource = detokeniseFreescapeCondition(conditionArray, instructions, isAmiga() || isAtariST());
 			area->_conditions.push_back(instructions);
 			area->_conditionSources.push_back(conditionSource);
 			debugC(1, kFreescapeDebugParser, "%s", conditionSource.c_str());
@@ -842,7 +875,11 @@ Area *FreescapeEngine::load8bitArea(Common::SeekableReadStream *file, uint16 nco
 void FreescapeEngine::load8bitBinary(Common::SeekableReadStream *file, int offset, int ncolors) {
 	file->seek(offset);
 	uint8 numberOfAreas = readField(file, 8);
-	if (isAmiga() && isCastle() && isDemo())
+	// The Castle Master Amiga/Atari ST binaries store the count as 0x68 (104)
+	// but the area pointer table only has 87 valid entries; the demo and the
+	// full game share the same asset section so the same override applies.
+	// The Crypt stores its real count (49), so it must not be overridden.
+	if ((isAmiga() || isAtariST()) && isCastle() && !isCastleMaster2())
 		numberOfAreas = 87;
 	debugC(1, kFreescapeDebugParser, "Number of areas: %d", numberOfAreas);
 
@@ -861,7 +898,7 @@ void FreescapeEngine::load8bitBinary(Common::SeekableReadStream *file, int offse
 	uint8 initialEnergy2 = 0;
 	uint8 initialShield2 = 0;
 
-	if (isCastle() && (isSpectrum() || isCPC())) {
+	if (isCastle() && (isSpectrum() || isCPC() || isC64())) {
 		initialShield1 = readField(file, 8);
 	} else {
 		readField(file, 8); // Unknown
@@ -875,7 +912,7 @@ void FreescapeEngine::load8bitBinary(Common::SeekableReadStream *file, int offse
 	debugC(1, kFreescapeDebugParser, "Initial levels of energy: %d and shield: %d", initialEnergy1, initialShield1);
 	debugC(1, kFreescapeDebugParser, "Initial levels of energy: %d and shield: %d", initialEnergy2, initialShield2);
 
-	if (isCastle() && (isSpectrum() || isCPC()))
+	if (isCastle() && (isSpectrum() || isCPC() || isC64()))
 		file->seek(offset + 0x6);
 	else if (isAmiga() || isAtariST())
 		file->seek(offset + 0x14);
@@ -909,6 +946,8 @@ void FreescapeEngine::load8bitBinary(Common::SeekableReadStream *file, int offse
 
 	if (isCastle() && (isSpectrum() || isCPC()))
 		file->seek(offset + 0x42);
+	else if (isCastle() && isC64())
+		file->seek(offset + 0x3e);
 	else if (isAmiga() || isAtariST())
 		file->seek(offset + 0x8c);
 	else
@@ -938,7 +977,7 @@ void FreescapeEngine::load8bitBinary(Common::SeekableReadStream *file, int offse
 		// get the condition
 		if (lengthOfCondition > 0) {
 			Common::Array<uint16> conditionArray = readArray(file, lengthOfCondition);
-			Common::String conditionSource = detokenise8bitCondition(conditionArray, instructions, isAmiga() || isAtariST());
+			Common::String conditionSource = detokeniseFreescapeCondition(conditionArray, instructions, isAmiga() || isAtariST());
 			_conditions.push_back(instructions);
 			_conditionSources.push_back(conditionSource);
 			debugC(1, kFreescapeDebugParser, "%s", conditionSource.c_str());
@@ -984,6 +1023,8 @@ void FreescapeEngine::load8bitBinary(Common::SeekableReadStream *file, int offse
 
 	if (isCastle() && (isSpectrum() || isCPC()))
 		file->seek(offset + 0x4f);
+	else if (isCastle() && isC64())
+		file->seek(offset + 0x4b);
 	else if (isAmiga() || isAtariST())
 		file->seek(offset + 0x190);
 	else
@@ -1001,7 +1042,10 @@ void FreescapeEngine::load8bitBinary(Common::SeekableReadStream *file, int offse
 	for (uint16 area = 0; area < numberOfAreas; area++) {
 		debugC(1, kFreescapeDebugParser, "Starting to parse area index %d at offset %x", area, fileOffsetForArea[area]);
 
-		file->seek(offset + fileOffsetForArea[area]);
+		if (isCastle() && isC64())
+			file->seek(offset + fileOffsetForArea[area] - 4);
+		else
+			file->seek(offset + fileOffsetForArea[area]);
 		newArea = load8bitArea(file, ncolors);
 
 		if (newArea) {
@@ -1122,6 +1166,7 @@ void FreescapeEngine::loadGlobalObjects(Common::SeekableReadStream *file, int of
 	for (int i = 0; i < size; i++) {
 		Object *gobj = load8bitObject(file);
 		assert(gobj);
+		gobj->_loadIndex = i; // global objects render before area objects (original pass 1)
 		assert(!globalObjectsByID->contains(gobj->getObjectID()));
 		debugC(1, kFreescapeDebugParser, "Adding global object: %d", gobj->getObjectID());
 		(*globalObjectsByID)[gobj->getObjectID()] = gobj;
@@ -1148,6 +1193,44 @@ void FreescapeEngine::parseAmigaAtariHeader(Common::SeekableReadStream *stream) 
 }
 
 Common::SeekableReadStream *FreescapeEngine::decryptFileAmigaAtari(const Common::Path &packed, const Common::Path &unpacker, uint32 unpackArrayOffset) {
+	Common::File executable;
+	if (!executable.open(unpacker))
+		error("Failed to open %s", unpacker.toString().c_str());
+
+	return decryptFileAmigaAtari(packed, &executable, unpackArrayOffset);
+}
+
+// moveq #0,d1 ; move.w -(a5),d1 ; move.w -(a5),d0 ; add.l d1,d1 ;
+// move.w d0,(a6,d1.l) ; dbra d7,...
+const byte kUnpackLoop[] = {
+	0x72, 0x00, 0x32, 0x25, 0x30, 0x25, 0xd2, 0x81,
+	0x3d, 0x80, 0x18, 0x00, 0x51, 0xcf, 0xff, 0xf2
+};
+
+// The unpack array is a table of 1024 (word offset, value) pairs holding the
+// words the encryption took out of the data file. It lives in the executable,
+// which walks it back to front, so the lea that precedes that loop gives its
+// end, as an offset within the code segment. Every release is laid out
+// differently, hence the search; the value the caller passes is only used when
+// the loop cannot be found.
+uint32 findUnpackArrayOffset(const byte *data, uint32 size, uint32 fallback) {
+	// the code follows the header of the executable, hunk or GEMDOS
+	uint32 header = (size >= 4 && READ_BE_UINT32(data) == 0x000003f3) ? 0x20 : 0x1c;
+
+	for (uint32 i = 6; i + sizeof(kUnpackLoop) <= size; i += 2) {
+		if (READ_BE_UINT16(data + i - 6) != 0x4bf9) // lea $xxxxxxxx.l,a5
+			continue;
+		if (memcmp(data + i, kUnpackLoop, sizeof(kUnpackLoop)))
+			continue;
+
+		return READ_BE_UINT32(data + i - 4) + header - 0x1002; // 0x1000 long, read from its last word
+	}
+
+	debugC(1, kFreescapeDebugParser, "Unpack array not found, using offset %d", fallback);
+	return fallback;
+}
+
+Common::SeekableReadStream *FreescapeEngine::decryptFileAmigaAtari(const Common::Path &packed, Common::SeekableReadStream *unpacker, uint32 unpackArrayOffset) {
 	Common::File file;
 	file.open(packed);
 	if (!file.isOpen())
@@ -1189,23 +1272,21 @@ Common::SeekableReadStream *FreescapeEngine::decryptFileAmigaAtari(const Common:
 		a6 += 4;
 	}
 
-	file.open(unpacker);
-	if (!file.isOpen())
-		error("Failed to open %s", unpacker.toString().c_str());
-
 	int originalSize = size;
-	size = file.size();
+	size = unpacker->size();
 	byte *unpackArray = (byte *)malloc(size);
-	file.read(unpackArray, size);
-	file.close();
+	unpacker->seek(0);
+	unpacker->read(unpackArray, size);
 
-	byte *unpackArrayPtr = unpackArray + unpackArrayOffset;
+	uint32 offset = findUnpackArrayOffset(unpackArray, size, unpackArrayOffset);
+	if (offset + 4098 > uint32(size))
+		error("The unpack array of the executable used to decrypt %s is out of bounds", packed.toString().c_str());
+
+	byte *unpackArrayPtr = unpackArray + offset;
 	uint32 i = 2 * 1024;
 	do {
 		uint8 ptr0 = unpackArrayPtr[2 * i];
-		//debug("%x -> %x", unpackArrayOffset + 2 * i, ptr0);
 		uint8 ptr1 = unpackArrayPtr[2 * i + 1];
-		//debug("%x -> %x", unpackArrayOffset + 2 * i + 1, ptr1);
 		uint8 val0 = unpackArrayPtr[2 * (i - 1)];
 		uint8 val1 = unpackArrayPtr[2 * (i - 1) + 1];
 
@@ -1215,8 +1296,169 @@ Common::SeekableReadStream *FreescapeEngine::decryptFileAmigaAtari(const Common:
 		i = i - 2;
 	} while (i > 0);
 
+	free(unpackArray);
 	return (new Common::MemoryReadStream(encryptedBuffer, originalSize));
 }
 
+
+// A simple implementation of memmem, which is a non-standard GNU extension.
+const void *local_memmem(const void *haystack, size_t haystack_len, const void *needle, size_t needle_len) {
+	if (needle_len == 0) {
+		return haystack;
+	}
+	if (haystack_len < needle_len) {
+		return nullptr;
+	}
+	const char *h = (const char *)haystack;
+	for (size_t i = 0; i <= haystack_len - needle_len; ++i) {
+		if (memcmp(h + i, needle, needle_len) == 0) {
+			return h + i;
+		}
+	}
+	return nullptr;
+}
+
+Common::SeekableReadStream *FreescapeEngine::decryptFileAtariVirtualWorlds(const Common::Path &filename) {
+	Common::File file;
+	if (!file.open(filename)) {
+		error("Failed to open %s", filename.toString().c_str());
+	}
+	const int size = file.size();
+	byte *data = (byte *)malloc(size);
+	file.read(data, size);
+
+	int start = 0;
+	int valid_offset = -1;
+	int chunk_size = 0;
+
+	while (true) {
+		const byte *found = (const byte *)local_memmem(data + start, size - start, "CBCP", 4);
+		if (!found) break;
+
+		int idx = found - data;
+		if (idx + 8 <= size) {
+			int sz = READ_BE_UINT32(data + idx + 4);
+			if (sz > 0 && sz < size + 0x20000) {
+				valid_offset = idx;
+				chunk_size = sz;
+			}
+		}
+		start = idx + 1;
+	}
+
+	if (valid_offset == -1) {
+		error("No valid CBCP chunk found in %s", filename.toString().c_str());
+	}
+
+	const byte *payload = data + valid_offset + 8;
+	const int payload_size = chunk_size;
+
+	if (payload_size < 12) {
+		error("Payload too short in %s", filename.toString().c_str());
+	}
+
+	uint32 bit_buf_init = READ_BE_UINT32(payload + payload_size - 12);
+	uint32 checksum_init = READ_BE_UINT32(payload + payload_size - 8);
+	uint32 decoded_size = READ_BE_UINT32(payload + payload_size - 4);
+
+	byte *out_buffer = (byte *)malloc(decoded_size);
+	int dst_idx = decoded_size;
+
+	struct BitStream {
+		const byte *_src_data;
+		int _src_idx;
+		uint32 _bit_buffer;
+		uint32 _checksum;
+		int _refill_carry;
+
+		BitStream(const byte *src_data, int start_idx, uint32 bit_buffer, uint32 checksum) :
+			_src_data(src_data), _src_idx(start_idx), _bit_buffer(bit_buffer), _checksum(checksum), _refill_carry(0) {}
+
+		void refill() {
+			if (_src_idx < 0) {
+				_refill_carry = 0;
+				_bit_buffer = 0x80000000;
+				return;
+			}
+			uint32 val = READ_BE_UINT32(_src_data + _src_idx);
+			_src_idx -= 4;
+			_checksum ^= val;
+			_refill_carry = val & 1;
+			_bit_buffer = (val >> 1) | 0x80000000;
+		}
+
+		int getBits(int count) {
+			uint32 result = 0;
+			for (int i = 0; i < count; ++i) {
+				int carry = _bit_buffer & 1;
+				_bit_buffer >>= 1;
+				if (_bit_buffer == 0) {
+					refill();
+					carry = _refill_carry;
+				}
+				result = (result << 1) | carry;
+			}
+			return result;
+		}
+	};
+
+	int src_idx = payload_size - 16;
+	uint32 checksum = checksum_init ^ bit_buf_init;
+	BitStream bs(payload, src_idx, bit_buf_init, checksum);
+
+	while (dst_idx > 0) {
+		if (bs.getBits(1) == 0) {
+			if (bs.getBits(1) == 1) {
+				int offset = bs.getBits(8);
+				for (int i = 0; i < 2; ++i) {
+					dst_idx--;
+					if (dst_idx >= 0) {
+						out_buffer[dst_idx] = out_buffer[dst_idx + offset];
+					}
+				}
+			} else {
+				int count = bs.getBits(3) + 1;
+				for (int i = 0; i < count; ++i) {
+					dst_idx--;
+					if (dst_idx >= 0) {
+						out_buffer[dst_idx] = bs.getBits(8);
+					}
+				}
+			}
+		} else {
+			int tag = bs.getBits(2);
+			if (tag == 3) {
+				int count = bs.getBits(8) + 9;
+				for (int i = 0; i < count; ++i) {
+					dst_idx--;
+					if (dst_idx >= 0) {
+						out_buffer[dst_idx] = bs.getBits(8);
+					}
+				}
+			} else if (tag == 2) {
+				int length = bs.getBits(8) + 1;
+				int offset = bs.getBits(12);
+				for (int i = 0; i < length; ++i) {
+					dst_idx--;
+					if (dst_idx >= 0) {
+						out_buffer[dst_idx] = out_buffer[dst_idx + offset];
+					}
+				}
+			} else {
+				int bits_offset = 9 + tag;
+				int length = 3 + tag;
+				int offset = bs.getBits(bits_offset);
+				for (int i = 0; i < length; ++i) {
+					dst_idx--;
+					if (dst_idx >= 0) {
+						out_buffer[dst_idx] = out_buffer[dst_idx + offset];
+					}
+				}
+			}
+		}
+	}
+	free(data);
+	return new Common::MemoryReadStream(out_buffer, decoded_size);
+}
 
 } // namespace Freescape

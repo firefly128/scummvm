@@ -46,6 +46,10 @@ uint32 DirectorEngine::getGameFlags() const {
 	return _gameDescription->desc.flags;
 }
 
+bool DirectorEngine::isDemo() const {
+	return (bool)(_gameDescription->desc.flags & ADGF_DEMO);
+}
+
 uint16 DirectorEngine::getDescriptionVersion() const {
 	return _gameDescription->version;
 }
@@ -78,8 +82,8 @@ static const ADExtraGuiOptionsMap optionsList[] = {
 	{
 		GAMEOPTION_TRUE_COLOR,
 		{
-			_s("Force true color"),
-			_s("Use true color graphics mode, even if the game is not designed for it"),
+			_s("Force true color (32bpp) mode"),
+			_s("Use true color graphics mode (32 bits per pixel), even if the game is not designed for it"),
 			"true_color",
 			false,
 			0,

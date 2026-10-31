@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="fonts">
-			<UniqueIdentifier>8BC500F8-1D28-4CA8-B297-FDC299580822</UniqueIdentifier>
+			<UniqueIdentifier>C5458562-FA46-461F-B50E-9FC8E2C6B349</UniqueIdentifier>
 		</Filter>
 		<Filter Include="image">
-			<UniqueIdentifier>FCD3FCE4-3A67-4E1E-87EB-A0C687D2D9C4</UniqueIdentifier>
+			<UniqueIdentifier>F98382B8-68D6-4C05-8247-A5DD3B024E5F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="versailles">
-			<UniqueIdentifier>04392CC6-0D9E-44B0-99EE-8588AD07B952</UniqueIdentifier>
+			<UniqueIdentifier>54FE58A6-1632-44B5-969B-EA0377031E79</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

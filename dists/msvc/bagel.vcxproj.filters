@@ -1,119 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="boflib">
-			<UniqueIdentifier>7250330D-69A1-4936-A443-032941829A6B</UniqueIdentifier>
+			<UniqueIdentifier>749BCFA4-791F-4205-930D-B193DA851EC9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj">
-			<UniqueIdentifier>AF53E23E-73B9-402C-A8D6-EA6ABB7D5C24</UniqueIdentifier>
+			<UniqueIdentifier>0792E6D2-58C7-49A0-8769-040BFE010D41</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\archeroids">
-			<UniqueIdentifier>4A173A6F-706F-46AF-8FC1-E42F5339A9EB</UniqueIdentifier>
+			<UniqueIdentifier>91DF070E-0828-4A6A-B6BF-4230FD316A4D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\artparts">
-			<UniqueIdentifier>8A1EE7AD-4189-4625-B4D1-0D21AC5E3FDC</UniqueIdentifier>
+			<UniqueIdentifier>23723686-08B1-4A6C-B658-9B734279F8D5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\barbershop">
-			<UniqueIdentifier>DF6621EF-CFD6-4303-8A08-6934A8A2F2C7</UniqueIdentifier>
+			<UniqueIdentifier>906D310F-DF9A-46EB-8F13-B8C74FDBF15B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\battlefish">
-			<UniqueIdentifier>4D1364C6-B368-4625-AD46-00FB886A7850</UniqueIdentifier>
+			<UniqueIdentifier>06FD8BDF-238E-49C6-BC89-DEE1CA765F24</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\beacon">
-			<UniqueIdentifier>2FA74892-4868-4D70-AFB8-503414D5AE91</UniqueIdentifier>
+			<UniqueIdentifier>71EB31C0-8237-47A0-9758-0F7213909F10</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\crypt">
-			<UniqueIdentifier>EF7A2B98-9150-4B10-927C-876F0D0E01C2</UniqueIdentifier>
+			<UniqueIdentifier>A27C21D2-60C5-44DF-8969-89C8332A8436</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\dfa">
-			<UniqueIdentifier>7C9FC488-4213-4AB3-A9A3-D3FC174720ED</UniqueIdentifier>
+			<UniqueIdentifier>23292B50-70B9-4557-A036-21E56D5679B4</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\fuge">
-			<UniqueIdentifier>BCD84202-7617-4FBC-A201-C5D883400A5E</UniqueIdentifier>
+			<UniqueIdentifier>550B4FBA-B65A-46A0-8E3C-94368542B5C4</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\garfunkle">
-			<UniqueIdentifier>E0CBC81E-B430-4567-A864-0586177AA578</UniqueIdentifier>
+			<UniqueIdentifier>DA5D5B9D-F5DB-42BE-9098-8D62C6B387A5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\gfx">
-			<UniqueIdentifier>8FF551EE-9207-4ADA-9CDD-08BA6F1C059D</UniqueIdentifier>
+			<UniqueIdentifier>13506779-ABE9-43BF-ABAA-A8FA10B5CB68</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\hnplibs">
-			<UniqueIdentifier>7C5F53E4-F2A0-4D24-8825-0373F392AF63</UniqueIdentifier>
+			<UniqueIdentifier>B3C7E1AF-8E28-4402-A556-83C8D0093F92</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\libs">
-			<UniqueIdentifier>F9E0DCF6-DA35-4E26-B4C4-BD98A407979A</UniqueIdentifier>
+			<UniqueIdentifier>5818E9FA-0A29-409B-8C6E-B040591C88BB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\life">
-			<UniqueIdentifier>B6BFCACA-4326-49B4-BDFA-8215935FAA9D</UniqueIdentifier>
+			<UniqueIdentifier>FD52BE74-A3C6-465F-97B1-EA1AE5625501</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\mankala">
-			<UniqueIdentifier>7BA83E91-E711-4431-89AA-E52BD9F0256E</UniqueIdentifier>
+			<UniqueIdentifier>150E94CA-5714-44A4-8768-DBBDF2B23BD3</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\mazedoom">
-			<UniqueIdentifier>8DE22640-C0AA-4446-A684-A6161C57C33F</UniqueIdentifier>
+			<UniqueIdentifier>31743D4E-066C-4C9B-99C8-4D4485201EFE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame">
-			<UniqueIdentifier>154902AD-2183-44CB-BA32-B6DB45904E6E</UniqueIdentifier>
+			<UniqueIdentifier>8C3E8D8C-BEF6-4AF7-AE92-AB309E2411E1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame\bgen">
-			<UniqueIdentifier>A3EC06D7-6A2E-4077-8E9A-36BB32419FBB</UniqueIdentifier>
+			<UniqueIdentifier>6C0602EF-557C-4E5A-8A7A-E2AF1530AEDF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame\demo">
-			<UniqueIdentifier>7E42B24A-6962-4679-A23A-6AB6FE96CC8A</UniqueIdentifier>
+			<UniqueIdentifier>83ECEDB8-2CEF-4F2C-9EF3-B44488767DD5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame\frame">
-			<UniqueIdentifier>EAF0EE20-D537-4790-BAA8-5D8EE23A7630</UniqueIdentifier>
+			<UniqueIdentifier>6EDB4E60-267D-477D-A781-6931D719C036</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame\grand_tour">
-			<UniqueIdentifier>2EB45ADC-08FB-404B-92E9-F1211F584A53</UniqueIdentifier>
+			<UniqueIdentifier>3270FCA0-7BB3-43BE-8D0B-76D181DE776F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame\gtl">
-			<UniqueIdentifier>9D01B805-4643-49A4-994F-4F3CEED8BDE4</UniqueIdentifier>
+			<UniqueIdentifier>A80CAA46-9A71-4485-B28B-7DF53942701D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame\saves">
-			<UniqueIdentifier>E3C11160-9319-4ABE-9C71-297CF7BA9D4A</UniqueIdentifier>
+			<UniqueIdentifier>6EC5CFB3-C3C9-48B9-81A7-B8C26D6BE323</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\metagame\zoom">
-			<UniqueIdentifier>5802D796-CF3A-479F-9ADB-915A3DEB028C</UniqueIdentifier>
+			<UniqueIdentifier>248886F9-6494-4B5E-A470-B2D3595E3DDE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\novacancy">
-			<UniqueIdentifier>E4EDC80E-173E-4447-91F4-D350552B4C9D</UniqueIdentifier>
+			<UniqueIdentifier>E20BE6D1-C975-4EB3-8A79-1CEFB5563FF4</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\packrat">
-			<UniqueIdentifier>74E4073D-59BF-45B1-AA6E-F08D417011E6</UniqueIdentifier>
+			<UniqueIdentifier>16CDF51E-D1E5-468F-B1D9-A69808E2D018</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\pdq">
-			<UniqueIdentifier>6ADF1D52-FBAC-499E-AEE9-9F7A209A13BC</UniqueIdentifier>
+			<UniqueIdentifier>BAA9C0D6-A563-4905-9DE8-BD17F471A7A2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\peggle">
-			<UniqueIdentifier>D846AA35-4551-47D1-B055-5DE4EB9FA9E8</UniqueIdentifier>
+			<UniqueIdentifier>F272E7C4-C04D-4FBD-9428-8744A8E79B5F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\poker">
-			<UniqueIdentifier>B5BD2D2A-5EAF-41A8-B6A2-EBFA2B2D462A</UniqueIdentifier>
+			<UniqueIdentifier>258DD3E7-A7BB-4960-8A66-AB53A48C0CC7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\riddles">
-			<UniqueIdentifier>624C4FF0-CE42-4D46-B3F4-FD6711776D77</UniqueIdentifier>
+			<UniqueIdentifier>46CD6210-9D08-4700-997D-B583512EF6AB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hodjnpodj\wordsearch">
-			<UniqueIdentifier>7E4C3901-0A29-4391-81F6-7153F0D485C2</UniqueIdentifier>
+			<UniqueIdentifier>E42EC756-3C59-4B45-A595-7F22D9499720</UniqueIdentifier>
 		</Filter>
 		<Filter Include="spacebar">
-			<UniqueIdentifier>09F0229E-435A-482E-9AFA-670774FE1D11</UniqueIdentifier>
+			<UniqueIdentifier>4BEAB074-CD4D-4ACE-A0C5-193F7B0C61EC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="spacebar\baglib">
-			<UniqueIdentifier>038374A7-4AA4-48CD-A079-F76E2927F0EB</UniqueIdentifier>
+			<UniqueIdentifier>B2C2F405-B15A-4199-8518-56F3D707C170</UniqueIdentifier>
 		</Filter>
 		<Filter Include="spacebar\boflib">
-			<UniqueIdentifier>E4305332-7A51-4637-BC26-77BEF4A8F918</UniqueIdentifier>
+			<UniqueIdentifier>F73EB5D4-061D-42B2-8E0E-0E136832083A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="spacebar\boflib\gfx">
-			<UniqueIdentifier>C6B20F9E-77A0-432E-8AEA-74E482F9D9F1</UniqueIdentifier>
+			<UniqueIdentifier>242809F6-DA45-47E7-9C47-037E6E8C2181</UniqueIdentifier>
 		</Filter>
 		<Filter Include="spacebar\boflib\gui">
-			<UniqueIdentifier>BE02A68C-9A7F-4436-A155-AFCE990C930D</UniqueIdentifier>
+			<UniqueIdentifier>8801C153-9861-477C-98D9-CA7D52C9BED0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="spacebar\dialogs">
-			<UniqueIdentifier>547DE4C2-0A00-4224-B427-9A273B0D028C</UniqueIdentifier>
+			<UniqueIdentifier>4417FBBB-9052-4551-864B-3049C4074486</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

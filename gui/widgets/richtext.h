@@ -33,6 +33,7 @@ class ManagedSurface;
 namespace GUI {
 
 class ScrollBarWidget;
+class FluidScroller;
 
 /* RichTextWidget */
 class RichTextWidget : public Widget, public CommandSender {
@@ -52,6 +53,10 @@ protected:
 	int _textWidth;
 	int _textHeight;
 
+	float _scrollPos;
+	FluidScroller *_fluidScroller;
+	bool _isDragging;
+
 	Common::Path _imageArchive;
 
 public:
@@ -69,7 +74,11 @@ public:
 	void handleMouseDown(int x, int y, int button, int clickCount) override;
 	void handleMouseUp(int x, int y, int button, int clickCount) override;
 	void handleMouseMoved(int x, int y, int button) override;
+	void handleTickle() override;
 	void handleTooltipUpdate(int x, int y) override;
+
+	void cancelDrag() override;
+	void cancelTickle() override;
 
 	void markAsDirty() override;
 
@@ -80,6 +89,7 @@ public:
 protected:
 	void init();
 	void recalc();
+	void applyScrollPos();
 	void drawWidget() override;
 	void createWidget();
 	void ensureWidget();

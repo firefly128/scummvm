@@ -38,12 +38,7 @@ TangramPuzzle::~TangramPuzzle() {
 }
 
 void TangramPuzzle::init() {
-	Common::Rect screenBounds = NancySceneState.getViewport().getBounds();
-	_drawSurface.create(screenBounds.width(), screenBounds.height(), g_nancy->_graphics->getInputPixelFormat());
-	_drawSurface.clear(g_nancy->_graphics->getTransColor());
-	setTransparent(true);
-	setVisible(true);
-	moveTo(screenBounds);
+	initViewportSurface();
 
 	g_nancy->_resource->loadImage(_tileImageName, _tileImage);
 	g_nancy->_resource->loadImage(_maskImageName, _maskImage);
@@ -63,7 +58,7 @@ void TangramPuzzle::init() {
 	curTile->setTransparent(true);
 	curTile->setVisible(true);
 	drawToBuffer(*curTile);
-	curTile->setZ(_z + 1);
+	curTile->setZOrder(_z + 1);
 
 	// Then, add the actual tiles
 	for (uint i = 0; i < _tileSrcs.size(); ++i) {
@@ -74,7 +69,7 @@ void TangramPuzzle::init() {
 		curTile->moveTo(_tileDests[i]);
 		curTile->setTransparent(true);
 		curTile->setVisible(true);
-		curTile->setZ(_z + curTile->_id + 1);
+		curTile->setZOrder(_z + curTile->_id + 1);
 		curTile->drawMask();
 		drawToBuffer(*curTile);
 
@@ -108,7 +103,7 @@ void TangramPuzzle::registerGraphics() {
 		tile.registerGraphics();
 	}
 
-	RenderActionRecord::registerGraphics();
+	PuzzleRecord::registerGraphics();
 }
 
 void TangramPuzzle::readData(Common::SeekableReadStream &stream) {
@@ -168,8 +163,7 @@ void TangramPuzzle::execute() {
 				}
 			}
 
-			g_nancy->_sound->loadSound(_solveSound);
-			g_nancy->_sound->playSound(_solveSound);
+			playSolveSound();
 			_solved = true;
 			_state = kActionTrigger;
 		}
@@ -177,7 +171,7 @@ void TangramPuzzle::execute() {
 		break;
 	case kActionTrigger :
 		if (_solved) {
-			if (g_nancy->_sound->isSoundPlaying(_solveSound)) {
+			if (isSolveSoundPlaying()) {
 				break;
 			}
 
@@ -234,9 +228,7 @@ void TangramPuzzle::handleInput(NancyInput &input) {
 		}
 
 		// No tile under cursor, check exit hotspot
-		if (_exitHotspot.contains(mousePos)) {
-			g_nancy->_cursor->setCursorType(g_nancy->_cursor->_puzzleExitCursor);
-
+		if (hoverExitHotspot(input)) {
 			if (input.input & NancyInput::kLeftMouseButtonUp) {
 				_state = kActionTrigger;
 			}
@@ -276,11 +268,11 @@ void TangramPuzzle::handleInput(NancyInput &input) {
 
 void TangramPuzzle::drawToBuffer(const Tile &tile, Common::Rect subRect) {
 	if (subRect.isEmpty()) {
-		subRect = tile._screenPosition;
+		subRect = tile.getScreenPositionRaw();
 	}
 
-	uint16 xDiff = subRect.left - tile._screenPosition.left;
-	uint16 yDiff = subRect.top - tile._screenPosition.top;
+	uint16 xDiff = subRect.left - tile.getScreenPositionRaw().left;
+	uint16 yDiff = subRect.top - tile.getScreenPositionRaw().top;
 
 	for (int y = 0; y < subRect.height(); ++y) {
 		byte *src = &tile._mask[(y + yDiff) * tile._drawSurface.w + xDiff];
@@ -303,7 +295,7 @@ void TangramPuzzle::pickUpTile(uint id) {
 
 	moveToTop(id);
 	_pickedUpTile = id;
-	redrawBuffer(tileToPickUp._screenPosition);
+	redrawBuffer(tileToPickUp.getScreenPositionRaw());
 	tileToPickUp.pickUp();
 
 	// Make sure we don't have a frame with the correct zOrder, but wrong position
@@ -339,7 +331,7 @@ void TangramPuzzle::rotateTile(uint id) {
 
 	moveToTop(id);
 
-	Common::Rect oldPos = tileToRotate._screenPosition;
+	Common::Rect oldPos = tileToRotate.getScreenPositionRaw();
 
 	if (_pickedUpTile != -1 && checkBuffer(tileToRotate)) {
 		tileToRotate.setHighlighted(true);
@@ -353,7 +345,7 @@ void TangramPuzzle::rotateTile(uint id) {
 	_needsRedraw = true;
 
 	tileToRotate.drawMask();
-	tileToRotate._needsRedraw = true;
+	tileToRotate.setNeedsRedraw(true);
 
 	if (_pickedUpTile == -1) {
 		redrawBuffer(oldPos);
@@ -365,14 +357,12 @@ void TangramPuzzle::rotateTile(uint id) {
 void TangramPuzzle::moveToTop(uint id) {
 	for (uint i = 1; i < _tiles.size(); ++i) {
 		Tile &tile = _tiles[i];
-		if (tile._z > _tiles[id]._z) {
-			tile.setZ(tile._z - 1);
-			tile.registerGraphics();
+		if (tile.getZOrder() > _tiles[id].getZOrder()) {
+			tile.setZOrder(tile.getZOrder() - 1);
 		}
 	}
 
-	_tiles[id].setZ(_z + _tiles.size());
-	_tiles[id].registerGraphics();
+	_tiles[id].setZOrder(_z + _tiles.size());
 }
 
 void TangramPuzzle::redrawBuffer(const Common::Rect &rect) {
@@ -385,9 +375,9 @@ void TangramPuzzle::redrawBuffer(const Common::Rect &rect) {
 	for (uint z = _z + 1; z < _z + _tiles.size(); ++z) {
 		for (uint i = 0; i < _tiles.size() - 1; ++i) {
 			Tile &tile = _tiles[i];
-			if (tile._z == z) {
-				if (tile._screenPosition.intersects(rect)) {
-					drawToBuffer(tile, tile._screenPosition.findIntersectingRect(rect));
+			if (tile.getZOrder() == z) {
+				if (tile.getScreenPositionRaw().intersects(rect)) {
+					drawToBuffer(tile, tile.getScreenPositionRaw().findIntersectingRect(rect));
 				}
 
 				break;
@@ -401,7 +391,7 @@ bool TangramPuzzle::checkBuffer(const Tile &tile) const {
 	// In other words, this checks if we're placing on a valid empty spot
 	for (int y = 0; y < tile._drawSurface.h; ++y) {
 		const byte *tilePtr = &tile._mask[y * tile._drawSurface.w];
-		const byte *bufPtr = &_zBuffer[(y + tile._screenPosition.top) * _drawSurface.w + tile._screenPosition.left];
+		const byte *bufPtr = &_zBuffer[(y + tile.getScreenPositionRaw().top) * _drawSurface.w + tile.getScreenPositionRaw().left];
 		for (int x = 0; x < tile._drawSurface.w; ++x) {
 			if (*tilePtr != (byte)-1 && *bufPtr != 0) {
 				return false;

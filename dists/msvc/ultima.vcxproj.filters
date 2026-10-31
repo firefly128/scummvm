@@ -1,164 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="nuvie">
-			<UniqueIdentifier>D50D90FE-D91A-4551-9708-DE3479096472</UniqueIdentifier>
+			<UniqueIdentifier>36D6A113-120B-4A00-9E59-E9B613B4EA14</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\actors">
-			<UniqueIdentifier>BC1AB1E4-8B24-46E4-A89C-24349881963D</UniqueIdentifier>
+			<UniqueIdentifier>AAF3528E-6E9E-4CE3-8854-61EEF363BE22</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\conf">
-			<UniqueIdentifier>C085C3C4-4DAE-4C73-A982-8DC220C35891</UniqueIdentifier>
+			<UniqueIdentifier>255EFB45-35CE-4EC0-BED6-37ED77F3B4DB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\core">
-			<UniqueIdentifier>4D15CAF9-EAD9-4311-92DC-CE0762683748</UniqueIdentifier>
+			<UniqueIdentifier>BD4596A8-0BFE-4E7D-9800-60E6403AEE79</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\files">
-			<UniqueIdentifier>6860A64B-0F21-4CC3-B860-FBB59DC88481</UniqueIdentifier>
+			<UniqueIdentifier>439DE939-89B7-404E-BEC3-1D68CD15F8E1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\fonts">
-			<UniqueIdentifier>5FD55523-5B79-4168-8E5E-98A7192BC368</UniqueIdentifier>
+			<UniqueIdentifier>F734D093-CC10-41BB-9749-2A18B53B3229</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\gui">
-			<UniqueIdentifier>BDD8CABD-B39E-4A18-8DBD-D9E0622F16F3</UniqueIdentifier>
+			<UniqueIdentifier>2AC5C824-B206-4CC8-92F5-835759B9DB8E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\gui\widgets">
-			<UniqueIdentifier>4C3B5F06-E48C-4667-B051-0301FE719A8E</UniqueIdentifier>
+			<UniqueIdentifier>AC99A85B-E28B-4772-9090-7F9C4971BE66</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\keybinding">
-			<UniqueIdentifier>665AB4B8-69A5-4A90-BA28-3B1C275640D1</UniqueIdentifier>
+			<UniqueIdentifier>57DB56B5-E11B-4B72-9BF9-71C9DDF63FC8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\menus">
-			<UniqueIdentifier>55AAC2FE-35BC-4A8F-B3EA-63BEC7B1F79C</UniqueIdentifier>
+			<UniqueIdentifier>DD85D5FE-0546-4A44-88AE-CB12947CEA47</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\misc">
-			<UniqueIdentifier>228A8D15-E45E-401A-8DB7-3DB5B3B7B680</UniqueIdentifier>
+			<UniqueIdentifier>A6B6D35F-A549-40E8-B7CE-293DAB798DD8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\pathfinder">
-			<UniqueIdentifier>6F9D7F8F-BFEB-4C5A-AFF8-58AB0DB3BB02</UniqueIdentifier>
+			<UniqueIdentifier>7327B194-7758-495E-8FDB-1BDA81D6E625</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\portraits">
-			<UniqueIdentifier>D954B7C0-BCA1-41FE-8327-D4E8DECD3D3D</UniqueIdentifier>
+			<UniqueIdentifier>D01BAB3C-CA0C-4468-8458-0459017FA57D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\save">
-			<UniqueIdentifier>8F2EB5A7-A478-4185-ABC1-F1239516E17C</UniqueIdentifier>
+			<UniqueIdentifier>2F6984D4-F2EA-4E97-AB53-50B2D6D22E9C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\screen">
-			<UniqueIdentifier>DDBAB38D-8D21-45EA-AC1B-1D943653165E</UniqueIdentifier>
+			<UniqueIdentifier>3E0188B3-0852-492D-BD7D-F7114F7D5B03</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\script">
-			<UniqueIdentifier>052DFABF-BB52-4A0A-9EF2-4CEBAF5D536F</UniqueIdentifier>
+			<UniqueIdentifier>0E662401-6C50-479D-8BB4-5BDD97ECD1EA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\sound">
-			<UniqueIdentifier>10816F95-9AB3-4CB7-981D-7C4F578A18C3</UniqueIdentifier>
+			<UniqueIdentifier>A126DDB4-C858-4EC4-85B0-476A4DBDE90F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\sound\adplug">
-			<UniqueIdentifier>06E05328-3B5D-4CA6-8E77-5219CD235788</UniqueIdentifier>
+			<UniqueIdentifier>67793D38-E537-4711-88AB-DB6C3B35CA9B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\sound\decoder">
-			<UniqueIdentifier>790E0BEB-DDD0-42AA-B749-71EDAD0CDBD8</UniqueIdentifier>
+			<UniqueIdentifier>AD928D6C-4E87-4554-A839-3265C304733A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\usecode">
-			<UniqueIdentifier>08397CE1-DC29-476A-83D7-0CE7189ADB49</UniqueIdentifier>
+			<UniqueIdentifier>E78788EB-AE1D-4993-86C1-5910C0A2A4F6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nuvie\views">
-			<UniqueIdentifier>B54CC887-FE1B-4EA7-B87B-0890ACEB4B75</UniqueIdentifier>
+			<UniqueIdentifier>5EBAE166-C0CC-440F-81B9-7AAA40B02BA0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="shared">
-			<UniqueIdentifier>591039BB-21A7-47D1-BC45-22C668DD027D</UniqueIdentifier>
+			<UniqueIdentifier>57423814-1A3B-4620-A1DF-D98AE97B0806</UniqueIdentifier>
 		</Filter>
 		<Filter Include="shared\conf">
-			<UniqueIdentifier>66FCDB0D-0ED2-434F-A491-2016EED86E0A</UniqueIdentifier>
+			<UniqueIdentifier>9E8DC4F0-42B4-4825-9437-9E530A5F5E67</UniqueIdentifier>
 		</Filter>
 		<Filter Include="shared\engine">
-			<UniqueIdentifier>EFB82D48-06BA-4BF4-B52E-BB3FFC176817</UniqueIdentifier>
+			<UniqueIdentifier>E31CC5E6-48A8-4C53-AF49-26F434D0D8EA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4">
-			<UniqueIdentifier>5BA3BA13-C913-4851-BF48-50380F3C61AA</UniqueIdentifier>
+			<UniqueIdentifier>0CD0A849-B5D6-47A2-AB72-70DF9D3E3319</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\controllers">
-			<UniqueIdentifier>9378D7E6-BB30-4CC4-AD8E-1C330C32834B</UniqueIdentifier>
+			<UniqueIdentifier>0EDF608C-B7B7-450A-9946-8D5C8940218B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\conversation">
-			<UniqueIdentifier>B30201A4-CDDB-46D3-9EBA-DED472F5BC30</UniqueIdentifier>
+			<UniqueIdentifier>6E62E46E-7CE5-4F16-81A8-156010919FAC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\core">
-			<UniqueIdentifier>7FF5433B-0132-46A8-8F8D-C834BFDA47A5</UniqueIdentifier>
+			<UniqueIdentifier>82EBEEF5-1C81-4783-B50B-C537FA96DF1F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\core\lzw">
-			<UniqueIdentifier>3CB7C1B5-A681-419A-BD65-619E56A3CAE9</UniqueIdentifier>
+			<UniqueIdentifier>8EE39D72-F957-4415-84A7-56A55BB5144E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\events">
-			<UniqueIdentifier>4A81CB70-0BD2-4A04-802B-F62704297FD6</UniqueIdentifier>
+			<UniqueIdentifier>F7274EE8-301F-4012-A04D-6BABD7C13B31</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\filesys">
-			<UniqueIdentifier>E36F430F-0ED2-4ADB-84B6-3B4506C6CC85</UniqueIdentifier>
+			<UniqueIdentifier>BC711667-10E8-4ACF-B107-5D125016ACDD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\game">
-			<UniqueIdentifier>6D33B439-4ABE-4493-B94C-48954C17FD9F</UniqueIdentifier>
+			<UniqueIdentifier>374352CA-7B75-4303-9B88-46A575104B9B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\gfx">
-			<UniqueIdentifier>B20423AE-FE4A-4B35-89C9-5BC94D312C81</UniqueIdentifier>
+			<UniqueIdentifier>B26C3969-624B-4878-84E7-4FD55085C0CA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\map">
-			<UniqueIdentifier>FC39884D-C0CB-48E2-844E-5A575089EB63</UniqueIdentifier>
+			<UniqueIdentifier>0F552FBB-F767-4A25-9C23-283ED8168759</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\sound">
-			<UniqueIdentifier>17224224-FB6E-45BE-8FF3-F420EE6C61A2</UniqueIdentifier>
+			<UniqueIdentifier>4F524840-96A1-42BF-B320-EE8290300FE8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima4\views">
-			<UniqueIdentifier>3665CC35-D838-4F32-9439-5E13A3F63D19</UniqueIdentifier>
+			<UniqueIdentifier>C2F3BC98-8D04-4FFE-ABE2-10B86208D635</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8">
-			<UniqueIdentifier>D940186D-F87F-47B2-BE8A-9B836AE5C815</UniqueIdentifier>
+			<UniqueIdentifier>93346F5B-A5C8-4676-A1F2-7A20644EEFAF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\audio">
-			<UniqueIdentifier>8F514CA1-7D10-4A87-87BA-26EC2D871A5E</UniqueIdentifier>
+			<UniqueIdentifier>A173D414-0A5D-42B8-8CC4-FA765E9E82BC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\conf">
-			<UniqueIdentifier>A294F277-2595-4490-98A2-1D15E29CBCBC</UniqueIdentifier>
+			<UniqueIdentifier>CC8E2358-7B36-4B52-9590-03C798F9346B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\convert">
-			<UniqueIdentifier>F2AF1629-70BB-4CF6-8344-2BE915558F29</UniqueIdentifier>
+			<UniqueIdentifier>D26A5B11-DDDD-42E8-BDFD-357E0E4AF5D5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\convert\crusader">
-			<UniqueIdentifier>60D9769F-58A4-4035-A256-EDE96A952C94</UniqueIdentifier>
+			<UniqueIdentifier>09282E15-3147-4DD4-9C9E-F611E989C64D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\convert\u8">
-			<UniqueIdentifier>15AFF85C-C252-4AF6-AE92-E6F45387DD5D</UniqueIdentifier>
+			<UniqueIdentifier>59327EB3-0AD7-4A2E-82BB-9F05FB405CD0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\filesys">
-			<UniqueIdentifier>8421418A-022F-498E-9886-0BA97488CAB5</UniqueIdentifier>
+			<UniqueIdentifier>A5C02650-2089-4C69-890B-9DBBAE4A0945</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\games">
-			<UniqueIdentifier>3FC7494F-4EFC-41D2-9343-D2D81B1DDECF</UniqueIdentifier>
+			<UniqueIdentifier>CA80E84B-B512-4E93-B883-1DC82CC6D5AE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\gfx">
-			<UniqueIdentifier>6805AA5F-3629-40FA-9E7E-92ABA0A9A0CE</UniqueIdentifier>
+			<UniqueIdentifier>B697EFC8-43BE-4961-8ECF-6BB89F7C1570</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\gfx\fonts">
-			<UniqueIdentifier>D7F4325D-813B-44E1-9F01-2E21DCBCA2B3</UniqueIdentifier>
+			<UniqueIdentifier>8FC8EB6F-7DEF-47A9-A121-2875DD8D74D9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\gumps">
-			<UniqueIdentifier>6CDC42AB-263E-401A-8776-BA1D9903490F</UniqueIdentifier>
+			<UniqueIdentifier>305BBE51-64D8-4B44-B10D-A1BB9BBCDF39</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\gumps\widgets">
-			<UniqueIdentifier>B4259DE3-C7F4-4678-BC46-0230E83AEFC5</UniqueIdentifier>
+			<UniqueIdentifier>44930B08-C5BB-42FE-A58D-BC2F7E3DF175</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\kernel">
-			<UniqueIdentifier>6BA9099F-E529-445A-8A0A-13A297545F57</UniqueIdentifier>
+			<UniqueIdentifier>80A30044-5246-4FE7-80AE-7A39443476BD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\misc">
-			<UniqueIdentifier>370A6EE9-73C3-45B9-B930-B08E94A47D3E</UniqueIdentifier>
+			<UniqueIdentifier>1997AFD8-452B-4B34-A3EA-1944ECBDE987</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\usecode">
-			<UniqueIdentifier>B20EE889-8B94-48C5-B17C-0335E89EC8D9</UniqueIdentifier>
+			<UniqueIdentifier>89E77195-5B23-4549-9068-0CC710B19B0D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\world">
-			<UniqueIdentifier>225BD48F-E980-4140-B693-CB3AC3A05C5D</UniqueIdentifier>
+			<UniqueIdentifier>C445D020-9FD6-4BAE-AC99-262F505D421E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima8\world\actors">
-			<UniqueIdentifier>9B820921-5E57-4191-9A00-5D254C60EBCD</UniqueIdentifier>
+			<UniqueIdentifier>8F09EBE1-32F5-4248-A0EA-B9F806133795</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

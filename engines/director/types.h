@@ -58,6 +58,7 @@ enum CastType {
 	kCastDigitalVideo = 10,
 	kCastLingoScript = 11,
 	kCastRichText = 12,
+	kCastOLE = 13,
 	kCastTransition = 14,		// D5
 	kCastXtra = 15,
 };
@@ -196,7 +197,7 @@ enum InkType {
 
 // ID matches up to the fake cast member ID used by EventScript
 enum LEvent {
-	kEventPrepareMovie, // 0
+	kEventPrepareMovie = 0, // 0
 	kEventStartMovie,
 	kEventStepMovie,
 	kEventStopMovie,
@@ -358,6 +359,10 @@ enum ChunkType {
 };
 
 enum FileVer {
+	kFileVer010 = 0x100,
+	kFileVer020 = 0x200,
+	kFileVer100 = 0x3ff,
+	kFileVer200 = 0x400,
 	kFileVer300 = 0x404,
 	kFileVer310 = 0x405,
 	kFileVer400 = 0x45B,
@@ -437,16 +442,20 @@ struct CastMemberID {
 
 	uint hash() const { return ((castLib & 0xffff) << 16) + (member & 0xffff); }
 
+	// Multiplex IDs are basically member + castLib * 0x10000.
+	// castLib 1 is equivalent to castLib 0; the range repeats twice, and
+	// "the number of (member (65536+1))" returns 1.
 	CastMemberID fromMultiplex(int multiplexID) {
 		if (multiplexID < 0)
 			return CastMemberID(multiplexID, -1);
-		return CastMemberID(multiplexID % 0x20000, 1 + (multiplexID >> 17));
+		int lib = multiplexID >> 16;
+		return CastMemberID(multiplexID % 0x10000, lib ? lib : 1);
 	}
 
 	int toMultiplex() {
-		if (castLib < 0)
+		if (castLib <= 1)
 			return member;
-		return (member % 0x20000) + ((castLib - 1) << 17);
+		return (member % 0x10000) + (castLib << 16);
 	}
 };
 
@@ -474,6 +483,8 @@ const char *castType2str(CastType type);
 const char *spriteType2str(SpriteType type);
 const char *inkType2str(InkType type);
 const char *symbolType2str(SymbolType type);
+const char *leventType2str(LEvent type);
+const char *eventHandlerSourceType2str(EventHandlerSourceType type);
 Common::String objectType2str(int fl);
 Common::String paletteType2str(PaletteType value);
 Common::String textAlignType2str(TextAlignType value);

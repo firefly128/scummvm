@@ -58,8 +58,9 @@ void Player::resetCursor() {
 }
 
 void Player::updateCursor() {
-	// TODO: V2 has additional cursor frames. How are they used?
-	if (g_engine->isV1() || g_engine->isV2() || g_engine->menu().isOpen())
+	if (g_engine->isV2())
+		_cursorFrameI = g_engine->config().cursor();
+	else if (g_engine->isV1() || g_engine->menu().isOpen())
 		_cursorFrameI = 0;
 	else if (_selectedObject == nullptr)
 		_cursorFrameI = !g_engine->input().isMouseLeftDown() || _pressedObject != nullptr ? 6 : 7;
@@ -211,10 +212,9 @@ void Player::triggerObject(ObjectBase *object, const char *action) {
 	_activeCharacter->currentlyUsing() = nullptr;
 	if (scumm_stricmp(action, "MIRAR") == 0)
 		script.createProcess(activeCharacterKind(), "DefectoMirar");
-	//else if (action[0] == 'i' && object->name()[0] == 'i')
-	// This case can happen if you combine two objects without procedure, the original engine
-	// would attempt to start the procedure "DefectoObjeto" which does not exist
-	// (this should be revised when working on further games)
+	else if (action[0] == 'i' && object->name()[0] == 'i' && script.hasProcedure("DefectoObjeto"))
+		// This case can happen if you combine two objects without procedure. This does not happen in all games
+		script.createProcess(activeCharacterKind(), "DefectoObjeto");
 	else
 		script.createProcess(activeCharacterKind(), "DefectoUsar");
 }
@@ -354,9 +354,24 @@ void Player::setActiveCharacter(MainCharacterKind kind) {
 }
 
 bool Player::isAllowedToOpenMenu() {
-	return !g_engine->menu().isOpen() &&
-		   g_engine->game().isAllowedToOpenMenu() &&
-		   !_isInTemporaryRoom; // we cannot reliably store this state across multiple room changes
+	return
+		!g_engine->menu().isOpen() &&
+		!g_engine->isInSpecialGameLoop() &&
+		!_isInTemporaryRoom && // we cannot reliably store this state across multiple room changes
+		g_engine->game().isAllowedToOpenMenu();
+}
+
+Room *Player::lastGameRoom() const {
+	// save from in-game menu
+	if (g_engine->menu().isOpen() && g_engine->menu().previousRoom() != nullptr)
+		return g_engine->menu().previousRoom();
+
+	// save from ScummVM while in inventory
+	if (currentRoom() == &g_engine->world().inventory() && _roomBeforeInventory != nullptr)
+		return _roomBeforeInventory;
+
+	// save from ScumnmVM global menu or autosave in normal gameplay
+	return currentRoom(); // this *could* still return nullptr but only at the very start of the engine	
 }
 
 void Player::syncGame(Serializer &s) {
@@ -378,10 +393,8 @@ void Player::syncGame(Serializer &s) {
 
 	String roomName;
 	if (s.isSaving()) {
-		roomName =
-			g_engine->menu().isOpen() ? g_engine->menu().previousRoom()->name() // save from in-game menu
-			: _roomBeforeInventory != nullptr ? _roomBeforeInventory->name() // save from ScummVM while in inventory
-			: currentRoom()->name(); // save from ScumnmVM global menu or autosave in normal gameplay
+		// only call lastGameRoom if we are saving, a load-on-start might not have a current room yet
+		roomName = lastGameRoom()->name();
 	}
 	s.syncString(roomName);
 	if (s.isLoading()) {

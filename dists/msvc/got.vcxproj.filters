@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="data">
-			<UniqueIdentifier>AD067D99-7428-4A12-B51B-D42F29141E71</UniqueIdentifier>
+			<UniqueIdentifier>64103DD7-D8D1-4BB0-AC5B-3E26BA5325DF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game">
-			<UniqueIdentifier>22C4CD0E-A23E-46C3-AEDD-898996265FAF</UniqueIdentifier>
+			<UniqueIdentifier>50B61337-9C6A-4744-A2FC-B607BD7EBA24</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gfx">
-			<UniqueIdentifier>500B2CA6-F7E3-432D-AB38-2A41645277CB</UniqueIdentifier>
+			<UniqueIdentifier>2E0A8A21-10BD-437B-943B-02FD22A4ACEB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="utils">
-			<UniqueIdentifier>70F85E08-946E-42AD-8A38-DD7EC696E171</UniqueIdentifier>
+			<UniqueIdentifier>8A58494A-49C7-4CD2-9F39-7306BBF56353</UniqueIdentifier>
 		</Filter>
 		<Filter Include="views">
-			<UniqueIdentifier>4E8E4A2F-4A17-4AD6-AFC7-9EC1BD54562A</UniqueIdentifier>
+			<UniqueIdentifier>25B7D56E-80DB-4675-A00E-52D54BBA23D5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="views\dialogs">
-			<UniqueIdentifier>24845B19-99A8-495C-A9D7-FEB750D76696</UniqueIdentifier>
+			<UniqueIdentifier>939AECCB-25D4-451D-902B-18C13761CAF2</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

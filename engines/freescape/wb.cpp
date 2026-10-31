@@ -60,14 +60,17 @@ int8 decodeOrderTranspose(byte cmd) {
 	return (int8)((cmd + 0x20) & 0xFF);
 }
 
+// Both engines mask the command byte and store it verbatim; zero is a legal
+// value because the counters they feed are reloaded with N and expire one tick
+// (respectively one sequencer step) after reaching zero, so N always means
+// N + 1 units. Asm ref: HDSMUSIC.AM $0256, TEMUSIC.ST $0266 (speed) and
+// HDSMUSIC.AM $02B4, TEMUSIC.ST $02A2 (duration).
 byte decodeTickSpeed(byte cmd) {
-	byte speed = cmd & 0x0F;
-	return speed == 0 ? 1 : speed;
+	return cmd & 0x0F;
 }
 
 byte decodeDuration(byte cmd) {
-	byte duration = cmd & 0x3F;
-	return duration == 0 ? 1 : duration;
+	return cmd & 0x3F;
 }
 
 byte buildArpeggioTable(const byte intervals[8], byte mask, byte *outTable, byte maxLen, bool includeBase) {
@@ -87,31 +90,41 @@ byte buildArpeggioTable(const byte intervals[8], byte mask, byte *outTable, byte
 
 } // End of namespace WBCommon
 
-// TEXT-relative offsets for data tables within HDSMUSIC.AM
+// Default TEXT-relative offsets for Dark Side HDSMUSIC.AM
 // All addresses verified against disassembly of the 68000 code.
-static const uint32 kPeriodTableOffset    = 0x0AAE; // 48 x uint16 BE (note 0=silence, 1-47=C-1..B-3)
-static const uint32 kSamplePtrTableOffset = 0x0C42; // 16 x uint32 BE (TEXT-relative PCM offsets)
-static const uint32 kInstrumentTableOffset = 0x0C82; // 16 x 8 bytes (sample#, loopFlag, len, loopOff, loopLen)
-static const uint32 kArpeggioIntervalsOffset = 0x0D02; // 8 bytes (semitone offsets for arpeggio bitmask)
-static const uint32 kEnvelopeTableOffset  = 0x0D0A; // 10 x 8 bytes (atk, dec, fadeRate, rel, mod, vib, arp, flags)
-static const uint32 kSongTableOffset      = 0x0DBA; // 2 songs x 4 channels x uint32 BE order-list pointers
-static const uint32 kPatternPtrTableOffset = 0x0DCA; // up to 128 x uint32 BE (overlaps Song 2 order ptrs)
-static const uint32 kMaxPatternEntries    = 128;
+const WBTableOffsets kDarkSideOffsets = {
+	0x0AAE, // periodTable: 48 x uint16 BE
+	0x0C42, // samplePtrTable: 16 x uint32 BE
+	0x0C82, // instrumentTable: 16 x 8 bytes
+	0x0D02, // arpeggioIntervals: 8 bytes
+	0x0D0A, // envelopeTable: 22 x 8 bytes
+	0x0DBA, // songTable: 2 songs x 4 channels
+	0x0DCA, // patternPtrTable: up to 128 x uint32 BE
+	16, 16, 22 // numSamples, numInstruments, numEnvelopes
+};
+
+const uint32 kMaxPatternEntries = 128;
 
 class WallyBebenStream : public Audio::Paula {
 public:
-	WallyBebenStream(const byte *data, uint32 dataSize, int songNum, int rate, bool stereo);
+	WallyBebenStream(const byte *data, uint32 dataSize, int songNum, int rate, bool stereo,
+	                 const WBTableOffsets &offsets);
 	~WallyBebenStream() override;
 
 private:
 	void interrupt() override;
 
-	// --- Data tables (parsed from HDSMUSIC.AM TEXT segment) ---
+	// --- Data tables (parsed from TEXT segment) ---
 
 	const byte *_data;
 	uint32 _dataSize;
+	WBTableOffsets _offsets;
 
 	uint16 _periods[48];
+
+	static const int kMaxSamples = 16;
+	static const int kMaxInstruments = 16;
+	static const int kMaxEnvelopes = 32; // the $C0 command carries a 5-bit index
 
 	struct InstrumentDesc {
 		byte sampleIndex;
@@ -120,22 +133,23 @@ private:
 		uint16 loopOffset;
 		uint16 loopLength;
 	};
-	InstrumentDesc _instruments[16];
+	InstrumentDesc _instruments[kMaxInstruments];
 
+	// Asm ref: TEXT+$0900, which copies these into the channel at note-on.
 	struct EnvelopeDesc {
-		byte attackLevel;
-		byte decayTarget;
-		byte sustainLevel;
+		byte initialVolume;
+		byte targetVolume;
+		byte attackRate;  // added per tick until the volume reaches the target
 		byte releaseRate;
-		byte modDepth;
-		byte vibratoWave;
+		byte flags;       // 0 = release at once, $FF = never, else at duration/flags
+		byte effectParam;
 		byte arpeggioMask;
-		byte flags;
+		byte extraFlags;
 	};
-	EnvelopeDesc _envelopes[10];
+	EnvelopeDesc _envelopes[kMaxEnvelopes];
 
 	// Sample offsets within the data buffer
-	uint32 _sampleOffsets[16];
+	uint32 _sampleOffsets[kMaxSamples];
 
 	// Song order list pointers (TEXT-relative)
 	uint32 _songOrderPtrs[2][4];
@@ -168,16 +182,15 @@ private:
 
 		// Instrument / envelope selection
 		byte instrumentIdx;     // 0-15
-		byte envelopeIdx;       // 0-9
+		byte envelopeIdx;       // 0-31
 
 		// Volume envelope
 		byte volume;            // Current output volume (0-64)
-		byte attackLevel;
-		byte decayTarget;
-		byte sustainLevel;
+		byte targetVolume;
+		byte attackRate;
 		byte releaseRate;
-		byte envelopePhase;     // 0=attack, 1=decay, 2=sustain, 3=release
-		byte modDepth;
+		byte envelopeFlags;
+		bool envelopeDone;
 
 		// Effects
 		byte effectMode;        // 0=none, 1=porta/arpeggio, 2=envelope vibrato
@@ -253,9 +266,10 @@ private:
 // ---------------------------------------------------------------------------
 
 WallyBebenStream::WallyBebenStream(const byte *data, uint32 dataSize,
-                                   int songNum, int rate, bool stereo)
+                                   int songNum, int rate, bool stereo,
+                                   const WBTableOffsets &offsets)
 	: Paula(stereo, rate, rate / 50), // 50 Hz PAL VBI interrupt rate
-	  _data(data), _dataSize(dataSize),
+	  _data(data), _dataSize(dataSize), _offsets(offsets),
 	  _musicActive(false), _tickSpeed(6), _tickCounter(0),
 	  _pendingSongCommand(-1), _numPatterns(0), _firstSampleOffset(0) {
 
@@ -282,20 +296,19 @@ WallyBebenStream::~WallyBebenStream() {
 }
 
 void WallyBebenStream::loadTables() {
-	// Period table: 48 x uint16 BE at TEXT+$AAE
+	// Period table: 48 x uint16 BE
 	for (int i = 0; i < 48; i++) {
-		_periods[i] = readDataWord(kPeriodTableOffset + i * 2);
+		_periods[i] = readDataWord(_offsets.periodTable + i * 2);
 	}
 
-	// Sample pointer table: 16 x uint32 BE at TEXT+$C42
-	// These are TEXT-relative offsets to PCM sample data
-	for (int i = 0; i < 16; i++) {
-		_sampleOffsets[i] = readDataLong(kSamplePtrTableOffset + i * 4);
+	// Sample pointer table: TEXT-relative offsets to PCM sample data
+	for (int i = 0; i < _offsets.numSamples; i++) {
+		_sampleOffsets[i] = readDataLong(_offsets.samplePtrTable + i * 4);
 	}
 
-	// Instrument table: 16 x 8 bytes at TEXT+$C82
-	for (int i = 0; i < 16; i++) {
-		uint32 off = kInstrumentTableOffset + i * 8;
+	// Instrument table
+	for (int i = 0; i < _offsets.numInstruments; i++) {
+		uint32 off = _offsets.instrumentTable + i * 8;
 		_instruments[i].sampleIndex  = readDataByte(off + 0);
 		_instruments[i].loopFlag     = readDataByte(off + 1);
 		_instruments[i].totalLength  = readDataWord(off + 2);
@@ -303,65 +316,65 @@ void WallyBebenStream::loadTables() {
 		_instruments[i].loopLength   = readDataWord(off + 6);
 	}
 
-	// Arpeggio interval table: 8 bytes at TEXT+$D02
+	// Arpeggio interval table: 8 bytes
 	for (int i = 0; i < 8; i++) {
-		_arpeggioIntervals[i] = readDataByte(kArpeggioIntervalsOffset + i);
+		_arpeggioIntervals[i] = readDataByte(_offsets.arpeggioIntervals + i);
 	}
 
-	// Envelope table: 10 x 8 bytes at TEXT+$D0A
-	for (int i = 0; i < 10; i++) {
-		uint32 off = kEnvelopeTableOffset + i * 8;
-		_envelopes[i].attackLevel  = readDataByte(off + 0);
-		_envelopes[i].decayTarget  = readDataByte(off + 1);
-		_envelopes[i].sustainLevel = readDataByte(off + 2);
-		_envelopes[i].releaseRate  = readDataByte(off + 3);
-		_envelopes[i].modDepth     = readDataByte(off + 4);
-		_envelopes[i].vibratoWave  = readDataByte(off + 5);
-		_envelopes[i].arpeggioMask = readDataByte(off + 6);
-		_envelopes[i].flags        = readDataByte(off + 7);
+	// Envelope table
+	for (int i = 0; i < _offsets.numEnvelopes && i < kMaxEnvelopes; i++) {
+		uint32 off = _offsets.envelopeTable + i * 8;
+		_envelopes[i].initialVolume = readDataByte(off + 0);
+		_envelopes[i].targetVolume  = readDataByte(off + 1);
+		_envelopes[i].attackRate    = readDataByte(off + 2);
+		_envelopes[i].releaseRate   = readDataByte(off + 3);
+		_envelopes[i].flags         = readDataByte(off + 4);
+		_envelopes[i].effectParam   = readDataByte(off + 5);
+		_envelopes[i].arpeggioMask  = readDataByte(off + 6);
+		_envelopes[i].extraFlags    = readDataByte(off + 7);
 	}
 
-	// Song table: 2 songs x 4 channels x uint32 BE at TEXT+$DBA
+	// Song table: 2 songs x 4 channels x uint32 BE
 	for (int s = 0; s < 2; s++) {
 		for (int ch = 0; ch < 4; ch++) {
-			_songOrderPtrs[s][ch] = readDataLong(kSongTableOffset + s * 16 + ch * 4);
+			_songOrderPtrs[s][ch] = readDataLong(_offsets.songTable + s * 16 + ch * 4);
 		}
 	}
 
 	// Compute the first sample offset — this is the upper bound for valid
 	// pattern/order-list data. Anything at or above this is PCM sample data.
 	_firstSampleOffset = _dataSize;
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < _offsets.numSamples; i++) {
 		if (_sampleOffsets[i] > 0 && _sampleOffsets[i] < _firstSampleOffset)
 			_firstSampleOffset = _sampleOffsets[i];
 	}
 
-	// Pattern pointer table at TEXT+$DCA.
+	// Pattern pointer table.
 	// Valid pattern pointers must be > 0 and < _firstSampleOffset (i.e., they
 	// point into the song data area between the tables and the PCM samples).
 	// Entries at or beyond _firstSampleOffset are stale data, not real patterns.
 	_numPatterns = 0;
 	for (uint32 i = 0; i < kMaxPatternEntries; i++) {
-		uint32 ptr = readDataLong(kPatternPtrTableOffset + i * 4);
+		uint32 ptr = readDataLong(_offsets.patternPtrTable + i * 4);
 		_patternPtrs[i] = ptr;
 		if (ptr > 0 && ptr < _firstSampleOffset)
 			_numPatterns = i + 1;
 	}
 
 	// Debug: dump loaded data tables for verification
-	debug(3, "WB: Data loaded from HDSMUSIC.AM TEXT segment (%u bytes)", _dataSize);
+	debug(3, "WB: Data loaded from TEXT segment (%u bytes)", _dataSize);
 
 	debug(3, "WB: Period table (first 12): %d %d %d %d %d %d %d %d %d %d %d %d",
 		_periods[0], _periods[1], _periods[2], _periods[3],
 		_periods[4], _periods[5], _periods[6], _periods[7],
 		_periods[8], _periods[9], _periods[10], _periods[11]);
 
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < _offsets.numSamples; i++) {
 		if (_sampleOffsets[i])
 			debug(3, "WB: Sample %d: offset=$%X", i, _sampleOffsets[i]);
 	}
 
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < _offsets.numInstruments; i++) {
 		const InstrumentDesc &inst = _instruments[i];
 		if (inst.totalLength > 0)
 			debug(3, "WB: Inst %d: sample=%d loop=%d len=%d loopOff=%d loopLen=%d",
@@ -369,11 +382,11 @@ void WallyBebenStream::loadTables() {
 				inst.loopOffset, inst.loopLength);
 	}
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < _offsets.numEnvelopes; i++) {
 		const EnvelopeDesc &env = _envelopes[i];
-		debug(3, "WB: Env %d: atk=%d dec=%d sus=%d rel=%d mod=%d arp=$%02X",
-			i, env.attackLevel, env.decayTarget, env.sustainLevel,
-			env.releaseRate, env.modDepth, env.arpeggioMask);
+		debug(3, "WB: Env %d: vol=%d target=%d atk=%d rel=%d flags=$%02X arp=$%02X",
+			i, env.initialVolume, env.targetVolume, env.attackRate,
+			env.releaseRate, env.flags, env.arpeggioMask);
 	}
 
 	debug(3, "WB: Song 1 order ptrs: $%X $%X $%X $%X",
@@ -436,14 +449,14 @@ void WallyBebenStream::initChannel(int ch) {
 	memset(&c, 0, sizeof(ChannelState));
 	c.duration = 1;
 	c.durationCounter = 0; // Will trigger readPatternCommands on first tick
-	c.envelopePhase = 3;   // Start in release (silent) until note-on
+	c.envelopeDone = true;
 
-	// Default envelope params: full volume sustain, so notes before any
-	// $C0 envelope command still produce sound (Env 0 has all zeros = silence)
-	c.attackLevel = 64;
-	c.decayTarget = 64;
-	c.sustainLevel = 64;
+	// Hold at full volume, so notes before any $C0 command still sound.
+	c.volume = 64;
+	c.targetVolume = 64;
+	c.attackRate = 0;
 	c.releaseRate = 0;
+	c.envelopeFlags = 0xFF;
 }
 
 // ---------------------------------------------------------------------------
@@ -505,6 +518,19 @@ void WallyBebenStream::readOrderList(int ch) {
 void WallyBebenStream::readPatternCommands(int ch) {
 	ChannelState &c = _channels[ch];
 
+	// Asm ref: TEXT+$01BC — transient per-note state is cleared before the next
+	// command stream is parsed, except that mode 2 survives a step boundary.
+	if (c.effectMode != 2) {
+		c.effectMode = 0;
+		c.arpeggioMask = 0;
+		c.arpeggioPos = 0;
+		c.arpeggioTableLen = 0;
+	}
+	c.portaUp = false;
+	c.portaDown = false;
+	c.effect7BActive = false;
+	c.envelopeDone = false;
+
 	for (int safety = 0; safety < 256; safety++) {
 		if (c.patternOffset + c.patternPos >= _dataSize)
 			break;
@@ -545,33 +571,9 @@ void WallyBebenStream::readPatternCommands(int ch) {
 		}
 
 		if (cmd >= 0xC0) {
-			// Set envelope: low 5 bits (0-31, but only 1-9 valid)
-			// Asm ref: TEXT+$2C8 — envelope command handler
-			// $C0 (index 0) is a no-op: Env 0 is all zeros (sentinel entry).
-			// The original engine treats index 0 as "no envelope change".
-			byte envIdx = cmd & 0x1F;
-			if (envIdx == 0 || envIdx > 9) {
-				// Index 0 or out-of-range: skip, keep current envelope params
-				continue;
-			}
-
-			c.envelopeIdx = envIdx;
-
-			// Copy envelope parameters into channel state immediately
-			// (original engine loads params on $C0 command, not on note-on)
-			const EnvelopeDesc &env = _envelopes[c.envelopeIdx];
-			c.attackLevel  = MIN(env.attackLevel,  (byte)64);
-			c.decayTarget  = MIN(env.decayTarget,  (byte)64);
-			c.sustainLevel = MIN(env.sustainLevel, (byte)64);
-			c.releaseRate  = env.releaseRate;
-			c.modDepth     = env.modDepth;
-
-			// Envelope-triggered arpeggio/vibrato from envelope table
-			if (env.arpeggioMask != 0) {
-				c.effectMode = 2;
-				c.arpeggioMask = env.arpeggioMask;
-				buildArpeggioTable(ch, env.arpeggioMask);
-			}
+			// Asm ref: TEXT+$0290 only records the index; the parameters are
+			// copied at note-on, and index 0 is an ordinary entry.
+			c.envelopeIdx = cmd & 0x1F;
 			continue;
 		}
 
@@ -691,7 +693,7 @@ void WallyBebenStream::triggerNote(int ch) {
 		// Rest — silence channel
 		c.outputPeriod = 0;
 		c.volume = 0;
-		c.envelopePhase = 3;
+		c.envelopeDone = true;
 		c.effect7BActive = false;
 		setChannelVolume(ch, 0);
 		return;
@@ -720,7 +722,7 @@ void WallyBebenStream::triggerNote(int ch) {
 	// Load instrument
 	const InstrumentDesc &inst = _instruments[c.instrumentIdx];
 	byte sampleIdx = inst.sampleIndex;
-	if (sampleIdx >= 16)
+	if (sampleIdx >= _offsets.numSamples)
 		sampleIdx = 0;
 
 	uint32 sampleOffset = _sampleOffsets[sampleIdx];
@@ -767,11 +769,22 @@ void WallyBebenStream::triggerNote(int ch) {
 
 	setChannelPeriod(ch, c.outputPeriod);
 
-	// Reset envelope phase — params were already loaded by $C0 command
-	// (or default to full volume from initChannel)
-	// Asm ref: TEXT+$30C — note-on envelope reset
-	c.envelopePhase = 0; // Start at attack
-	c.volume = c.attackLevel;
+	// Asm ref: TEXT+$0900, reached from note-on rather than from $C0.
+	if (c.envelopeIdx < _offsets.numEnvelopes && c.envelopeIdx < kMaxEnvelopes) {
+		const EnvelopeDesc &env = _envelopes[c.envelopeIdx];
+		c.volume        = MIN(env.initialVolume, (byte)64);
+		c.targetVolume  = MIN(env.targetVolume, (byte)64);
+		c.attackRate    = env.attackRate;
+		c.releaseRate   = env.releaseRate;
+		c.envelopeFlags = env.flags;
+
+		// A non-zero interval mask forces the channel into effect mode.
+		if (env.arpeggioMask != 0) {
+			c.effectMode = 2;
+			c.arpeggioMask = env.arpeggioMask;
+			buildArpeggioTable(ch, env.arpeggioMask);
+		}
+	}
 
 	setChannelVolume(ch, c.volume);
 
@@ -872,57 +885,44 @@ void WallyBebenStream::processEffects(int ch) {
 
 // ---------------------------------------------------------------------------
 // Volume envelope — runs every frame (50Hz)
-// Asm ref: TEXT+$068C (envelope processing)
-//
-// Envelope table bytes (per entry, 8 bytes at TEXT+$D0A):
-//   byte 0 (attackLevel):  initial volume on note-on
-//   byte 1 (decayTarget):  target volume to fade toward and hold
-//   byte 2 (sustainLevel): sustain volume while note is active
-//   byte 3 (releaseRate):  volume decrease per tick on note-off
-//   byte 4 (modDepth):     modulation depth
-//   byte 5 (vibratoWave):  vibrato waveform selector
-//   byte 6 (arpeggioMask): bitmask into arpeggio interval table at TEXT+$D02
-//   byte 7 (flags):        misc flags
+// Asm ref: TEXT+$068C. Not an ADSR: the volume ramps from the envelope's
+// initial value towards its target by attackRate, releases once the duration
+// counter reaches duration/flags, then falls by releaseRate to zero.
 // ---------------------------------------------------------------------------
 
 void WallyBebenStream::processEnvelope(int ch) {
 	ChannelState &c = _channels[ch];
 
-	switch (c.envelopePhase) {
-	case 0: // Attack — start from attack level, then enter decay.
-		c.volume = MIN(c.attackLevel, (byte)64);
-		c.envelopePhase = 1;
-		break;
+	// A finished note holds its last level until the next note-on.
+	if (c.durationCounter <= 0)
+		return;
 
-	case 1: // Decay — decrease toward decay target.
-		if (c.volume > c.decayTarget) {
-			c.volume--;
-		} else {
-			c.volume = c.sustainLevel;
-			c.envelopePhase = 2;
+	if (!c.envelopeDone) {
+		byte flags = c.envelopeFlags;
+
+		if (flags == 0) {
+			c.envelopeDone = true;
+			c.volume = c.targetVolume;
+			return;
 		}
-		break;
 
-	case 2: // Sustain — hold sustain level until note-off.
-		c.volume = c.sustainLevel;
-		break;
+		if (flags == 0xFF)
+			return; // Hold for the whole note
 
-	case 3: // Release — decrease volume on note-off
-		if (c.releaseRate > 0) {
-			if (c.volume > c.releaseRate) {
-				c.volume -= c.releaseRate;
-			} else {
-				c.volume = 0;
-			}
+		if (c.durationCounter == c.duration / flags) {
+			c.envelopeDone = true;
 		} else {
-			c.volume = 0; // Rate 0 = instant off
+			if (c.volume != c.targetVolume)
+				c.volume = (byte)(c.volume + c.attackRate);
+			if (c.volume > 64)
+				c.volume = 64;
+			return;
 		}
-		break;
 	}
 
-	// Clamp to Paula range
-	if (c.volume > 64)
-		c.volume = 64;
+	// Release
+	int next = (int)c.volume - (int)c.releaseRate;
+	c.volume = (next < 0) ? 0 : (byte)next;
 }
 
 // ---------------------------------------------------------------------------
@@ -931,7 +931,12 @@ void WallyBebenStream::processEnvelope(int ch) {
 
 void WallyBebenStream::buildArpeggioTable(int ch, byte mask) {
 	ChannelState &c = _channels[ch];
-	c.arpeggioTableLen = WBCommon::buildArpeggioTable(_arpeggioIntervals, mask, c.arpeggioTable, 16, true);
+	// Asm ref: TEXT+$07F4 — intervals are written from slot 1 and playback
+	// wraps back to slot 0, so the base note closes the cycle.
+	byte len = WBCommon::buildArpeggioTable(_arpeggioIntervals, mask, c.arpeggioTable, 15, false);
+	if (len > 0)
+		c.arpeggioTable[len++] = 0;
+	c.arpeggioTableLen = len;
 	c.arpeggioPos = 0;
 }
 
@@ -962,15 +967,19 @@ void WallyBebenStream::interrupt() {
 			if (_channels[ch].pendingNoteOn)
 				continue;
 
-			if (_channels[ch].durationCounter > 0) {
-				_channels[ch].durationCounter--;
-			}
+			// Asm ref: TEXT+$0152 — the counter is decremented unconditionally,
+			// the note is gated off on the step it reaches 0, and the next
+			// commands are only parsed on the following step, when it goes
+			// negative. A note of duration N therefore lasts N + 1 steps.
+			_channels[ch].durationCounter--;
 
 			if (_channels[ch].durationCounter == 0) {
-				// Note-off: enter release phase
-				if (_channels[ch].envelopePhase < 3)
-					_channels[ch].envelopePhase = 3;
-
+				// Note-off. Asm ref: TEXT+$0156 tests the flags byte first, so
+				// only flags-0 envelopes gate the channel; the rest hold their
+				// last level, the envelope routine having stopped running.
+				if (_channels[ch].envelopeFlags == 0)
+					_channels[ch].volume = 0;
+			} else if (_channels[ch].durationCounter < 0) {
 				// Read next commands
 				readPatternCommands(ch);
 			}
@@ -1022,9 +1031,11 @@ void WallyBebenStream::interrupt() {
 		setChannelVolume(ch, _channels[ch].volume);
 	}
 
-	// Advance tick counter
+	// Advance tick counter. Asm ref: TEXT+$0794 — the counter is decremented
+	// every tick and only reloaded with the speed value once it goes negative,
+	// so a speed of N puts N + 1 ticks between sequencer steps.
 	_tickCounter++;
-	if (_tickCounter >= _tickSpeed) {
+	if (_tickCounter > _tickSpeed) {
 		_tickCounter = 0;
 	}
 }
@@ -1034,13 +1045,15 @@ void WallyBebenStream::interrupt() {
 // ---------------------------------------------------------------------------
 
 Audio::AudioStream *makeWallyBebenStream(const byte *data, uint32 dataSize,
-                                         int songNum, int rate, bool stereo) {
-	if (!data || dataSize < 0xF000) {
+                                         int songNum, int rate, bool stereo,
+                                         const WBTableOffsets *offsets) {
+	if (!data || dataSize < 0x1000) {
 		warning("WallyBeben: invalid data (size %u)", dataSize);
 		return nullptr;
 	}
 
-	return new WallyBebenStream(data, dataSize, songNum, rate, stereo);
+	const WBTableOffsets &tbl = offsets ? *offsets : kDarkSideOffsets;
+	return new WallyBebenStream(data, dataSize, songNum, rate, stereo, tbl);
 }
 
 } // End of namespace Freescape

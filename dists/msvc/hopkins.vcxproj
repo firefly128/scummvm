@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{F2EA23DD-77BC-46C8-8F9B-9980470A610D}</ProjectGuid>
+		<ProjectGuid>{CC6A27DE-0D79-44C6-926E-1BFE719628DB}</ProjectGuid>
 		<RootNamespace>hopkins</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -171,6 +174,12 @@
 	<PropertyGroup Label="UserMacros" />
 	<ItemGroup>
 		<ClCompile Include="..\..\engines\hopkins\anim.cpp" />
+		<ClCompile Include="..\..\engines\hopkins\base.cpp" />
+		<ClCompile Include="..\..\engines\hopkins\base_data.cpp" />
+		<ClCompile Include="..\..\engines\hopkins\base_engine.cpp" />
+		<ClCompile Include="..\..\engines\hopkins\base_enhancements.cpp" />
+		<ClCompile Include="..\..\engines\hopkins\base_enhancements_autoplay.cpp" />
+		<ClCompile Include="..\..\engines\hopkins\base_renderer.cpp" />
 		<ClCompile Include="..\..\engines\hopkins\computer.cpp" />
 		<ClCompile Include="..\..\engines\hopkins\debugger.cpp" />
 		<ClCompile Include="..\..\engines\hopkins\dialogs.cpp" />
@@ -191,6 +200,13 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="..\..\engines\hopkins\anim.h" />
+		<ClInclude Include="..\..\engines\hopkins\base.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_data.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_engine.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_enhancements.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_enhancements_autoplay.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_renderer.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_types.h" />
 		<ClInclude Include="..\..\engines\hopkins\computer.h" />
 		<ClInclude Include="..\..\engines\hopkins\debugger.h" />
 		<ClInclude Include="..\..\engines\hopkins\detection.h" />

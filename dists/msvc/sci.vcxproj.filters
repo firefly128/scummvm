@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="engine">
-			<UniqueIdentifier>65732E51-AE26-4BF4-A9F6-54EA5EBDCDA2</UniqueIdentifier>
+			<UniqueIdentifier>596B443D-A582-4BA4-98A5-87D6C6D2570E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="graphics">
-			<UniqueIdentifier>8792C27D-ED37-4E5D-B213-28EB91DF4743</UniqueIdentifier>
+			<UniqueIdentifier>09A66B0E-4947-4852-880F-05B6B3231D88</UniqueIdentifier>
 		</Filter>
 		<Filter Include="graphics\drivers">
-			<UniqueIdentifier>769EE61A-5E0C-4F54-981C-891F0787AFF3</UniqueIdentifier>
+			<UniqueIdentifier>6F858674-8A7C-463D-BDC1-ADB75327AE9F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="parser">
-			<UniqueIdentifier>E61E6F29-10A5-4E32-9C22-62EF2574D0C7</UniqueIdentifier>
+			<UniqueIdentifier>B06931A5-4713-4EDB-A57A-2DA0D5C455B0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="resource">
-			<UniqueIdentifier>918EEB44-90C1-4FCE-A0CE-B944E2E61FD8</UniqueIdentifier>
+			<UniqueIdentifier>4624B0B0-59B7-44CA-83A6-6DA10209E4BE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound">
-			<UniqueIdentifier>EA17A1D1-E0BB-4473-95BA-4E2C89721662</UniqueIdentifier>
+			<UniqueIdentifier>776E4E7B-602B-49A6-96C2-4ED42F8682F8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound\decoders">
-			<UniqueIdentifier>3224F749-0C0D-4023-B20F-1B1935F5A244</UniqueIdentifier>
+			<UniqueIdentifier>727C6FB5-84CF-4996-B7EB-A255E60099B5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound\drivers">
-			<UniqueIdentifier>C87C0532-5538-4ED8-BEC4-8FE89662D26D</UniqueIdentifier>
+			<UniqueIdentifier>6F79FEDA-1CE9-451F-AB6F-D7EC54378993</UniqueIdentifier>
 		</Filter>
 		<Filter Include="video">
-			<UniqueIdentifier>EF8007DF-EBAE-4F1A-A13D-3A175F1FE012</UniqueIdentifier>
+			<UniqueIdentifier>3A902C16-4887-4F2B-A140-CADC64F986C9</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

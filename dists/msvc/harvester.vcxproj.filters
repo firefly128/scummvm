@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="npc">
+			<UniqueIdentifier>50A827B4-2193-4F0B-80B5-24608F736990</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\engines\harvester\npc\authority_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\beggar_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\boyle_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\buster_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\butcher_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\chessmaster_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\cloak_atnd_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\curator_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\dad_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\dark_woman_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\dwayne_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\edna_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\fireman1_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\fireman2_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\gladiator_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\hank_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\herrill_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\inquisitor_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\jimmy_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\johnson_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\karin_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\librarian_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\lodge_chef_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\loomis_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\madam_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\maint_man_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\mcknight_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\memb_dir_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\mom_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\mother_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\moynahan_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\mr_potts_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\mrs_potts_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\nude_man_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\parsons_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\pastorelli_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\phelps_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\priest_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\pta_mom_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\ryder_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\sergeant_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\sparky_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\stephanie_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\stub_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\swell_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\valet_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\vet_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\wasp_woman_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\npc\whaley_dialogue.cpp">
+			<Filter>npc</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\art.cpp" />
+		<ClCompile Include="..\..\engines\harvester\cft_font.cpp" />
+		<ClCompile Include="..\..\engines\harvester\cheats.cpp" />
+		<ClCompile Include="..\..\engines\harvester\console.cpp" />
+		<ClCompile Include="..\..\engines\harvester\dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\flow.cpp" />
+		<ClCompile Include="..\..\engines\harvester\fst_player.cpp" />
+		<ClCompile Include="..\..\engines\harvester\harvester.cpp" />
+		<ClCompile Include="..\..\engines\harvester\inventory.cpp" />
+		<ClCompile Include="..\..\engines\harvester\media_manager.cpp" />
+		<ClCompile Include="..\..\engines\harvester\menu.cpp" />
+		<ClCompile Include="..\..\engines\harvester\metaengine.cpp" />
+		<ClCompile Include="..\..\engines\harvester\monster.cpp" />
+		<ClCompile Include="..\..\engines\harvester\player.cpp" />
+		<ClCompile Include="..\..\engines\harvester\resources.cpp" />
+		<ClCompile Include="..\..\engines\harvester\room.cpp" />
+		<ClCompile Include="..\..\engines\harvester\room_combat.cpp" />
+		<ClCompile Include="..\..\engines\harvester\room_interaction.cpp" />
+		<ClCompile Include="..\..\engines\harvester\runtime_entity.cpp" />
+		<ClCompile Include="..\..\engines\harvester\saveload.cpp" />
+		<ClCompile Include="..\..\engines\harvester\script.cpp" />
+		<ClCompile Include="..\..\engines\harvester\text.cpp" />
+		<ClCompile Include="..\..\engines\harvester\xfile_archive.cpp" />
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\engines\harvester\npc\authority_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\beggar_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\boyle_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\buster_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\butcher_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\chessmaster_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\cloak_atnd_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\curator_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\dad_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\dark_woman_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\dialogue_flags.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\dialogue_handler.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\dialogue_runtime.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\dwayne_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\edna_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\fireman1_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\fireman2_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\gladiator_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\hank_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\herrill_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\inquisitor_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\jimmy_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\johnson_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\karin_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\librarian_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\lodge_chef_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\loomis_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\madam_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\maint_man_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\mcknight_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\memb_dir_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\mom_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\mother_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\moynahan_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\mr_potts_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\mrs_potts_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\nude_man_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\parsons_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\pastorelli_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\phelps_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\priest_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\pta_mom_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\ryder_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\sergeant_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\sparky_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\stephanie_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\stub_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\swell_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\valet_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\vet_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\wasp_woman_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\npc\whaley_dialogue.h">
+			<Filter>npc</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\art.h" />
+		<ClInclude Include="..\..\engines\harvester\cft_font.h" />
+		<ClInclude Include="..\..\engines\harvester\cheats.h" />
+		<ClInclude Include="..\..\engines\harvester\console.h" />
+		<ClInclude Include="..\..\engines\harvester\detection.h" />
+		<ClInclude Include="..\..\engines\harvester\detection_tables.h" />
+		<ClInclude Include="..\..\engines\harvester\dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\flow.h" />
+		<ClInclude Include="..\..\engines\harvester\fst_player.h" />
+		<ClInclude Include="..\..\engines\harvester\harvester.h" />
+		<ClInclude Include="..\..\engines\harvester\inventory.h" />
+		<ClInclude Include="..\..\engines\harvester\media_manager.h" />
+		<ClInclude Include="..\..\engines\harvester\menu.h" />
+		<ClInclude Include="..\..\engines\harvester\metaengine.h" />
+		<ClInclude Include="..\..\engines\harvester\monster.h" />
+		<ClInclude Include="..\..\engines\harvester\palette_utils.h" />
+		<ClInclude Include="..\..\engines\harvester\parse_utils.h" />
+		<ClInclude Include="..\..\engines\harvester\player.h" />
+		<ClInclude Include="..\..\engines\harvester\resources.h" />
+		<ClInclude Include="..\..\engines\harvester\room.h" />
+		<ClInclude Include="..\..\engines\harvester\room_combat.h" />
+		<ClInclude Include="..\..\engines\harvester\room_interaction.h" />
+		<ClInclude Include="..\..\engines\harvester\room_support.h" />
+		<ClInclude Include="..\..\engines\harvester\runtime_entity.h" />
+		<ClInclude Include="..\..\engines\harvester\saveload.h" />
+		<ClInclude Include="..\..\engines\harvester\script.h" />
+		<ClInclude Include="..\..\engines\harvester\text.h" />
+		<ClInclude Include="..\..\engines\harvester\xfile_archive.h" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\engines\harvester\module.mk" />
+	</ItemGroup>
+</Project>

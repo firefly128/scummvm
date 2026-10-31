@@ -902,8 +902,8 @@ int32 IMuseInternal::doCommand_internal(int numargs, int a[]) {
 			if (!player)
 				return -1;
 			if (_newSystem && cmd == 5) {
-				assert(a[3] >= 0 && a[3] <= 15);
-				part = player->getPart(a[2]);
+				if (a[3] >= 0 && a[3] <= 15)
+					part = player->getPart(a[3]);
 				if (!part)
 					return -1;
 			} else if (((1 << cmd) & (1 << 11 | 1 << 22))) {
@@ -1643,7 +1643,7 @@ MidiChannel *IMuseInternal::allocateChannel(MidiDriver *midi, byte prio) {
 	}
 
 	if (best) {
-		best->off();
+		best->off(true);
 		suspendPart(best);
 		mc = midi->allocateChannel();
 	}
@@ -1725,7 +1725,7 @@ void IMuseInternal::reallocateMidiChannels(MidiDriver *midi) {
 
 			if (lopart == nullptr || lopri >= hipri)
 				return;
-			lopart->off();
+			lopart->off(true);
 
 			if ((hipart->_mc = midi->allocateChannel()) == nullptr)
 				return;

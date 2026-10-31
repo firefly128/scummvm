@@ -20,7 +20,6 @@
  */
 
 #include "common/scummsys.h"
-#include "common/translation.h"
 
 #include "common/savefile.h"
 #include "graphics/thumbnail.h"
@@ -63,6 +62,8 @@ KingdomGame::KingdomGame(OSystem *syst, const ADGameDescription *gameDesc) : Eng
 	_oldTime = g_system->getMillis();
 
 	_showHotspots = false;
+
+	_monoSound = false;
 
 	const Common::FSNode gameDataDir(ConfMan.getPath("path"));
 	SearchMan.addSubDirectoryMatching(gameDataDir, "MAPS");
@@ -170,6 +171,8 @@ Common::Error KingdomGame::run() {
 	setDebugger(new Console(this));
 
 	_logic = new Logic(this);
+
+	_monoSound = ConfMan.getBool("mono_sound");
 
 	setupPics();
 	initTools();
@@ -728,7 +731,7 @@ Common::String KingdomGame::getSavegameFilename(int slot) {
 }
 
 void KingdomGame::saveGame() {
-	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(_("Save game:"), _("Save"), true);
+	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(true);
 	int16 savegameId = dialog->runModalWithCurrentTarget();
 	Common::String savegameDescription = dialog->getResultString();
 	delete dialog;
@@ -738,7 +741,7 @@ void KingdomGame::saveGame() {
 }
 
 void KingdomGame::restoreGame() {
-	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(_("Restore game:"), _("Restore"), false);
+	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(false);
 	int16 savegameId = dialog->runModalWithCurrentTarget();
 	delete dialog;
 
@@ -927,10 +930,22 @@ void KingdomGame::playSound(int idx) {
 		return;
 
 	int realIdx = _soundNumber + 200; // Or +250, depending in the original on the sound card
+	byte audioFlags = Audio::FLAG_UNSIGNED | Audio::FLAG_LITTLE_ENDIAN;
+	if (_monoSound)
+		realIdx += 50;
+	else
+		audioFlags |= Audio::FLAG_STEREO;
+
+	if (realIdx <= 200 || realIdx > 300) {
+		warning("Invalid sound index %d", realIdx);
+		return;
+	}
+
 	debug("PlaySound %d : %s", idx, _rezNames[realIdx]);
 
 	Common::SeekableReadStream *soundStream = loadAResource(realIdx);
-	Audio::RewindableAudioStream *rewindableStream = Audio::makeRawStream(soundStream, 22050, Audio::FLAG_UNSIGNED | Audio::FLAG_LITTLE_ENDIAN, DisposeAfterUse::YES);
+	Audio::RewindableAudioStream *rewindableStream = Audio::makeRawStream(soundStream, 22050, audioFlags, DisposeAfterUse::YES);
+
 	_mixer->setVolumeForSoundType(Audio::Mixer::kMusicSoundType, Audio::Mixer::kMaxMixerVolume);
 	_mixer->playStream(Audio::Mixer::kMusicSoundType, &_soundHandle, rewindableStream);
 //  In the original, there's an array describing whether a sound should loop or not.

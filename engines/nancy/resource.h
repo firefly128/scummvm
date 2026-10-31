@@ -34,8 +34,6 @@ namespace Nancy {
 class IFF;
 
 class ResourceManager {
-	friend class NancyConsole;
-	friend class NancyEngine;
 public:
 	ResourceManager() = default;
 	~ResourceManager() = default;
@@ -50,9 +48,17 @@ public:
 
 	// Load a new ciftree
 	bool readCifTree(const Common::String &name, const Common::String &ext, int priority);
+
+	// Whether a ciftree of that name has been loaded. Nancy15 conversations use it
+	// to tell a cel archive apart from a movie of the same name (see ConversationCel).
+	bool hasCifTree(const Common::String &name) const;
+
+	// Change the search priority of an already loaded ciftree. Nancy15+ ships one
+	// copy of the popup UI resources per player character, so the tree belonging
+	// to the active character has to win name lookups against all the others.
+	void setCifTreePriority(const Common::String &name, int priority);
 	PatchTree *readPatchTree(Common::SeekableReadStream *stream, const Common::String &name, int priority);
 
-private:
 	// Debug functions
 
 	// Return a human-readable description of a single CIF file.
@@ -62,7 +68,7 @@ private:
 	void list(const Common::String &treeName, Common::Array<Common::Path> &outList, CifInfo::ResType type) const;
 
 	// Exports a single resource as a standalone .cif file
-	bool exportCif(const Common::String &treeName, const Common::Path &name);
+	bool exportCif(const Common::Path &name);
 
 	// Exports a collection of resources as a ciftree
 	bool exportCifTree(const Common::String &treeName, const Common::Array<Common::Path> &names);

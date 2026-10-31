@@ -34,13 +34,15 @@ namespace Nancy {
 
 GraphicsManager::GraphicsManager() :
 	_objects(objectComparator),
-	_inputPixelFormat(2, 5, 5, 5, 0, 10, 5, 0, 0),
-	_screenPixelFormat(2, 5, 6, 5, 0, 11, 5, 0, 0),
+	_inputPixelFormat16(2, 5, 5, 5, 0, 10, 5, 0, 0),
+	_inputPixelFormat24(Graphics::PixelFormat::createFormatBGR24()),
+	_inputPixelFormat32(Graphics::PixelFormat::createFormatBGRA32()),
+	_screenPixelFormat16(2, 5, 6, 5, 0, 11, 5, 0, 0),
+	_screenPixelFormat32(Graphics::PixelFormat::createFormatBGRA32()),
 	_clut8Format(Graphics::PixelFormat::createFormatCLUT8()),
-	_transparentPixelFormat(4, 8, 8, 8, 8, 8, 16, 24, 0),
-	_isSuppressed(false),
-	_screen(640, 480, _screenPixelFormat){}
-
+	_transparentPixelFormat(Graphics::PixelFormat::createFormatBGRA32()),
+	_screen(640, 480, getScreenPixelFormat()),
+	_isSuppressed(false){}
 void GraphicsManager::init() {
 	auto *bsum = GetEngineData(BSUM);
 	assert(bsum);
@@ -49,19 +51,20 @@ void GraphicsManager::init() {
 	if (g_nancy->getGameType() == kGameTypeVampire) {
 		_transColor = bsum->paletteTrans;
 	} else {
-		_transColor = 	(bsum->rTrans << _inputPixelFormat.rShift) |
-						(bsum->gTrans << _inputPixelFormat.gShift) |
-						(bsum->bTrans << _inputPixelFormat.bShift);
+		const Graphics::PixelFormat &format = getInputPixelFormat();
+		_transColor = (bsum->rTrans << format.rShift) |
+					  (bsum->gTrans << format.gShift) |
+					  (bsum->bTrans << format.bShift);
 	}
 
-	initGraphics(640, 480, &_screenPixelFormat);
+	initGraphics(640, 480, &getScreenPixelFormat());
 	_screen.setTransparentColor(getTransColor());
 	_screen.clear();
 
+	// OB0 has been dropped in Nancy16+
 	const ImageChunk *ob0 = (const ImageChunk *)g_nancy->getEngineData("OB0");
-	assert(ob0);
-
-	g_nancy->_resource->loadImage(ob0->imageName, _object0);
+	if (ob0)
+		g_nancy->_resource->loadImage(ob0->imageName, _object0);
 }
 
 void GraphicsManager::draw(bool updateScreen) {
@@ -79,8 +82,8 @@ void GraphicsManager::draw(bool updateScreen) {
 
 		current.updateGraphics();
 
-		if (current._needsRedraw) {
-			if (current._isVisible) {
+		if (current.needsRedraw()) {
+			if (current.isVisible()) {
 				if (current.hasMoved() && !current.getPreviousScreenPosition().isEmpty()) {
 					// Object moved to a new location on screen, update the previous one
 					_dirtyRects.push_back(current.getPreviousScreenPosition());
@@ -94,15 +97,15 @@ void GraphicsManager::draw(bool updateScreen) {
 			}
 		}
 
-		current._needsRedraw = false;
-		current._hasMoved = false;
-		current._previousScreenPosition = current._screenPosition;
+		current.setNeedsRedraw(false);
+		current.setHasMoved(false);
+		current.updatePreviousScreenPosition();
 	}
 
 	// Filter out dirty rects that are completely inside others to reduce overdraw
 	for (auto outer = _dirtyRects.begin(); outer != _dirtyRects.end(); ++outer) {
 		for (auto inner = _dirtyRects.begin(); inner != _dirtyRects.end(); ++inner) {
-			if (inner != outer && (*outer).contains(*inner)) {
+			if (inner != outer && outer->contains(*inner)) {
 				_dirtyRects.erase(inner);
 				break;
 			}
@@ -115,7 +118,7 @@ void GraphicsManager::draw(bool updateScreen) {
 		for (RenderObject **it = _objects.begin(); it < _objects.end(); ++it) {
 			RenderObject &current = **it;
 
-			if (!current._isVisible || current.getScreenPosition().isEmpty()) {
+			if (!current.isVisible() || current.getScreenPosition().isEmpty()) {
 				continue;
 			}
 
@@ -128,7 +131,7 @@ void GraphicsManager::draw(bool updateScreen) {
 				for (auto it2 = it + 1; it2 < _objects.end(); ++it2) {
 					RenderObject &other = **it2;
 
-					if (!other._isVisible || other.getScreenPosition().isEmpty()) {
+					if (!other.isVisible() || other.getScreenPosition().isEmpty()) {
 						continue;
 					}
 
@@ -177,18 +180,6 @@ void GraphicsManager::loadFonts(Common::SeekableReadStream *chunkStream) {
 	delete chunkStream;
 }
 
-void GraphicsManager::loadFontsNew(Common::SeekableReadStream *chunkStream, uint16 fontCount) {
-	assert(chunkStream);
-
-	chunkStream->seek(0);
-	_fonts.resize(fontCount);
-	for (uint i = 0; i < _fonts.size(); ++i) {
-		_fonts[i].read(*chunkStream);
-	}
-
-	delete chunkStream;
-}
-
 void GraphicsManager::addObject(RenderObject *object) {
 	for (auto &r : _objects) {
 		if (r == object) {
@@ -199,6 +190,20 @@ void GraphicsManager::addObject(RenderObject *object) {
 	}
 
 	_objects.insert(object);
+}
+
+void GraphicsManager::reorderObject(RenderObject *object) {
+	// The array is kept sorted as objects are inserted, so an object that has
+	// changed its z depth has to be taken out and put back to move. One that is
+	// not in the list yet has nothing to reorder; it will be sorted when it is
+	// added.
+	for (auto &r : _objects) {
+		if (r == object) {
+			_objects.erase(&r);
+			_objects.insert(object);
+			return;
+		}
+	}
 }
 
 void GraphicsManager::removeObject(RenderObject *object) {
@@ -218,7 +223,7 @@ void GraphicsManager::clearObjects() {
 
 void GraphicsManager::redrawAll() {
 	for (auto &obj : _objects) {
-		obj->_needsRedraw = true;
+		obj->setNeedsRedraw(true);
 	}
 }
 
@@ -334,11 +339,11 @@ void GraphicsManager::copyToManaged(void *src, Graphics::ManagedSurface &dst, ui
 void GraphicsManager::rotateBlit(const Graphics::ManagedSurface &src, Graphics::ManagedSurface &dest, byte rotation) {
 	assert(!src.empty() && !dest.empty());
 	assert(rotation <= 3);
-	assert(src.format.bytesPerPixel == 2 && dest.format.bytesPerPixel == 2);
+	assert(src.format.bytesPerPixel == dest.format.bytesPerPixel);
 
-	uint srcW = src.w;
-	uint srcH = src.h;
-	const uint16 *s, *e;
+	const uint srcW = src.w;
+	const uint srcH = src.h;
+	const uint bpp = src.format.bytesPerPixel;
 
 	if (rotation % 2) {
 		if (src.h != dest.w || src.w != dest.h) {
@@ -352,45 +357,33 @@ void GraphicsManager::rotateBlit(const Graphics::ManagedSurface &src, Graphics::
 		}
 	}
 
-	switch (rotation) {
-	case 0 :
+	if (rotation == 0) {
 		// No rotation, just blit
 		dest.rawBlitFrom(src, src.getBounds(), Common::Point());
 		return;
-	case 2 : {
-		// 180 degrees
-		uint16 *d;
-		for (uint y = 0; y < srcH; ++y) {
-			s = (const uint16 *)src.getBasePtr(0, y);
-			e = (const uint16 *)src.getBasePtr(srcW, y);
-			d = (uint16 *)dest.getBasePtr(srcW - 1, srcH - y - 1);
-			for (; s < e; ++s, --d) {
-				*d = *s;
-			}
-		}
-
-		break;
 	}
-	case 1 :
-		// 90 degrees
-		for (uint y = 0; y < srcH; ++y) {
-			s = (const uint16 *)src.getBasePtr(0, y);
-			for (uint x = 0; x < srcW; ++x, ++s) {
-				*((uint16 *)dest.getBasePtr(srcH - y - 1, x)) = *s;
-			}
-		}
 
-		break;
-	case 3 :
-		// 270 degrees
-		for (uint y = 0; y < srcH; ++y) {
-			s = (const uint16 *)src.getBasePtr(0, y);
-			for (uint x = 0; x < srcW; ++x, ++s) {
-				*((uint16 *)dest.getBasePtr(y, srcW - x - 1)) = *s;
+	for (uint y = 0; y < srcH; ++y) {
+		const byte *s = (const byte *)src.getBasePtr(0, y);
+		for (uint x = 0; x < srcW; ++x, s += bpp) {
+			byte *d;
+			switch (rotation) {
+			case 1:
+				// 90 degrees
+				d = (byte *)dest.getBasePtr(srcH - y - 1, x);
+				break;
+			case 2:
+				// 180 degrees
+				d = (byte *)dest.getBasePtr(srcW - x - 1, srcH - y - 1);
+				break;
+			default:
+				// 270 degrees
+				d = (byte *)dest.getBasePtr(y, srcW - x - 1);
+				break;
 			}
-		}
 
-		break;
+			memcpy(d, s, bpp);
+		}
 	}
 }
 
@@ -405,16 +398,26 @@ void GraphicsManager::debugDrawToScreen(const Graphics::ManagedSurface &surf) {
 	_screen.update();
 }
 
-const Graphics::PixelFormat &GraphicsManager::getInputPixelFormat() {
-	if (g_nancy->getGameType() == kGameTypeVampire) {
+const Graphics::PixelFormat &GraphicsManager::getInputPixelFormat(uint bpp) {
+	if (g_nancy->getGameType() == kGameTypeVampire)
 		return _clut8Format;
-	} else {
-		return _inputPixelFormat;
+
+	switch (bpp) {
+	case 0:
+		return g_nancy->getGameType() >= kGameTypeNancy13 ? _inputPixelFormat32 : _inputPixelFormat16;
+	case 16:
+		return _inputPixelFormat16;	// RGB555
+	case 24:
+		return _inputPixelFormat24;
+	case 32:
+		return _inputPixelFormat32;
+	default:
+		error("Unsupported input pixel format with bpp %d", bpp);
 	}
 }
 
 const Graphics::PixelFormat &GraphicsManager::getScreenPixelFormat() {
-	return _screenPixelFormat;
+	return (g_nancy->getGameType() >= kGameTypeNancy13) ? _screenPixelFormat32 : _screenPixelFormat16;
 }
 
 const Graphics::PixelFormat &GraphicsManager::getTransparentPixelFormat() {

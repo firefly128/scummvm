@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="carry">
-			<UniqueIdentifier>8D9F276D-C871-4C6D-BEC4-92FDE4BDF690</UniqueIdentifier>
+			<UniqueIdentifier>65628B00-922D-4F67-8906-C142A97B5A2E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="core">
-			<UniqueIdentifier>BA9E065F-D500-486A-8286-92917460FEBA</UniqueIdentifier>
+			<UniqueIdentifier>64384B60-55CA-459F-AF8D-F01F7FC4DDB6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game">
-			<UniqueIdentifier>654EF44F-9C7B-4273-AAC0-678307581020</UniqueIdentifier>
+			<UniqueIdentifier>4E61F260-D90E-4819-AE81-2CA16090D643</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\gondolier">
-			<UniqueIdentifier>241ED90A-B601-45EF-B9AD-A20B2AA55824</UniqueIdentifier>
+			<UniqueIdentifier>07A028E5-9390-4F41-BA30-8F1AECF6DA2E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\maitred">
-			<UniqueIdentifier>AA7DE4ED-E16C-403D-A0C1-F5B4E4E212EB</UniqueIdentifier>
+			<UniqueIdentifier>03C2EFE5-D159-4567-9B39-73956399F44F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\parrot">
-			<UniqueIdentifier>BBA8B3A7-E7CA-489D-B867-B0E583FDCFF1</UniqueIdentifier>
+			<UniqueIdentifier>AD93E40B-AFC0-4DC3-B0EB-C4D483876D4C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\pet">
-			<UniqueIdentifier>280563E8-B1EC-430A-B96F-D3315ECDF093</UniqueIdentifier>
+			<UniqueIdentifier>3DC07665-A585-4E2D-BED0-67A5CC233D83</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\pickup">
-			<UniqueIdentifier>CFDBB6D0-273B-4555-AB7A-910B64BDB35C</UniqueIdentifier>
+			<UniqueIdentifier>D12A3D92-B66F-418F-AFD2-395F80D8FA3F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\placeholder">
-			<UniqueIdentifier>C3E28D7B-B41A-42F0-8FD4-F03EE43D7EC6</UniqueIdentifier>
+			<UniqueIdentifier>7B2090D7-97CC-4E1E-A0FE-E8D5C453AC81</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\sgt">
-			<UniqueIdentifier>7EF85049-E5CF-4A1C-8AE9-F3D2CD4DCF1D</UniqueIdentifier>
+			<UniqueIdentifier>F1DEBC07-0208-48D5-8B3F-839E7EB8C038</UniqueIdentifier>
 		</Filter>
 		<Filter Include="game\transport">
-			<UniqueIdentifier>AAB2E9D8-8DB7-4543-BFA5-0578ED1D013C</UniqueIdentifier>
+			<UniqueIdentifier>A6621A92-6D2B-4521-B987-AE54E9850096</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gfx">
-			<UniqueIdentifier>27DE9E42-7915-4856-B191-EC2F67C28B8E</UniqueIdentifier>
+			<UniqueIdentifier>5D92144E-6B2D-4A55-A33D-2D34C665C648</UniqueIdentifier>
 		</Filter>
 		<Filter Include="messages">
-			<UniqueIdentifier>4FE98CA6-EE14-4452-88F1-3B69F7B47A24</UniqueIdentifier>
+			<UniqueIdentifier>6FC5C17B-3F5C-4824-A160-7A7319B04BFB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="moves">
-			<UniqueIdentifier>109E0B1D-11CC-40D6-B870-FEE534A47F93</UniqueIdentifier>
+			<UniqueIdentifier>37340B43-E9DA-4DCB-BEB2-9370E3838D2F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="npcs">
-			<UniqueIdentifier>E1C5B92C-4F9C-4F8D-953F-B11B91E69B77</UniqueIdentifier>
+			<UniqueIdentifier>4530CA59-AF43-4EDE-9AAE-E346D47B90F5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="pet_control">
-			<UniqueIdentifier>6D49E3C0-9DA3-42C7-8298-F55535A06013</UniqueIdentifier>
+			<UniqueIdentifier>BA4099C6-548E-4A89-96BB-DF0C7B11CCCF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound">
-			<UniqueIdentifier>A009C8FC-602F-4322-B556-AE43F0041CC2</UniqueIdentifier>
+			<UniqueIdentifier>0E83DFB8-0211-45F7-ADF3-38E521BA8769</UniqueIdentifier>
 		</Filter>
 		<Filter Include="star_control">
-			<UniqueIdentifier>99AE81B3-00BD-4EF8-B2B6-B955FAF97ECA</UniqueIdentifier>
+			<UniqueIdentifier>F6A2A247-BD68-44D2-8F24-DB05B2EAE227</UniqueIdentifier>
 		</Filter>
 		<Filter Include="support">
-			<UniqueIdentifier>FD498203-C684-4F51-9B6E-778AAAC69713</UniqueIdentifier>
+			<UniqueIdentifier>513267BD-B7D6-4048-B3A5-E620D1956875</UniqueIdentifier>
 		</Filter>
 		<Filter Include="true_talk">
-			<UniqueIdentifier>B361A892-0E41-4A37-93EF-CCB9019736A4</UniqueIdentifier>
+			<UniqueIdentifier>00E0C394-2109-49ED-B0E9-076FEB01FEC2</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

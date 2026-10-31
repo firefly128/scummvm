@@ -1,65 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="adrift">
-			<UniqueIdentifier>D02E9209-F276-4AD6-9CAC-34C1D50B1A8F</UniqueIdentifier>
+			<UniqueIdentifier>9C7C3AAE-15EA-4AB6-B949-27974EC9808F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="advsys">
-			<UniqueIdentifier>CB9C11E3-E289-43F8-9FC9-10BD27C15BA9</UniqueIdentifier>
+			<UniqueIdentifier>5D39CA98-30B3-4266-B5FB-6C027324A771</UniqueIdentifier>
 		</Filter>
 		<Filter Include="agt">
-			<UniqueIdentifier>2087D9D2-4FAB-45BE-9470-431C69CC3355</UniqueIdentifier>
+			<UniqueIdentifier>265B881F-82DC-4E87-A25C-8AF7DBDE4D07</UniqueIdentifier>
 		</Filter>
 		<Filter Include="alan2">
-			<UniqueIdentifier>3B624DE7-2F10-48C6-85A2-C1E957716BD8</UniqueIdentifier>
+			<UniqueIdentifier>E39501B0-3204-441B-B5CD-9D149A382FAB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="alan3">
-			<UniqueIdentifier>CE16B7C5-4B69-44CE-9441-5B91741D1C66</UniqueIdentifier>
+			<UniqueIdentifier>0E949AB3-D683-47F9-A77F-0EA431B04DE3</UniqueIdentifier>
 		</Filter>
 		<Filter Include="archetype">
-			<UniqueIdentifier>A82EC4B3-575F-4C6C-9D01-7BA110EB8C46</UniqueIdentifier>
+			<UniqueIdentifier>AD8A4443-418F-4255-AD6C-421CC8BEB3AC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="comprehend">
-			<UniqueIdentifier>8748BD1C-EB97-4AD7-BBB9-02204A7CAF27</UniqueIdentifier>
+			<UniqueIdentifier>529E87BD-6C51-4792-9784-B6ACA1716E83</UniqueIdentifier>
 		</Filter>
 		<Filter Include="glulx">
-			<UniqueIdentifier>F21C657A-9C5D-4A8E-8B10-EB995B260F92</UniqueIdentifier>
+			<UniqueIdentifier>3E33FBBE-3A2F-4E13-A3CD-8DB212FA4ADF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hugo">
-			<UniqueIdentifier>DAABF4DC-B8DC-4024-9E18-5A94F24B840B</UniqueIdentifier>
+			<UniqueIdentifier>C68F7728-2144-4C91-9F1D-9DEC71C98246</UniqueIdentifier>
 		</Filter>
 		<Filter Include="jacl">
-			<UniqueIdentifier>7471F986-744F-4E03-83B6-DF1151FE6B7B</UniqueIdentifier>
+			<UniqueIdentifier>91D2EEE1-4B22-40A9-B047-D502BCBC3A82</UniqueIdentifier>
 		</Filter>
 		<Filter Include="level9">
-			<UniqueIdentifier>E5CC63D7-BBE8-4D04-88B9-BBEFA6EFF162</UniqueIdentifier>
+			<UniqueIdentifier>B484A90E-4410-4C3D-A635-4756B8B04EE3</UniqueIdentifier>
 		</Filter>
 		<Filter Include="magnetic">
-			<UniqueIdentifier>9486B2F9-8A94-48C2-A6EF-31B87FB2CC1C</UniqueIdentifier>
+			<UniqueIdentifier>2D60B0BE-BAB8-46A4-BDE9-2D3D8C1DB3D2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="quest">
-			<UniqueIdentifier>F11017B0-2AA5-46B9-A091-58E16C369DE3</UniqueIdentifier>
+			<UniqueIdentifier>D356D331-72C7-4D16-9CFD-05C4A25A0344</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scott">
-			<UniqueIdentifier>FD914B58-EB6B-4966-BE6B-49DE6A3F1541</UniqueIdentifier>
-		</Filter>
-		<Filter Include="scott\unp64">
-			<UniqueIdentifier>C36A9C70-DB92-4B40-9D20-E3B52CA1B69F</UniqueIdentifier>
-		</Filter>
-		<Filter Include="scott\unp64\scanners">
-			<UniqueIdentifier>EAEC68AD-5923-4E8D-943D-0D1076186093</UniqueIdentifier>
+			<UniqueIdentifier>AEC938C8-3B98-4266-9ACC-6B53A2D9BBD5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tads">
-			<UniqueIdentifier>AE29FA37-85B8-4DA3-AD45-4934470CBBA7</UniqueIdentifier>
+			<UniqueIdentifier>8F298A12-79A8-4719-A1A1-D373D73992BE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tads\tads2">
-			<UniqueIdentifier>AF99793B-99B7-4058-9A11-36247138F6A8</UniqueIdentifier>
+			<UniqueIdentifier>9E86FC38-4420-4E02-96FD-598331010A61</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tads\tads3">
-			<UniqueIdentifier>921E46B1-E040-4A12-A764-C0E69669F169</UniqueIdentifier>
+			<UniqueIdentifier>52188538-CD5D-4FB1-A823-1CB72DA6FCDB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="zcode">
-			<UniqueIdentifier>2BAB498C-88A8-4D2C-881C-DF8E88E06355</UniqueIdentifier>
+			<UniqueIdentifier>594625C7-DF06-4D15-8D07-B8B8AFB8B7BA</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -720,63 +714,6 @@
 		<ClCompile Include="..\..\engines\glk\quest\string.cpp">
 			<Filter>quest</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\action_packer.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\byte_boiler.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\caution.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\ccs.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\cruel.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\eca.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\exomizer.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\expert.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\master_compressor.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\megabyte.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\pu_crunch.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\scanners.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\section8.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\tbc_multicomp.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\tcs_crunch.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\xtc.cpp">
-			<Filter>scott\unp64\scanners</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\6502_emu.cpp">
-			<Filter>scott\unp64</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\exo_util.cpp">
-			<Filter>scott\unp64</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\glk\scott\unp64\unp64.cpp">
-			<Filter>scott\unp64</Filter>
-		</ClCompile>
 		<ClCompile Include="..\..\engines\glk\scott\c64_checksums.cpp">
 			<Filter>scott</Filter>
 		</ClCompile>
@@ -825,6 +762,9 @@
 		<ClCompile Include="..\..\engines\glk\scott\load_ti99_4a.cpp">
 			<Filter>scott</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\glk\scott\load_zx_spectrum.cpp">
+			<Filter>scott</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\glk\scott\resource.cpp">
 			<Filter>scott</Filter>
 		</ClCompile>
@@ -847,6 +787,9 @@
 			<Filter>scott</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\glk\scott\ti99_4a_terp.cpp">
+			<Filter>scott</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\glk\scott\zx_spectrum.cpp">
 			<Filter>scott</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\glk\tads\tads2\built_in.cpp">
@@ -1048,6 +991,7 @@
 		<ClCompile Include="..\..\engines\glk\conf.cpp" />
 		<ClCompile Include="..\..\engines\glk\debugger.cpp" />
 		<ClCompile Include="..\..\engines\glk\detection.cpp" />
+		<ClCompile Include="..\..\engines\glk\dialogs.cpp" />
 		<ClCompile Include="..\..\engines\glk\events.cpp" />
 		<ClCompile Include="..\..\engines\glk\fonts.cpp" />
 		<ClCompile Include="..\..\engines\glk\glk.cpp" />
@@ -1614,18 +1558,6 @@
 		<ClInclude Include="..\..\engines\glk\quest\string.h">
 			<Filter>quest</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\glk\scott\unp64\6502_emu.h">
-			<Filter>scott\unp64</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\glk\scott\unp64\exo_util.h">
-			<Filter>scott\unp64</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\glk\scott\unp64\unp64.h">
-			<Filter>scott\unp64</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\glk\scott\unp64\unp64_interface.h">
-			<Filter>scott\unp64</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\engines\glk\scott\c64_checksums.h">
 			<Filter>scott</Filter>
 		</ClInclude>
@@ -1680,6 +1612,9 @@
 		<ClInclude Include="..\..\engines\glk\scott\load_ti99_4a.h">
 			<Filter>scott</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\glk\scott\load_zx_spectrum.h">
+			<Filter>scott</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\glk\scott\resource.h">
 			<Filter>scott</Filter>
 		</ClInclude>
@@ -1705,6 +1640,9 @@
 			<Filter>scott</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\glk\scott\types.h">
+			<Filter>scott</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\glk\scott\zx_spectrum.h">
 			<Filter>scott</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\glk\tads\tads2\appctx.h">
@@ -1882,6 +1820,7 @@
 		<ClInclude Include="..\..\engines\glk\conf.h" />
 		<ClInclude Include="..\..\engines\glk\debugger.h" />
 		<ClInclude Include="..\..\engines\glk\detection.h" />
+		<ClInclude Include="..\..\engines\glk\dialogs.h" />
 		<ClInclude Include="..\..\engines\glk\events.h" />
 		<ClInclude Include="..\..\engines\glk\fonts.h" />
 		<ClInclude Include="..\..\engines\glk\game_description.h" />

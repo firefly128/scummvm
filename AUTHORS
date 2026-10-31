@@ -2,10 +2,8 @@ ScummVM Team
 ************
   Project Leaders
   ---------------
-     Pawel Kolodziejski
-     Eugene Sandulenko
-     Einar Johan T. Somaaen
-     Lothar Serra Mari
+     Eugene Sandulenko              - Project Leader
+     Lothar Serra Mari              - Project Co-Leader and Admin
 
   PR Office
   ---------
@@ -134,6 +132,9 @@ ScummVM Team
        Peter Kohaut
        Eugene Sandulenko
 
+    Bolt:
+       Andrea Boscarino
+
     Buried:
        Matthew Hoops
 
@@ -147,6 +148,7 @@ ScummVM Team
        Paul Gilbert
 
     Chamber:
+       Ion Andrei Cristian
        Retro-Junk;
        Eugene Sandulenko
 
@@ -162,6 +164,9 @@ ScummVM Team
        Gregory Montoir                - (retired)
        Kari Salminen
        Eugene Sandulenko
+
+    Colony:
+       Gustavo Grieco
 
     Composer:
        Alyssa Milburn
@@ -227,8 +232,14 @@ ScummVM Team
        Vladimir Menshakov
        Willem Jan Palenstijn
 
+    EEM:
+       Gustavo Grieco
+
     Efh:
        Arnaud Boutonne
+
+    Fool:
+       Scott Percival
 
     Freescape:
        Chris Allen                    - Sound engine programming
@@ -285,6 +296,9 @@ ScummVM Team
 
     Hades Challenge:
        Vladimir Serbinenko/Google
+
+    Harvester:
+       Alex Bevilacqua
 
     HDB:
        Eugene Sandulenko
@@ -351,7 +365,12 @@ ScummVM Team
        Paul Gilbert
        Arnaud Boutonne
 
+    Macs2:
+       Martin Gerhardy
+       Florian Mehm
+
     MacVenture:
+       Ion Andrei Cristian            - GSoC student
        Borja Lorente                  - GSoC student
 
     MADE:
@@ -398,6 +417,7 @@ ScummVM Team
 
     Nancy:
        Kaloyan Chehlarski
+       Filippos Karapetis
        Walter van Niftrik
 
     Neverhood:
@@ -413,6 +433,9 @@ ScummVM Team
     Pegasus:
        Matthew Hoops                  - (retired)
 
+    Pelrock:
+       Gabriel Sanmartín
+
     Petka:
        Andrei Prykhodko
        Eugene Sandulenko
@@ -420,6 +443,8 @@ ScummVM Team
     PhoenixVR:
        Vladimir Menshakov
        Hermann Noll                   - Help with 3D VR projections
+       Scorp                          - Dracula 1/2 and Messenger support,
+                                        Engine improvements
 
     Pink:
        Andrei Prykhodko
@@ -475,6 +500,7 @@ ScummVM Team
        Andrea Boscarino               - Digital iMUSE, SMUSH audio, GUI
        James Brown                    - (retired)
        Jonathan Gray                  - (retired)
+       Gustavo Grieco                 - Rebel Assault I & II
        Vincent Hamm                   - (retired)
        Max Horn                       - (retired)
        Travis Howell
@@ -1050,12 +1076,14 @@ Other contributions
        Dan Serban                     - Soltys English translation
        Victor Gonzalez                - Soltys Spanish translation
        Alejandro Gomez de la Munoza   - Soltys Spanish translation
+       Alexander Klaus                - Soltys German translation
 
     CGE2:
        Arnaud Boutonne                - Sfinx English translation
        Thierry Crozat                 - Sfinx English translation
        Peter Bozso                    - Sfinx English translation editor
        Ryan Clark                     - Sfinx English translation editor
+       Alexander Klaus                - Sfinx German translation
 
     Drascula:
        Thierry Crozat                 - Improve French translation
@@ -1211,6 +1239,10 @@ Other contributions
 
   ResidualVM Contributors
   -----------------------
+    Project Leaders:
+       Pawel Kolodziejski
+       Einar Johan T. Somaaen
+
     Grim:
        Thomas Allen                   - Various engine code fixes and
                                         improvements
@@ -1388,4 +1420,7 @@ Special thanks to
 
    Ron Davis for releasing the sources and generously giving away the three
    chapters of God of Thunder.
+
+   David A. Smith for releasing the source code of The Colony, which our
+   engine is based on.
 

@@ -377,7 +377,7 @@ bool Console::cmdHelp(int argc, const char **argv) {
 	debugPrintf(" draw_cel - Draws a cel from a view resource\n");
 	debugPrintf(" pic_visualize - Enables visualization of the drawing process of EGA pictures\n");
 	debugPrintf(" undither - Enable/disable undithering\n");
-	debugPrintf(" play_video - Plays a SEQ, AVI, VMD, RBT or DUK video\n");
+	debugPrintf(" play_video - Plays a SEQ or AVI video\n");
 	debugPrintf(" animate_list / al - Shows the current list of objects in kAnimate's draw list (SCI0 - SCI1.1)\n");
 	debugPrintf(" window_list / wl - Shows a list of all the windows (ports) in the draw list (SCI0 - SCI1.1)\n");
 	debugPrintf(" plane_list / pl - Shows a list of all the planes in the draw list (SCI2+)\n");
@@ -1505,7 +1505,7 @@ bool Console::cmdMapInstrument(int argc, const char **argv) {
 	if (Mt32dynamicMappings != nullptr) {
 		const Mt32ToGmMapList::iterator end = Mt32dynamicMappings->end();
 		for (Mt32ToGmMapList::iterator it = Mt32dynamicMappings->begin(); it != end; ++it) {
-			debugPrintf("\"%s\" -> %d / %d\n", (*it).name, (*it).gmInstr, (*it).gmRhythmKey);
+			debugPrintf("\"%s\" -> %d / %d\n", it->name, it->gmInstr, it->gmRhythmKey);
 		}
 	}
 
@@ -2426,44 +2426,44 @@ bool Console::cmdPrintSegmentTable(int argc, const char **argv) {
 
 			switch (mobj->getType()) {
 			case SEG_TYPE_SCRIPT:
-				debugPrintf("S  script.%03d l:%d ", (*(Script *)mobj).getScriptNumber(), (*(Script *)mobj).getLockers());
+				debugPrintf("S  script.%03d l:%d ", ((Script *)mobj)->getScriptNumber(), ((Script *)mobj)->getLockers());
 				break;
 
 			case SEG_TYPE_CLONES:
-				debugPrintf("C  clones (%d allocd)", (*(CloneTable *)mobj).entries_used);
+				debugPrintf("C  clones (%d allocd)", ((CloneTable *)mobj)->entries_used);
 				break;
 
 			case SEG_TYPE_LOCALS:
-				debugPrintf("V  locals %03d", (*(LocalVariables *)mobj).script_id);
+				debugPrintf("V  locals %03d", ((LocalVariables *)mobj)->script_id);
 				break;
 
 			case SEG_TYPE_STACK:
-				debugPrintf("D  data stack (%d)", (*(DataStack *)mobj)._capacity);
+				debugPrintf("D  data stack (%d)", ((DataStack *)mobj)->_capacity);
 				break;
 
 			case SEG_TYPE_LISTS:
-				debugPrintf("L  lists (%d)", (*(ListTable *)mobj).entries_used);
+				debugPrintf("L  lists (%d)", ((ListTable *)mobj)->entries_used);
 				break;
 
 			case SEG_TYPE_NODES:
-				debugPrintf("N  nodes (%d)", (*(NodeTable *)mobj).entries_used);
+				debugPrintf("N  nodes (%d)", ((NodeTable *)mobj)->entries_used);
 				break;
 
 			case SEG_TYPE_HUNK:
-				debugPrintf("H  hunk (%d)", (*(HunkTable *)mobj).entries_used);
+				debugPrintf("H  hunk (%d)", ((HunkTable *)mobj)->entries_used);
 				break;
 
 			case SEG_TYPE_DYNMEM:
-				debugPrintf("M  dynmem: %d bytes", (*(DynMem *)mobj)._size);
+				debugPrintf("M  dynmem: %d bytes", ((DynMem *)mobj)->_size);
 				break;
 
 #ifdef ENABLE_SCI32
 			case SEG_TYPE_ARRAY:
-				debugPrintf("A  SCI32 arrays (%d)", (*(ArrayTable *)mobj).entries_used);
+				debugPrintf("A  SCI32 arrays (%d)", ((ArrayTable *)mobj)->entries_used);
 				break;
 
 			case SEG_TYPE_BITMAP:
-				debugPrintf("T  SCI32 bitmaps (%d)", (*(BitmapTable *)mobj).entries_used);
+				debugPrintf("T  SCI32 bitmaps (%d)", ((BitmapTable *)mobj)->entries_used);
 				break;
 #endif
 
@@ -2569,7 +2569,7 @@ bool Console::segmentInfo(int nr) {
 	break;
 
 	case SEG_TYPE_NODES: {
-		debugPrintf("nodes (total %d)\n", (*(NodeTable *)mobj).entries_used);
+		debugPrintf("nodes (total %d)\n", ((NodeTable *)mobj)->entries_used);
 		break;
 	}
 
@@ -2587,9 +2587,9 @@ bool Console::segmentInfo(int nr) {
 
 	case SEG_TYPE_DYNMEM: {
 		debugPrintf("dynmem (%s): %d bytes\n",
-		          (*(DynMem *)mobj)._description.c_str(), (*(DynMem *)mobj)._size);
+		          ((DynMem *)mobj)->_description.c_str(), ((DynMem *)mobj)->_size);
 
-		Common::hexdump((*(DynMem *)mobj)._buf, (*(DynMem *)mobj)._size, 16, 0);
+		Common::hexdump(((DynMem *)mobj)->_buf, ((DynMem *)mobj)->_size, 16, 0);
 	}
 	break;
 

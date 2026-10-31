@@ -22,7 +22,7 @@
 #ifndef NANCY_ACTION_CUTTINGPUZZLE_H
 #define NANCY_ACTION_CUTTINGPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 #include "engines/nancy/commontypes.h"
 
 namespace Nancy {
@@ -41,9 +41,9 @@ namespace Action {
 //
 // The puzzle is solved when grooveDepths[i] == correctGrooves[i] for all i.
 //
-class CuttingPuzzle : public RenderActionRecord {
+class CuttingPuzzle : public PuzzleRecord {
 public:
-	CuttingPuzzle() : RenderActionRecord(7) {}
+	CuttingPuzzle() : PuzzleRecord(7) {}
 	virtual ~CuttingPuzzle() {}
 
 	void init() override;
@@ -51,6 +51,8 @@ public:
 	void readData(Common::SeekableReadStream &stream) override;
 	void execute() override;
 	void handleInput(NancyInput &input) override;
+
+	bool isViewportRelative() const override { return true; }
 
 protected:
 	enum SubState {
@@ -61,7 +63,6 @@ protected:
 	};
 
 	Common::String getRecordTypeName() const override { return "CuttingPuzzle"; }
-	bool isViewportRelative() const override { return true; }
 
 	void redrawSurface();
 	int grooveTypeForIndex(int i) const;
@@ -98,21 +99,16 @@ protected:
 
 	Common::Array<int16> _correctGrooves;        // data+0x3cc  8 target depths (one per groove slot)
 
-	SoundDescription _latheSound;  // data+0x3dc  looping lathe running sound
-	SoundDescription _clickSound;  // data+0x40d  click sound (lever / UI)
-	SoundDescription _clickSound2; // data+0x43e  click sound 2
-	SoundDescription _clickSound3; // data+0x46f  click sound 3
-	SoundDescription _cutSound;    // data+0x4a0  groove-cutting sound
-
-	SceneChangeWithFlag _puzzleSolvedScene;    // data+0x4d1 (25 bytes)
-	uint16 _doneSoundDelaySecs = 0;        // data+0x4ea  wait before playing done sound (seconds)
-	SoundDescription _doneSound;           // data+0x4ec
+	SoundDescription _latheSound;     // data+0x3dc  looping lathe running sound
+	SoundDescription _moveSound;      // data+0x40d  move left & right sound
+	SoundDescription _startStopSound; // data+0x43e  on/off switch sound
+	SoundDescription _depthSound;     // data+0x46f  depth adjust sound
+	SoundDescription _cutSound;       // data+0x4a0  groove-cutting sound
 
 	byte  _itemCheckByte = 0;              // data+0x51d  0=no check, nonzero=require inventory item
 	int16 _itemID        = -1;             // data+0x51e
 
 	SceneChangeDescription _missingGogglesScene;    // data+0x520  (20 bytes + 2-byte skip = 22 bytes total)
-	SceneChangeWithFlag    _cancelScene;   // data+0x536  (25 bytes)
 
 	// ---- runtime state ----
 

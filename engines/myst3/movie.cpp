@@ -382,6 +382,7 @@ void ScriptedMovie::update(bool pauseAtFirstFrame) {
 
 		updateVolume();
 
+		bool forceDrawNextFrame = false;
 		if (_nextFrameReadVar) {
 			int32 nextFrame = _vm->_state->getVar(_nextFrameReadVar);
 			if (nextFrame > 0 && nextFrame <= (int32)_bink.getFrameCount()) {
@@ -393,7 +394,6 @@ void ScriptedMovie::update(bool pauseAtFirstFrame) {
 						if (getId() == 12001
 						    && _vm->_state->getLocationRoom() == 1005 && _vm->_state->getLocationAge() == 10
 						    && nextFrame >= 200 && nextFrame < 250) {
-							debug("effectiveStartframe for getId(): %d (room: %d, age: %d) is: %d", getId(), _vm->_state->getLocationRoom(), _vm->_state->getLocationAge(), effectiveStartFrame);
 							// fix glitchy transition for rotation of the left turntable track (movie id 12001, room: 1005, age: 10),
 							// eg. when the left dial panel has no wood pegs
 							if (nextFrame >= 247) {
@@ -406,8 +406,10 @@ void ScriptedMovie::update(bool pauseAtFirstFrame) {
 							_bink.seekToFrame(nextFrame - 1);
 						}
 					}
+					forceDrawNextFrame = true;
 					if (_scriptDriven) {
 						drawNextFrameToTexture();
+						forceDrawNextFrame = false;
 					}
 				}
 
@@ -416,9 +418,8 @@ void ScriptedMovie::update(bool pauseAtFirstFrame) {
 			}
 		}
 
-		if (!_scriptDriven && (_bink.needsUpdate() || _isLastFrame)) {
+		if (!_scriptDriven && (forceDrawNextFrame || _bink.needsUpdate() || _isLastFrame)) {
 			bool complete = false;
-
 			if (_isLastFrame) {
 				_isLastFrame = false;
 				if (_loop) {
@@ -429,7 +430,9 @@ void ScriptedMovie::update(bool pauseAtFirstFrame) {
 				}
 			} else {
 				drawNextFrameToTexture();
-				_isLastFrame = _bink.getCurFrame() == effectiveEndFrame;
+				if (!forceDrawNextFrame) {
+					_isLastFrame = _bink.getCurFrame() == effectiveEndFrame;
+				}
 			}
 
 			if (_nextFrameWriteVar) {

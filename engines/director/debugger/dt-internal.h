@@ -57,6 +57,7 @@ typedef struct ImGuiScriptCodeLine {
 
 typedef struct ImGuiScript {
 	bool score = false;
+	bool showByteCode = false;
 	CastMemberID id;
 	ScriptType type;
 	Common::String handlerId;
@@ -74,6 +75,7 @@ typedef struct ImGuiScript {
 	Common::Array<LingoDec::Bytecode> bytecodeArray;
 	Common::Array<uint> startOffsets;
 	Common::SharedPtr<Node> oldAst;
+	Common::String rawText;
 
 	bool operator==(const ImGuiScript &c) const {
 		return moviePath == c.moviePath && score == c.score && id == c.id && handlerId == c.handlerId;
@@ -97,14 +99,42 @@ typedef struct ImGuiWindows {
 	bool archive = false;
 	bool watchedVars = false;
 	bool executionContext = false;
+	bool scripts = false;
 	bool search = false;
+	bool imageViewer = false;
+	bool windows = false;
+	bool help = false;
+	bool profiler = false;
 } ImGuiWindows;
+
+// Rebindable debugger actions. Keep in sync with kShortcutDefs (dt-help.cpp).
+enum DebuggerAction {
+	kActContinue = 0,
+	kActStepOver,
+	kActStepInto,
+	kActStepOut,
+	kActQuickOpen,
+	kActPickFromStage,
+	kActToggleControlPanel,
+	kActToggleCast,
+	kActToggleScore,
+	kActToggleMouseIgnore,
+	kActCount
+};
+
+typedef struct ShortcutDef {
+	const char *id;    // stable key for save/load
+	const char *label; // display name
+	const char *help;  // what it does
+	ImGuiKeyChord defaultChord;
+} ShortcutDef;
 
 
 enum SearchMode {
 	kSearchAll = 0,
-	kSearchHandlerNames,
-	kSearchScriptBody,
+	kSearchHandlers,
+	kSearchVariables,
+	kSearchBody,
 };
 
 typedef struct ScriptData {
@@ -112,6 +142,7 @@ typedef struct ScriptData {
 	uint _current = 0;
 	bool _showByteCode = false;
 	bool _showScript = false;
+	bool _scrollToCurrent = false; // pending scroll to the current script, consumed on render
 } ScriptData;
 
 typedef struct WindowFlag {
@@ -179,6 +210,34 @@ struct DebuggerTheme {
 	ImVec4 logger_warning;
 	ImVec4 logger_info;
 	ImVec4 logger_debug;
+
+	// Profiler
+	ImVec4 prof_ruler_bg;
+	ImVec4 prof_grid_line;
+	ImVec4 prof_freeze;
+	ImVec4 prof_thaw;
+	ImVec4 prof_zone_border;
+	ImVec4 prof_zone_text;
+	ImVec4 prof_selected;
+	ImVec4 prof_highlight;
+	ImVec4 prof_live_edge;
+	ImVec4 prof_crosshair;
+};
+
+struct QuickOpenItem {
+	Common::String label;
+	bool isHandler = false;
+	CastMemberID id;
+	ScriptType scriptType = kScoreScript;
+	Common::String handlerId;
+	Common::String handlerName;
+};
+
+struct CastRowEntry {
+	const Cast *cast = nullptr;
+	CastMember *member = nullptr;
+	int id = 0;
+	Common::String name;
 };
 
 typedef struct ImGuiState {
@@ -212,9 +271,10 @@ typedef struct ImGuiState {
 	struct {
 		Common::HashMap<CastMember *, ImGuiImage> _textures;
 		bool _listView = true;
+		bool _showGridNumbers = false;
 		int _thumbnailSize = 64;
 		ImGuiTextFilter _nameFilter;
-		int _typeFilter = 0x7FFF;
+		int _typeFilter = 0xFFFF;
 	} _cast;
 
 	struct {
@@ -223,12 +283,16 @@ typedef struct ImGuiState {
 		Common::HashMap<Window *, ScriptData> _windowScriptData;
 	} _functions;
 	struct {
-		CastMember *_castMember;
+		// stored as an ID: raw CastMember pointers dangle on movie switch
+		CastMemberID _castMemberID;
+		// name of the window whose movie owns the member
+		Common::String _window;
+		Common::HashMap<CastMemberID, int> _filmLoopCurrentFrame;
 	} _castDetails;
 
 	struct {
 		bool _isScriptDirty = false; // indicates whether or not we have to display the script corresponding to the current stackframe
-		bool _goToDefinition = false;
+		bool _hostExecutionContext = false; // true while the Execution Context window is rendering scripts
 		bool _scrollToPC = false;
 		uint _lastLinePC = 0;
 		uint _callstackSize = 0;
@@ -251,15 +315,42 @@ typedef struct ImGuiState {
 		DatumHash _prevGlobals;
 
 		uint32 _lastTimeRefreshed = 0;
+		ImGuiTextFilter _nameFilter;
 	} _vars;
+
+	struct {
+		ImGuiImage image;
+		Common::String text;      // empty = no text panel
+		Common::String title;     // optional title
+
+		// cached normalized text
+		Common::String cachedRaw;
+		Common::String cachedNormalized;
+
+		// reusable buffer
+		char *buffer = nullptr;
+		size_t bufferSize = 0;
+
+	} _imageViewerState;
 
 	ImGuiWindows _w;
 	ImGuiWindows _savedW;
 	bool _wasHidden = false;
 
-	Common::List<CastMemberID> _scriptCasts;
-	Common::HashMap<int, ImGuiScript> _openHandlers;
+	ScriptData _openScripts;
 	bool _showCompleteScript = true;
+
+	// Quick-open (command palette): jump to a cast member or handler by name.
+	bool _quickOpen = false;
+	char _quickOpenInput[256] = {};
+
+	// Pick-from-stage: next stage click selects the sprite under the cursor.
+	bool _pickMode = false;
+
+	// Rebindable shortcut chords, indexed by DebuggerAction; -1 = not capturing.
+	ImGuiKeyChord _shortcuts[kActCount] = {};
+	int _shortcutCapture = -1;
+	ImGuiKeyChord _shortcutPending = ImGuiKey_None; // chord being held during a rebind
 
 	Common::HashMap<Common::String, bool, Common::IgnoreCase_Hash, Common::IgnoreCase_EqualTo> _variables;
 	int _prevFrame = -1;
@@ -277,11 +368,16 @@ typedef struct ImGuiState {
 	Common::Array<Common::Array<Common::Pair<uint, uint>>> _continuationData;
 	Common::String _loadedContinuationData;
 
+	// archive paths of every window's movie, to detect movie switches
+	Common::String _movieSignature;
+
 	Common::Array<WatchLogEntry> _watchLog;
 
 	Common::String _scoreWindow;
 	Common::String _channelsWindow;
 	Common::String _castWindow;
+	Common::String _functionsWindow;
+	Common::String _executionContextWindow;
 	int _scoreMode = 0;
 	int _scoreFrameOffset = 1;
 	int _scorePageSlider = 0;
@@ -309,13 +405,22 @@ typedef struct ImGuiState {
 	bool _enableMultiViewport = true;
 
 	Window *_windowToRedraw = nullptr;
+
+	// Cached UI lists. Kept in the state (not file-static) so their Common::Strings
+	// free in onImGuiCleanup while g_system is alive, not at process exit.
+	Common::Array<CastRowEntry> _castRows;
+	Common::String _castRowsKey;
+	Common::Array<QuickOpenItem> _quickOpenItems;
+	bool _quickOpenGathered = false;
 } ImGuiState;
 
 // debugtools.cpp
+const LingoDec::Handler *getHandler(const Cast *cast, CastMemberID id, const Common::String &handlerId);
 ImGuiScript toImGuiScript(ScriptType scriptType, CastMemberID id, const Common::String &handlerId);
 ScriptContext *getScriptContext(CastMemberID id);
 ScriptContext *getScriptContext(uint32 nameIndex, CastMemberID castId, Common::String handler);
 ScriptContext *resolveHandlerContext(int32 nameIndex, const CastMemberID &refId, const Common::String &handlerName);
+int getCastLibIDForContext(const ScriptContext *ctx);
 ImGuiScript buildImGuiHandlerScript(ScriptContext *ctx, int castLibID, const Common::String &handlerName, const Common::String &moviePath);
 void maybeHighlightLastItem(const Common::String &text);
 void addToOpenHandlers(ImGuiScript handler);
@@ -332,18 +437,41 @@ ImVec4 convertColor(uint32 color);
 void displayVariable(const Common::String &name, bool changed, bool outOfScope = false);
 ImColor brightenColor(const ImColor &color, float factor);
 Window *windowListCombo(Common::String *target);
+Common::String movieId(const Movie *m);
+Window *findWindowByName(const Common::String &name);
+bool selectableViewButton(const char *label, bool selected);
 Common::String formatHandlerName(int scriptId, int castId, Common::String handlerName, ScriptType scriptType, bool childScript);
 void setTheme(int themeIndex);
+void openImageViewer(ImGuiImage image, const Common::String &text = "", const Common::String &title = "");
+
+// helper to draw thin rectangles for table grid
+inline void addThinRect(ImDrawList *dl, ImVec2 min, ImVec2 max, ImU32 col, float thickness = 0.1f) {
+	dl->AddLine(ImVec2(min.x, min.y), ImVec2(max.x, min.y), col, thickness); // top
+	dl->AddLine(ImVec2(max.x, min.y), ImVec2(max.x, max.y), col, thickness); // right
+	dl->AddLine(ImVec2(max.x, max.y), ImVec2(min.x, max.y), col, thickness); // bottom
+	dl->AddLine(ImVec2(min.x, max.y), ImVec2(min.x, min.y), col, thickness); // left
+}
 
 void showCast();		// dt-cast.cpp
+void showImageViewer();	// dt-castdetails.cpp
 void showCastDetails();	// dt-castdetails.cpp
 void showControlPanel();// dt-controlpanel.cpp
+void handleDebuggerShortcuts();	// dt-controlpanel.cpp
+void showProfiler();	// dt-profiler.cpp
+
+// dt-help.cpp
+extern const ShortcutDef kShortcutDefs[kActCount];
+void initShortcuts();       // load defaults into _state->_shortcuts
+void resetShortcuts();      // restore defaults
+void showHelp();            // the Help window (shortcuts + tips)
+bool actionTriggered(DebuggerAction act);   // Shortcut() honouring the current binding
 
 // dt-lists.cpp
 void showVars();
 void showWatchedVars();
 void showBreakpointList();
 void showArchive();
+void showWindows();
 
 // dt-score.cpp
 void showScore();
@@ -354,9 +482,9 @@ void renderScriptAST(ImGuiScript &script, bool showByteCode, bool scrollTo);	   
 
 // dt-scripts.cpp
 void showFuncList();
-void showScriptCasts();
 void showExecutionContext();
-void showHandlers();
+void showScriptsWindow();
+void showQuickOpen();
 
 // dt-save-state.cpp
 void saveCurrentState();

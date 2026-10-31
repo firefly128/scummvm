@@ -22,7 +22,7 @@
 #ifndef NANCY_ACTION_COLLISIONPUZZLE_H
 #define NANCY_ACTION_COLLISIONPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 
 namespace Nancy {
 namespace Action {
@@ -35,10 +35,10 @@ namespace Action {
 // - TileMovePuzzle: Many differently-sized tiles, one of which must reach the exit.
 //		Rectangular tiles can only move in the directions parallel to their longer sides.
 //		Exit is outside of the tile grid.
-class CollisionPuzzle : public RenderActionRecord {
+class CollisionPuzzle : public PuzzleRecord {
 public:
 	enum PuzzleType { kCollision, kTileMove };
-	CollisionPuzzle(PuzzleType type) : RenderActionRecord(7), _puzzleType(type) {}
+	CollisionPuzzle(PuzzleType type) : PuzzleRecord(7), _puzzleType(type) {}
 	virtual ~CollisionPuzzle() {}
 
 	void init() override;
@@ -49,31 +49,32 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
+	bool isViewportRelative() const override { return true; }
+
 protected:
-	// numbers 1-5 are home IDs, 0 is empty cell
-	enum WallType { kWallLeft = 6, kWallUp = 7, kWallDown = 8, kWallRight = 9, kBlock = 10 };
+	// 0 is an empty cell, positive numbers are home IDs. Wall/block markers use Nancy 11's
+	// values (16-20); earlier games store 6-10 and are remapped to these on load.
+	enum WallType { kWallLeft = 16, kWallUp = 17, kWallDown = 18, kWallRight = 19, kBlock = 20 };
 
 	class Piece : public RenderObject {
 	public:
 		Piece() : RenderObject(9) {}
 		virtual ~Piece() {}
 
+		Piece(Piece &&) = default;
+
 		Common::Point _gridPos;
 		uint _w = 1;
 		uint _h = 1;
 
-	protected:
 		bool isViewportRelative() const override { return true; }
 	};
 
 	Common::String getRecordTypeName() const override { return _puzzleType == kCollision ? "CollisionPuzzle" : "TileMovePuzzle"; }
-	bool isViewportRelative() const override { return true; }
 
 	Common::Point movePiece(uint pieceID, WallType direction);
 	Common::Rect getScreenPosition(Common::Point gridPos);
 	void drawGrid();
-
-	Common::Path _imageName;
 
 	Common::Array<Common::Array<uint16>> _grid;
 	Common::Array<Common::Point> _startLocations;
@@ -86,7 +87,8 @@ protected:
 	Common::Rect _blockSrc;
 
 	Common::Point _tileMoveExitPos = Common::Point(-1, -1);
-	uint _tileMoveExitSize = 0;
+	uint _tileMoveExitIndex = 0;
+	bool _tileMoveSolveStartsInSlot = false;
 
 	bool _usesExitButton = false;
 	Common::Rect _exitButtonSrc;
@@ -107,14 +109,6 @@ protected:
 	SoundDescription _wallHitSound;
 	SoundDescription _exitButtonSound;
 
-	SceneChangeWithFlag _solveScene;
-	uint16 _solveSoundDelay = 0;
-	SoundDescription _solveSound;
-
-	SceneChangeWithFlag _exitScene;
-	Common::Rect _exitHotspot;
-
-	Graphics::ManagedSurface _image;
 	Common::Array<Piece> _pieces;
 
 	int _currentlyAnimating = -1;

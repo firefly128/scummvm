@@ -101,6 +101,8 @@ SkyEngine::SkyEngine(OSystem *syst)
 	_skyDisk    = nullptr;
 	_skyControl = nullptr;
 	_skyCompact = nullptr;
+
+	_curScreen = 0xFFFF;
 }
 
 SkyEngine::~SkyEngine() {
@@ -170,6 +172,10 @@ void SkyEngine::handleKey() {
 			break;
 
 		case kSkyActionOpenControlPanel:
+			if (SkyEngine::isIbass()) {
+				_skyControl->doControlPanel();
+				break;
+			}
 			_skyControl->doControlPanel();
 			break;
 
@@ -212,12 +218,13 @@ Common::Error SkyEngine::go() {
 		// Clear pastIntro here (set to false) explicilty
 		// It should be false already, but better to ensure it
 		_systemVars->pastIntro = false;
-		if (_systemVars->gameVersion > 272) { // don't do intro for floppydemos
+		if (_systemVars->gameVersion > 272 && !SkyEngine::isIbass()) { // don't do intro for floppydemos
 			Intro *skyIntro = new Intro(_skyDisk, _skyScreen, _skyMusic, _skySound, _skyText, _mixer, _system);
 			bool floppyIntro = ConfMan.getBool("alt_intro");
 			introSkipped = !skyIntro->doIntro(floppyIntro);
 			delete skyIntro;
-		}
+		} else if (SkyEngine::isIbass())
+			introSkipped = true;
 
 		if (!shouldQuit()) {
 			_skyScreen->clearScreen(true);
@@ -238,7 +245,15 @@ Common::Error SkyEngine::go() {
 	uint32 delayCount = _system->getMillis();
 	while (!shouldQuit()) {
 		_skySound->checkFxQueue();
-		_skyMouse->mouseEngine();
+		if (SkyEngine::isIbass()) {
+			if (_curScreen != Logic::_scriptVariables[SCREEN]) {
+				_curScreen = Logic::_scriptVariables[SCREEN];
+				setSeenScreen(_curScreen);
+			}
+			_skyMouse->mouseEngineIBASS();
+		} else {
+			_skyMouse->mouseEngine();
+		}
 		handleKey();
 		if (_systemVars->paused) {
 			do {
@@ -345,7 +360,14 @@ bool SkyEngine::loadChineseTraditional() {
 }
 
 Common::Error SkyEngine::init() {
-	initGraphics(320, 200);
+	if (SkyEngine::isIbass()) {
+		Graphics::PixelFormat format(4, 8, 8, 8, 8, 24, 16, 8, 0);
+		initGraphics(320, 200, &format);
+	} else {
+		initGraphics(320, 200);
+	}
+
+	debug(1, "%d bytes per pixel", _system->getScreenFormat().bytesPerPixel);
 
 	_skyDisk = new Disk();
 	_skySound = new Sound(_mixer, _skyDisk, Audio::Mixer::kMaxChannelVolume);
@@ -385,8 +407,8 @@ Common::Error SkyEngine::init() {
 
 	_skyCompact = new SkyCompact();
 	_skyText = new Text(this, _skyDisk, _skyCompact);
-	_skyMouse = new Mouse(_system, _skyDisk, _skyCompact);
 	_skyScreen = new Screen(_system, _skyDisk, _skyCompact);
+	_skyMouse = new Mouse(_system, _skyDisk, _skyCompact, _skyScreen);
 
 	initVirgin();
 	initItemList();
@@ -399,6 +421,7 @@ Common::Error SkyEngine::init() {
 	assert(shortcutsKeymap);
 
 	_skyControl = new Control(this, _saveFileMan, _skyScreen, _skyDisk, _skyMouse, _skyText, _skyMusic, _skyLogic, _skySound, _skyCompact, _system, shortcutsKeymap);
+	_skyMouse->useControlInstance(_skyControl);
 	_skyLogic->useControlInstance(_skyControl);
 
 	switch (Common::parseLanguage(ConfMan.get("language"))) {
@@ -582,6 +605,65 @@ bool SkyEngine::isCDVersion() {
 	default:
 		error("Unknown game version %d", _systemVars->gameVersion);
 	}
+}
+
+bool SkyEngine::isIbass() {
+	if (ConfMan.get("gameid") == "ibass")
+		return true;
+	return false;
+}
+
+int SkyEngine::giveCurrentScreen() {
+	return Logic::_scriptVariables[SCREEN];
+}
+
+uint32 SkyEngine::giveScriptVar(uint32 s) {
+	return Logic::_scriptVariables[s];
+}
+
+void SkyEngine::setSeenScreen(int screen) {
+	if (screen >= TOTAL_SCREENS) {
+		debug(1, "setSeenScreen: illegal screen %d", screen);
+		return;
+	}
+	SkyEngine::_systemVars->_seenScreen[screen] = true;
+}
+
+bool SkyEngine::hasSeenScreen(int screen) {
+	if (screen >= TOTAL_SCREENS) {
+		debug(1, "hasSeenScreen: illegal screen %d", screen);
+		return false;
+	}
+	return SkyEngine::_systemVars->_seenScreen[screen];
+}
+
+void SkyEngine::setHintAnswerSeen(int answer) {
+	if (answer >= TOTAL_HINT_ANSWERS) {
+		debug(1, "setHintAnswerSeen: illegal answer %d", answer);
+		return;
+	}
+	SkyEngine::_systemVars->_answerSeen[answer] = true;
+}
+
+bool SkyEngine::isHintAnswerSeen(int answer) {
+	if (answer >= TOTAL_HINT_ANSWERS) {
+		debug(1, "isHintAnswerSeen: illegal answer %d", answer);
+		return false;
+	}
+	return SkyEngine::_systemVars->_answerSeen[answer];
+}
+
+Common::String SkyEngine::lookUpAscii(int line) {
+	line -= 1000;
+	if (line < 0 || line >= (int)kUkAsciiCount) {
+		debug(1, "lookUpAscii: illegal line %d", line);
+		return Common::U32String("???");
+	}
+	return Common::U32String(ukAscii[line]);
+}
+
+Common::String SkyEngine::giveButton(const Common::String &button) {
+	return button;
 }
 
 } // End of namespace Sky

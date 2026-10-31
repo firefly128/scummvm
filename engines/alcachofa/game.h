@@ -59,10 +59,12 @@ public:
 	virtual Common::Span<const ScriptKernelTask> getScriptKernelTaskMap() = 0;
 	virtual void updateScriptVariables() = 0;
 	virtual void drawScreenStates();
+	virtual Common::String reencodePath(const Common::String &path);
 	virtual const char *getDialogFileName() = 0;
 	virtual const char *getObjectFileName() = 0;
 	virtual char getTextFileKey() = 0;
 	virtual Common::Point getSubtitlePos() = 0;
+	virtual Common::Point getObjectNameOffset() = 0;
 	virtual const char *getMenuRoom() = 0;
 	virtual const char *getInitScriptName() = 0;
 	virtual int32 getKernelTaskArgCount(int32 kernelTaskI); // only necessary for V1
@@ -70,6 +72,7 @@ public:
 	virtual Common::String getSoundPath(const char *filename) = 0; ///< Without file-extension
 	virtual Common::String getMusicPath(int32 trackId) = 0; ///< Without file-extension
 	virtual int32 getCharacterJingle(MainCharacterKind kind) = 0;
+	virtual bool shouldMusicLoop();
 	virtual bool shouldFilterTexturesByDefault() = 0;
 	virtual bool shouldClipCamera() = 0;
 	virtual bool isAllowedToInteract() = 0;
@@ -114,6 +117,7 @@ public:
 	virtual void unknownScriptProcedure(const Common::String &procedure);
 	virtual void unknownMenuAction(int32 actionId);
 
+	virtual Common::String alternativeAnimationName(const Common::String &fileName, int variant);
 	virtual void missingAnimation(const Common::String &fileName);
 	virtual void missingSound(const Common::String &fileName);
 	virtual void invalidSNDFormat(uint format, uint channels, uint freq, uint bps);
@@ -128,6 +132,11 @@ public:
 	static Game *createForTerror(); // V1
 	static Game *createForVaqueros(); // V1
 	static Game *createForSecta(); // V2
+	static Game *createForMoscu(); // V2
+	static Game *createForEscarabajo(); // V2
+	static Game *createForCorvino(); // V2
+	static Game *createForBalones(); // V2
+	static Game *createForMamelucos(); // V2
 
 	const Message _message;
 };

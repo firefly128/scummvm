@@ -60,7 +60,6 @@ OSystem_3DS::OSystem_3DS():
 	_focusClearTime(0),
 	_cursorPaletteEnabled(false),
 	_cursorVisible(false),
-	_cursorScalable(false),
 	_cursorScreenX(0),
 	_cursorScreenY(0),
 	_cursorOverlayX(0),
@@ -77,7 +76,6 @@ OSystem_3DS::OSystem_3DS():
 	_magY(0),
 	_magWidth(400),
 	_magHeight(240),
-	_gameTextureDirty(false),
 	_filteringEnabled(true),
 	_overlayVisible(false),
 	_overlayInGUI(false),
@@ -89,7 +87,8 @@ OSystem_3DS::OSystem_3DS():
 	_showCursor(true),
 	_snapToBorder(true),
 	_stretchToFit(false),
-	_screen(kScreenBoth)
+	_screen(kScreenBoth),
+	_blitFunc(nullptr)
 {
 	chdir("sdmc:/");
 
@@ -151,12 +150,13 @@ void OSystem_3DS::initBackend() {
 		ConfMan.set("vkeybd_pack_name", "vkeybd_small");
 	}
 
+	_eventManager = new DefaultEventManager(this);
 	_timerManager = new DefaultTimerManager();
 	_savefileManager = new DefaultSaveFileManager("sdmc:/3ds/scummvm/saves/");
 
 	init3DSGraphics();
 	initAudio();
-	EventsBaseBackend::initBackend();
+	BaseBackend::initBackend();
 	initEvents();
 }
 

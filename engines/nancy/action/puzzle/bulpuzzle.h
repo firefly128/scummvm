@@ -22,15 +22,15 @@
 #ifndef NANCY_ACTION_BULPUZZLE_H
 #define NANCY_ACTION_BULPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 
 namespace Nancy {
 namespace Action {
 
 // A puzzle based around a simplified version of the Mayan game Bul
-class BulPuzzle : public RenderActionRecord {
+class BulPuzzle : public PuzzleRecord {
 public:
-	BulPuzzle() : RenderActionRecord(7) {}
+	BulPuzzle() : PuzzleRecord(7) {}
 	virtual ~BulPuzzle() {}
 
 	void init() override;
@@ -40,16 +40,22 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
+	bool isViewportRelative() const override { return true; }
+
 protected:
 	enum BulAction { kNone, kRoll, kPass, kReset, kCapture };
 
 	void movePiece(bool player);
 	void reset(bool capture);
 
-	Common::String getRecordTypeName() const override { return "BulPuzzle"; }
-	bool isViewportRelative() const override { return true; }
+	// Nancy 11: drive the computer opponent's roll/pass during its turn
+	void doAiTurn();
 
-	Common::Path _imageName;
+	// Nancy 11: pick (and optionally play) a random clip from one of the per-player voice tables
+	Common::String pickVoiceLine(int player, int table);
+	void playVoiceLine(int player, int table);
+
+	Common::String getRecordTypeName() const override { return "BulPuzzle"; }
 
 	uint16 _numCells = 0;
 	uint16 _numPieces = 0;
@@ -102,16 +108,22 @@ protected:
 	SoundDescription _passSound;
 	SoundDescription _resetSound;
 
-	SceneChangeWithFlag _solveScene;
-	uint16 _solveSoundDelay = 0;
-	SoundDescription _solveSound;
-
-	SceneChangeWithFlag _exitScene; // also when losing
 	uint16 _loseSoundDelay = 0;
 	SoundDescription _loseSound;
-	Common::Rect _exitHotspot;
+	SceneChangeWithFlag _giveUpScene; // nancy11: separate scene reached by giving up via the exit hotspot
 
-	Graphics::ManagedSurface _image;
+	// Nancy 11 voice clips: two players, seven tables each (entry counts 1,1,4,4,4,4,4).
+	// Table 0 = opening line, 2 = turn line, 5 = end-of-game line.
+	Common::Array<Common::String> _voiceLines[2][7];
+	uint16 _voiceChannel[2] = {};
+	SoundDescription _voiceSound;
+	int _prevSide = -1;
+	bool _gaveUp = false;
+
+	// Nancy 11: when true the opponent is computer-controlled and takes its own turns
+	bool _playAgainstComputer = false;
+	// Nancy 11: the computer passes strategically (based on piece positions) rather than randomly
+	bool _aiPassStrategy = false;
 
 	int16 _playerPos = 0;
 	int16 _playerPieces = 0;

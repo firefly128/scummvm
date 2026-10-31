@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="decoder">
-			<UniqueIdentifier>8C90F89F-6239-454F-B05B-20D05A34AD73</UniqueIdentifier>
+			<UniqueIdentifier>179041A6-2C0A-4A6C-87D4-9859475C9362</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

@@ -1,365 +1,386 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="access">
-			<UniqueIdentifier>70AA4648-0DA7-448F-8BF8-B345AD95EB99</UniqueIdentifier>
+			<UniqueIdentifier>839B6DAB-6FDD-4185-96EB-527D8753E731</UniqueIdentifier>
 		</Filter>
 		<Filter Include="adl">
-			<UniqueIdentifier>301A7928-9756-4C31-8B5D-593A9C852AB9</UniqueIdentifier>
+			<UniqueIdentifier>21DBCC62-A4ED-436E-BB77-8E842315336B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="agds">
-			<UniqueIdentifier>F92BEB46-995C-454B-8B7D-E13E41F34D98</UniqueIdentifier>
+			<UniqueIdentifier>EC5CDB27-9FCC-401C-A28C-BA6C0DCEE5D4</UniqueIdentifier>
 		</Filter>
 		<Filter Include="agi">
-			<UniqueIdentifier>B0AA0261-E395-4353-9842-B51B5ED12139</UniqueIdentifier>
+			<UniqueIdentifier>05C47DD6-3E70-4130-8042-433DAF1C627F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="agos">
-			<UniqueIdentifier>20C1F434-065A-4C00-945B-442E75D42C47</UniqueIdentifier>
+			<UniqueIdentifier>06674F2A-A298-424D-B405-A457738356FE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ags">
-			<UniqueIdentifier>BDBFF201-CFA8-4E49-A8E9-F8FE8695ACF6</UniqueIdentifier>
+			<UniqueIdentifier>2EDF626B-881E-4E94-9229-5C570711CB69</UniqueIdentifier>
 		</Filter>
 		<Filter Include="alcachofa">
-			<UniqueIdentifier>438952DE-4294-4268-BAD8-24331AA1E069</UniqueIdentifier>
+			<UniqueIdentifier>13BC11B2-06E4-4802-B542-C9805588614D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="alg">
-			<UniqueIdentifier>CEAD5F2D-2E88-4DDC-B72E-776D5E31A047</UniqueIdentifier>
+			<UniqueIdentifier>32BABEDC-8C09-4970-B317-D5DDB397BB8C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="asylum">
-			<UniqueIdentifier>4FEFD8BC-17D5-4E32-8AA8-ED0F6FD2133B</UniqueIdentifier>
+			<UniqueIdentifier>DC133BC7-BD0F-4CA1-9B77-7F2B8B561248</UniqueIdentifier>
 		</Filter>
 		<Filter Include="avalanche">
-			<UniqueIdentifier>70B88D0B-53A5-4F6C-8C31-54E45BDB3C9B</UniqueIdentifier>
+			<UniqueIdentifier>893144AF-647F-45F0-BD09-474726EB156D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="awe">
-			<UniqueIdentifier>9F92F203-2229-4352-970D-E933A88A9646</UniqueIdentifier>
+			<UniqueIdentifier>039D8B8F-5D6C-4BD0-978E-AA463AC3E698</UniqueIdentifier>
 		</Filter>
 		<Filter Include="bagel">
-			<UniqueIdentifier>2B2FCCAD-D021-40D5-ADC1-434929AB105F</UniqueIdentifier>
+			<UniqueIdentifier>84D58503-7077-4CAF-9B45-D4D920896A4D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="bbvs">
-			<UniqueIdentifier>19DA079E-5488-40F2-872E-101D49E66286</UniqueIdentifier>
+			<UniqueIdentifier>6E8C3EA2-633E-4CC7-AC6F-3D3F4AAD73BF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="bladerunner">
-			<UniqueIdentifier>11571281-5E8A-45AD-AC3C-BE5724C41DDE</UniqueIdentifier>
+			<UniqueIdentifier>B11FDAD5-F2B9-4720-85AE-AEA7CADF21B3</UniqueIdentifier>
+		</Filter>
+		<Filter Include="bolt">
+			<UniqueIdentifier>EA344CBA-B354-4334-AC12-A2C0B9113709</UniqueIdentifier>
 		</Filter>
 		<Filter Include="buried">
-			<UniqueIdentifier>BEE0C6E9-5273-433E-9459-5E92ED2D1DBD</UniqueIdentifier>
+			<UniqueIdentifier>4276C868-8982-475D-8C0A-BFE2CE4B4A9D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="cge">
-			<UniqueIdentifier>35E71154-480D-418E-A472-C71F7D03572A</UniqueIdentifier>
+			<UniqueIdentifier>5E1E127B-5B77-400C-A22E-96A607F0A8E8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="cge2">
-			<UniqueIdentifier>B98F3B96-00C5-4F35-9682-ACD6DC00A071</UniqueIdentifier>
+			<UniqueIdentifier>3777774A-C31E-40DE-B542-808ED60AF13F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="chamber">
-			<UniqueIdentifier>5CCC483F-7EE2-43C8-B20F-2F84B1785915</UniqueIdentifier>
+			<UniqueIdentifier>F558BAC0-139E-48EA-B7F1-2A8FA12C1CE8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="chewy">
-			<UniqueIdentifier>7AB0DAC2-F0E2-4B5D-B25E-D58E11CECC29</UniqueIdentifier>
+			<UniqueIdentifier>74BCA79F-110F-4B86-8414-2E4D59FE0A99</UniqueIdentifier>
 		</Filter>
 		<Filter Include="cine">
-			<UniqueIdentifier>36F3F341-6D7E-4230-B34A-D274989B1407</UniqueIdentifier>
+			<UniqueIdentifier>2BFB2D1B-4FFE-4B76-A658-A9005F69607D</UniqueIdentifier>
+		</Filter>
+		<Filter Include="colony">
+			<UniqueIdentifier>12927A90-55BC-4210-B5D7-832768724788</UniqueIdentifier>
 		</Filter>
 		<Filter Include="composer">
-			<UniqueIdentifier>E329F8FD-565A-416E-8AA0-1D5681612A3C</UniqueIdentifier>
+			<UniqueIdentifier>7427DD7A-8D87-4ED7-9B9B-CF7C96CD66BF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="crab">
-			<UniqueIdentifier>D4EE0A60-360C-4CFB-9353-60F647AE8CB6</UniqueIdentifier>
+			<UniqueIdentifier>6024D97A-AAC5-4D15-8617-0547DA5D7589</UniqueIdentifier>
 		</Filter>
 		<Filter Include="cruise">
-			<UniqueIdentifier>23E64795-B997-40F3-A9E5-5826DB64AE6B</UniqueIdentifier>
+			<UniqueIdentifier>B56E6BED-1951-4E52-99F3-99E081419330</UniqueIdentifier>
 		</Filter>
 		<Filter Include="cryo">
-			<UniqueIdentifier>A6685473-13D8-4A29-97BA-88C86A5DC417</UniqueIdentifier>
+			<UniqueIdentifier>9C7FCE54-5CF1-4081-837E-9E47359D4670</UniqueIdentifier>
 		</Filter>
 		<Filter Include="cryomni3d">
-			<UniqueIdentifier>763AF260-28EA-4F80-8E9B-29D59FA19784</UniqueIdentifier>
+			<UniqueIdentifier>CD690A04-A2BD-4D00-8450-10DE2BF08C6B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="darkseed">
-			<UniqueIdentifier>BC14800F-0690-4FD9-BA94-1782B1CBDD39</UniqueIdentifier>
+			<UniqueIdentifier>84DCF3A5-0E29-4291-B88B-A8309C9D22E9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="dgds">
-			<UniqueIdentifier>1680028F-219F-4B41-8AF3-2AD240327E79</UniqueIdentifier>
+			<UniqueIdentifier>6F49F8FD-870E-4B41-BDF7-A7BC81862CE7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="director">
-			<UniqueIdentifier>54221F71-31D4-4FAB-BAF0-390CD42D49FD</UniqueIdentifier>
+			<UniqueIdentifier>C3C0102D-7882-4C28-B90A-F93F6538080D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="dm">
-			<UniqueIdentifier>7ECCB8F3-50AC-48B6-98D7-E23B45884BED</UniqueIdentifier>
+			<UniqueIdentifier>F898E92F-F931-46C3-91BF-9559A2571FD7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="draci">
-			<UniqueIdentifier>E9A77918-20AA-4857-8E83-56F58987EC01</UniqueIdentifier>
+			<UniqueIdentifier>500C897F-70A9-46A7-AAA4-A81BF127639E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="dragons">
-			<UniqueIdentifier>EE1BA76B-3300-43CE-830C-4A8BACF0BA7F</UniqueIdentifier>
+			<UniqueIdentifier>0A0DC7BB-D92D-42F3-BE88-3854266BB9CE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="drascula">
-			<UniqueIdentifier>65E3947E-DD2D-418F-86FE-4AA26B8F3516</UniqueIdentifier>
+			<UniqueIdentifier>2A7553B2-C570-4873-B56E-327F311E1E7F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="dreamweb">
-			<UniqueIdentifier>D1C273A6-656A-459F-840A-00B602E575FC</UniqueIdentifier>
+			<UniqueIdentifier>417DAD48-9CA5-4E02-9E11-F8250ECB08DA</UniqueIdentifier>
+		</Filter>
+		<Filter Include="eem">
+			<UniqueIdentifier>FCBF9AFA-0377-4D09-8566-417993E6123F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="efh">
-			<UniqueIdentifier>A8E819E0-DE9B-447B-8243-428163FC5F8B</UniqueIdentifier>
+			<UniqueIdentifier>663D1254-405A-4611-8DBA-4E5E0975C1E3</UniqueIdentifier>
+		</Filter>
+		<Filter Include="fool">
+			<UniqueIdentifier>69B22287-7BC0-45A0-BA09-05B6A7E2EB7B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="freescape">
-			<UniqueIdentifier>FA06BAB4-7B54-4CB1-98B5-4B2559D3D51C</UniqueIdentifier>
+			<UniqueIdentifier>FD67602B-EBCB-435A-9F79-B48AD50916BA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gamos">
-			<UniqueIdentifier>9DA7D719-170A-4BD9-9BC3-2A2699472080</UniqueIdentifier>
+			<UniqueIdentifier>82637370-47DE-4495-BD90-E0C92C847AFD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="glk">
-			<UniqueIdentifier>F996E7AD-C2F1-4459-856C-DA0F518F192C</UniqueIdentifier>
+			<UniqueIdentifier>7424AB4B-68AF-40FB-8194-DC908AD9A4C5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gnap">
-			<UniqueIdentifier>EA0774CD-2FCF-4A20-A811-A95B2CC65613</UniqueIdentifier>
+			<UniqueIdentifier>DF3BE244-3CC1-442D-80FE-EF685139F0C6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gob">
-			<UniqueIdentifier>2AD4B7B6-8D36-47E2-BA0E-8EF86B48A387</UniqueIdentifier>
+			<UniqueIdentifier>F9D57001-E96E-46B1-BF8A-A717AC093E0E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gob\detection">
-			<UniqueIdentifier>8A3AE2BD-6559-4A6C-999C-14DEF4D64EF9</UniqueIdentifier>
+			<UniqueIdentifier>8148EA72-BCA6-47A7-B174-83563E35E0F0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="got">
-			<UniqueIdentifier>6562B264-0ADD-4EED-9D30-937FB0D2AE55</UniqueIdentifier>
+			<UniqueIdentifier>FC9B213C-DFDA-4AEB-8279-99510117B08C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="griffon">
-			<UniqueIdentifier>A09E5544-27C6-4EDE-AA65-17DA191FE0FB</UniqueIdentifier>
+			<UniqueIdentifier>65D2E45F-FBCA-4ED3-B97D-F9F62DF49742</UniqueIdentifier>
 		</Filter>
 		<Filter Include="grim">
-			<UniqueIdentifier>90F9AAF2-DF5D-4E8F-9B04-B0E450F043A1</UniqueIdentifier>
+			<UniqueIdentifier>2B36AB7D-63AA-4202-9D35-D454D7E5577B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="groovie">
-			<UniqueIdentifier>91E225AF-A810-4D41-B40C-B41E7D79E9B2</UniqueIdentifier>
+			<UniqueIdentifier>7F6E084F-CD4A-441C-A167-55A20767F0BD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hadesch">
-			<UniqueIdentifier>F38EB40C-E490-4421-8914-D5595D24FC28</UniqueIdentifier>
+			<UniqueIdentifier>88035C3A-56EC-4C9D-88B1-95787CB44D9B</UniqueIdentifier>
+		</Filter>
+		<Filter Include="harvester">
+			<UniqueIdentifier>8DA58D19-5F44-4602-8963-D8D2E9D0E256</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hdb">
-			<UniqueIdentifier>07B695BC-2ED6-45F6-85FD-2DDF969FFCB7</UniqueIdentifier>
+			<UniqueIdentifier>30C3C9E9-AF38-4B5B-A91A-1A0267635A5E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hopkins">
-			<UniqueIdentifier>4DC7D95D-18BC-42F7-99CE-10A354D05DA6</UniqueIdentifier>
+			<UniqueIdentifier>92116C51-72BF-467D-BC8A-16F4D73F200D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hpl1">
-			<UniqueIdentifier>4365866F-3A38-4E43-9C76-9D19E398F540</UniqueIdentifier>
+			<UniqueIdentifier>E7E72227-D455-4A69-9275-2622D2077AB6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hugo">
-			<UniqueIdentifier>3E8DE294-BF98-44CA-B95A-5AFAD0F4AF53</UniqueIdentifier>
+			<UniqueIdentifier>EF222FE1-AD89-4EAF-ACFD-870B7F700F3A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="hypno">
-			<UniqueIdentifier>CEA7CAE7-0163-47CC-B585-E227E310BAB6</UniqueIdentifier>
+			<UniqueIdentifier>13BBBAF1-F933-496E-825A-6D2CB9B8C245</UniqueIdentifier>
 		</Filter>
 		<Filter Include="icb">
-			<UniqueIdentifier>B20BCAE3-9206-4611-9991-E4E5642B4779</UniqueIdentifier>
+			<UniqueIdentifier>DCD57EBD-6F5F-4A4E-A497-FCD4A86BA15B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="illusions">
-			<UniqueIdentifier>5A95A74A-0E3D-4A6C-B447-E61A61ACF134</UniqueIdentifier>
+			<UniqueIdentifier>104ACAB6-F379-47BB-8680-7A638129F9A0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="immortal">
-			<UniqueIdentifier>ED1A034D-8A65-4C80-A470-0A6A2424B6CF</UniqueIdentifier>
+			<UniqueIdentifier>BC38C79A-7E2D-406E-8AEC-09ADACC7D0B1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="kingdom">
-			<UniqueIdentifier>9476ED04-ED8E-445F-A410-2A69DB64B0C4</UniqueIdentifier>
+			<UniqueIdentifier>45917D7A-F4DD-4CF3-A47F-785C9550CCAC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="kyra">
-			<UniqueIdentifier>7AE5373D-C7AB-43E0-9AD7-9E5983A462F4</UniqueIdentifier>
+			<UniqueIdentifier>80ECC309-5505-464F-B60F-BAD0DB485A8D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="lab">
-			<UniqueIdentifier>3EEE68F5-9067-43A0-B37A-748AB7B95F83</UniqueIdentifier>
+			<UniqueIdentifier>118512B4-1CD4-4129-A0C6-0244F1467895</UniqueIdentifier>
 		</Filter>
 		<Filter Include="lastexpress">
-			<UniqueIdentifier>5C785561-C01C-402A-9621-78B43F1ECE05</UniqueIdentifier>
+			<UniqueIdentifier>03E62483-FD4D-4549-B364-64376B62825A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="lilliput">
-			<UniqueIdentifier>4B1120D6-7739-438A-8490-461B4F0646B3</UniqueIdentifier>
+			<UniqueIdentifier>9D8B68AE-9306-45BE-8BB2-96A5CB6CEFD3</UniqueIdentifier>
 		</Filter>
 		<Filter Include="lure">
-			<UniqueIdentifier>442456D2-84BF-4B61-9EA6-ADD869E893A2</UniqueIdentifier>
+			<UniqueIdentifier>0AB47C16-73B2-4C2F-88A1-155E817E38AF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="m4">
-			<UniqueIdentifier>9030E66B-F05C-42E0-BA1D-6F762C0366B4</UniqueIdentifier>
+			<UniqueIdentifier>FB550FC6-E511-4754-A478-33D451339557</UniqueIdentifier>
+		</Filter>
+		<Filter Include="macs2">
+			<UniqueIdentifier>99762041-4604-46F3-8392-8BA7F7145FB6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="macventure">
-			<UniqueIdentifier>7322653C-1216-476F-B2A7-00C466402F04</UniqueIdentifier>
+			<UniqueIdentifier>E79E9EFE-5C07-4C85-B587-2834DB58697F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="made">
-			<UniqueIdentifier>BF2ABA8A-6ACA-42DB-B390-C0F96D919A4C</UniqueIdentifier>
+			<UniqueIdentifier>9B3C0CB2-6BD9-4CA5-BAAB-E1AAADCC42C0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mads">
-			<UniqueIdentifier>20A365CB-85EB-4F02-B329-EB908C1F0A3B</UniqueIdentifier>
+			<UniqueIdentifier>0059FA39-68DC-4859-991B-E09DDF7384E9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mediastation">
-			<UniqueIdentifier>9DBC854F-971E-4A83-9DD7-CE923512CDAD</UniqueIdentifier>
+			<UniqueIdentifier>F5DBBFB9-D163-460D-8039-A23B30360297</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm">
-			<UniqueIdentifier>D2A0C808-4F95-4E04-85CB-764908E40B7A</UniqueIdentifier>
+			<UniqueIdentifier>C847C497-EBCC-4A56-8C7A-965A9D9E6C6A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mohawk">
-			<UniqueIdentifier>A2FD22EA-2EA2-43CD-BFE5-80A23C2B4B2B</UniqueIdentifier>
+			<UniqueIdentifier>4AEE0674-15AC-49E4-B6E5-E87ADF3EEFE8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mortevielle">
-			<UniqueIdentifier>8F211CE8-543D-4904-A8AB-59C7D2E3B467</UniqueIdentifier>
+			<UniqueIdentifier>48856049-8ACC-45FC-9AEF-6B86E52CCEDD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mtropolis">
-			<UniqueIdentifier>5275BFDA-693C-4443-AD3E-180DEF486C8B</UniqueIdentifier>
+			<UniqueIdentifier>E77A4E15-49C2-4A83-861D-6AEEDE3E25BC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mutationofjb">
-			<UniqueIdentifier>E8A54C25-A5EC-4599-8C3A-BF63D17F22AF</UniqueIdentifier>
+			<UniqueIdentifier>F56578CF-788E-40D7-9E4F-561351C69366</UniqueIdentifier>
 		</Filter>
 		<Filter Include="myst3">
-			<UniqueIdentifier>AD0A2B73-D5D3-4F6F-A28A-1EA7A4B277E9</UniqueIdentifier>
+			<UniqueIdentifier>DF697DF1-CD87-497C-B116-1ADD2F1542D2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="nancy">
-			<UniqueIdentifier>EF788DAF-2B7F-4615-A7E2-43BEDDED14D2</UniqueIdentifier>
+			<UniqueIdentifier>EA400BE1-573D-4339-BB38-8943398F356A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="neverhood">
-			<UniqueIdentifier>50E5220B-0E02-4E50-97E9-6394F5362B5B</UniqueIdentifier>
+			<UniqueIdentifier>DF44EAF1-1E75-4050-B038-D4888B785A49</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ngi">
-			<UniqueIdentifier>1A590F99-F04E-4602-8557-A51DA52AF2C1</UniqueIdentifier>
+			<UniqueIdentifier>1DEE3152-A083-4C70-9715-6EF1E4207C3F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="parallaction">
-			<UniqueIdentifier>DACFF562-AB99-44DF-85B8-82FA112D7AC9</UniqueIdentifier>
+			<UniqueIdentifier>76D56049-DDED-49CA-B2E2-F4B3D75AEC62</UniqueIdentifier>
 		</Filter>
 		<Filter Include="pegasus">
-			<UniqueIdentifier>2103A86C-F895-49E8-8355-B8DCB5EB5986</UniqueIdentifier>
+			<UniqueIdentifier>9A8DD16A-9280-4CBB-B549-3B10DF823940</UniqueIdentifier>
+		</Filter>
+		<Filter Include="pelrock">
+			<UniqueIdentifier>16FB3DE1-FE40-4F52-A43E-08E6D58B2618</UniqueIdentifier>
 		</Filter>
 		<Filter Include="petka">
-			<UniqueIdentifier>08E374F3-60A8-414C-B2E7-8642C2ABA4A9</UniqueIdentifier>
+			<UniqueIdentifier>0F19131B-49F9-4B89-AB62-D3521FBFA7C5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="phoenixvr">
-			<UniqueIdentifier>1B5A309B-87C5-41B8-9EFA-C5175CE45AF2</UniqueIdentifier>
+			<UniqueIdentifier>18C7FC39-D296-42AB-894C-A51008640F68</UniqueIdentifier>
 		</Filter>
 		<Filter Include="pink">
-			<UniqueIdentifier>56639638-99A1-40D8-80AE-A6ECC616A850</UniqueIdentifier>
+			<UniqueIdentifier>BE42F8AA-E455-4225-B82D-C9C53571237E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="playground3d">
-			<UniqueIdentifier>6EB6878B-04A0-4754-937B-DCFC18388DCA</UniqueIdentifier>
+			<UniqueIdentifier>B0D67E63-AB3E-489B-A071-3C3F0022EA33</UniqueIdentifier>
 		</Filter>
 		<Filter Include="plumbers">
-			<UniqueIdentifier>AD73268D-C536-430C-974F-9451DB44C40B</UniqueIdentifier>
+			<UniqueIdentifier>C0A4DAE6-76B7-4A13-B007-2C9D137546D0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="prince">
-			<UniqueIdentifier>555965C1-39A7-48AD-B06B-D28A21E516D8</UniqueIdentifier>
+			<UniqueIdentifier>7950E10D-2325-4E8C-87B4-32A20544D5ED</UniqueIdentifier>
 		</Filter>
 		<Filter Include="private">
-			<UniqueIdentifier>FCD886F5-7BA2-415B-A4D9-BD0D44FA3AB0</UniqueIdentifier>
+			<UniqueIdentifier>5102D2F2-199F-4358-B766-A303C471F4E2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="qdengine">
-			<UniqueIdentifier>A8BA0C08-F1C3-453B-9933-55371BE3260D</UniqueIdentifier>
+			<UniqueIdentifier>5331C3E5-AB43-4F5C-9610-623340C406C7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="queen">
-			<UniqueIdentifier>D6BD8438-845B-4981-BF1A-769B6DC5BE90</UniqueIdentifier>
+			<UniqueIdentifier>EBD823E3-2A4F-4C70-8E20-58A8B2C4F9A6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="saga">
-			<UniqueIdentifier>64EC1F52-F4B4-41BA-804D-96611CDED2D8</UniqueIdentifier>
+			<UniqueIdentifier>90B8506A-01DC-4505-A7A7-A980B80D4351</UniqueIdentifier>
 		</Filter>
 		<Filter Include="saga2">
-			<UniqueIdentifier>78ABCF8C-FC6D-4AD3-8E7A-5F35DF93B31B</UniqueIdentifier>
+			<UniqueIdentifier>7A9BA29A-A9B6-423F-875D-D187315E8CAB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sci">
-			<UniqueIdentifier>E4FC2541-E75E-4284-8CDC-BCB389BBABDC</UniqueIdentifier>
+			<UniqueIdentifier>EE543798-BE6E-444C-8F61-3B625362EBE2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scumm">
-			<UniqueIdentifier>C07638C6-21AD-4540-B7E3-48F0189C092D</UniqueIdentifier>
+			<UniqueIdentifier>E09B469A-AE73-4871-B8E7-E75047A7160B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sherlock">
-			<UniqueIdentifier>8689C0F8-8F00-4F42-B19C-B20790AE3B1B</UniqueIdentifier>
+			<UniqueIdentifier>9BCAD888-85D3-496F-9392-C2A85CF03821</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sky">
-			<UniqueIdentifier>08C633CA-B184-4874-908F-49DD6C2E70A0</UniqueIdentifier>
+			<UniqueIdentifier>446B1F7D-61ED-43A9-B236-359BEDE389A0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sludge">
-			<UniqueIdentifier>41A32879-DC6C-4E34-9AD6-187F70291ED3</UniqueIdentifier>
+			<UniqueIdentifier>1FA76947-75C7-457B-ADC2-CD28B4514526</UniqueIdentifier>
 		</Filter>
 		<Filter Include="stark">
-			<UniqueIdentifier>11A19C1C-C5CD-4946-A75E-1C3050893548</UniqueIdentifier>
+			<UniqueIdentifier>48BB054D-B172-4828-A8AA-57BFB32B0CB4</UniqueIdentifier>
 		</Filter>
 		<Filter Include="startrek">
-			<UniqueIdentifier>83BB4C2C-1F32-4E70-B6E7-8C3BC559032B</UniqueIdentifier>
+			<UniqueIdentifier>82931B46-F50D-4E5C-878C-31851706F777</UniqueIdentifier>
 		</Filter>
 		<Filter Include="supernova">
-			<UniqueIdentifier>2DFE122E-C9AF-4031-8D71-791005AA6042</UniqueIdentifier>
+			<UniqueIdentifier>F5507B15-0805-40C8-9DC3-BAAD8F271B33</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sword1">
-			<UniqueIdentifier>6E62E9A9-BF22-4152-8F89-A77DF5FCAC08</UniqueIdentifier>
+			<UniqueIdentifier>5A9C4938-199A-45C1-B49E-B8682D52282B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sword2">
-			<UniqueIdentifier>355F480F-CE90-4795-891F-FC4F6B63956D</UniqueIdentifier>
+			<UniqueIdentifier>973979AA-2B8B-4988-B2F1-9A5CF8FEBE6F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sword25">
-			<UniqueIdentifier>F0D1EB43-6B0D-4383-B4E2-491D32BACCD7</UniqueIdentifier>
+			<UniqueIdentifier>7B5F7614-582E-4B37-95FD-D553CA7E1401</UniqueIdentifier>
 		</Filter>
 		<Filter Include="teenagent">
-			<UniqueIdentifier>CAE0AD0C-CABB-4CF1-8371-81C77112858A</UniqueIdentifier>
+			<UniqueIdentifier>F82010D8-6CEA-4820-83CF-678A993FCFE9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="testbed">
-			<UniqueIdentifier>901B87FA-F0C4-426F-AA84-48C697C27022</UniqueIdentifier>
+			<UniqueIdentifier>41E12F8D-1721-48BE-B098-8BD373A64590</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tetraedge">
-			<UniqueIdentifier>00214391-F567-4ED9-8D70-C574107D1E0E</UniqueIdentifier>
+			<UniqueIdentifier>B3E3F941-1D86-4515-8C43-E63D05EFB8F5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tinsel">
-			<UniqueIdentifier>BE897D8A-1453-4BBB-B8CE-5941190DFCFA</UniqueIdentifier>
+			<UniqueIdentifier>F743A91E-3918-4548-B5D7-827C49F99DAC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="titanic">
-			<UniqueIdentifier>02631014-545C-4538-B00F-35C459CABF7B</UniqueIdentifier>
+			<UniqueIdentifier>EA401116-AE46-4683-8D76-000F94333AE1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="toltecs">
-			<UniqueIdentifier>4BFAD979-B2F0-4E44-8D94-BF448A75413C</UniqueIdentifier>
+			<UniqueIdentifier>A1119648-0E9F-4968-A966-C4AB856AA866</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tony">
-			<UniqueIdentifier>AF084669-6823-4D34-9CF1-05968134CEFD</UniqueIdentifier>
+			<UniqueIdentifier>69099634-9506-4BCC-A3EB-6CE7C6B4CEFD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="toon">
-			<UniqueIdentifier>1D93CE7C-37BF-421A-BCC2-4815616F521F</UniqueIdentifier>
+			<UniqueIdentifier>489A7405-A2F0-40E7-978C-E8091A4AB0D7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tot">
-			<UniqueIdentifier>90BC7921-B787-4949-97CE-A5646D642936</UniqueIdentifier>
+			<UniqueIdentifier>80016F66-52D5-48F3-8807-50273583E59A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="touche">
-			<UniqueIdentifier>58A0369E-5FB3-4634-A823-E5879EF2D578</UniqueIdentifier>
+			<UniqueIdentifier>5B83D89A-B7F5-4AA6-925F-A80624DFE256</UniqueIdentifier>
 		</Filter>
 		<Filter Include="trecision">
-			<UniqueIdentifier>D984CFFD-44DF-4608-B91E-D94B6558D4EA</UniqueIdentifier>
+			<UniqueIdentifier>C70C92F0-5ABA-4E4E-8C37-A19D507030E1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tsage">
-			<UniqueIdentifier>7102BEEC-8C33-475C-9DCF-52E00D41D38D</UniqueIdentifier>
+			<UniqueIdentifier>6ADA930D-B75A-4D78-A1D6-EC8F4F112731</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tucker">
-			<UniqueIdentifier>69757285-34BE-4E07-A411-7C1F2395A4AB</UniqueIdentifier>
+			<UniqueIdentifier>1DDD1DA7-8629-43FE-AFBC-BC417F59CB23</UniqueIdentifier>
 		</Filter>
 		<Filter Include="twine">
-			<UniqueIdentifier>BF303F3C-7F99-42F4-96BE-C9280D7915E5</UniqueIdentifier>
+			<UniqueIdentifier>EE9AFD3A-B9D8-4B4D-9136-9CBB4B715171</UniqueIdentifier>
 		</Filter>
 		<Filter Include="twp">
-			<UniqueIdentifier>9CB9066C-6A06-4C81-9975-185A3D7C498F</UniqueIdentifier>
+			<UniqueIdentifier>CBCDB7BC-EDDC-497E-9F6A-D3CFABF17E36</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ultima">
-			<UniqueIdentifier>64C5E3BE-DDA2-4A43-9835-7E86B554D89A</UniqueIdentifier>
+			<UniqueIdentifier>C63D3CB5-98F3-4440-B072-28CE1E06C9DB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="vcruise">
-			<UniqueIdentifier>69A89B29-4668-441D-B310-0E26E395BFC7</UniqueIdentifier>
+			<UniqueIdentifier>EC264EEC-77B9-4E87-AACA-DBE69DD359C3</UniqueIdentifier>
 		</Filter>
 		<Filter Include="voyeur">
-			<UniqueIdentifier>B9AD31A4-B087-4BA5-9CB7-080865831481</UniqueIdentifier>
+			<UniqueIdentifier>A060EF5C-EEE9-48C2-B0C6-22DCD042A6C6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="wage">
-			<UniqueIdentifier>2373BDBC-354B-49EE-A7B0-11CD068385F4</UniqueIdentifier>
+			<UniqueIdentifier>530CDEAA-F02C-4D3F-BA82-74C641495625</UniqueIdentifier>
 		</Filter>
 		<Filter Include="watchmaker">
-			<UniqueIdentifier>3DF5FCE7-A48A-4AB4-BDCC-1835C9C61666</UniqueIdentifier>
+			<UniqueIdentifier>C62EF39B-E2D6-439B-AC3C-7FBE079FAC7F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="waynesworld">
-			<UniqueIdentifier>DCC4614C-0729-4856-99C9-82317942A771</UniqueIdentifier>
+			<UniqueIdentifier>C0EC7501-D96B-46B1-B8E0-7D54D367731E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="wintermute">
-			<UniqueIdentifier>76DC3054-57AD-494F-BCC8-281ECB65CF41</UniqueIdentifier>
+			<UniqueIdentifier>3A3CF559-3C25-4478-AE26-8696B4C0713E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="zvision">
-			<UniqueIdentifier>89C78475-C11B-4878-82AA-6DD17A880ABC</UniqueIdentifier>
+			<UniqueIdentifier>4FF6A163-ABAD-45C4-9C50-F5446B9427E2</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -408,6 +429,9 @@
 		<ClCompile Include="..\..\engines\bladerunner\detection.cpp">
 			<Filter>bladerunner</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\detection.cpp">
+			<Filter>bolt</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\buried\detection.cpp">
 			<Filter>buried</Filter>
 		</ClCompile>
@@ -425,6 +449,9 @@
 		</ClCompile>
 		<ClCompile Include="..\..\engines\cine\detection.cpp">
 			<Filter>cine</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\colony\detection.cpp">
+			<Filter>colony</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\composer\detection.cpp">
 			<Filter>composer</Filter>
@@ -465,8 +492,14 @@
 		<ClCompile Include="..\..\engines\dreamweb\detection.cpp">
 			<Filter>dreamweb</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\eem\detection.cpp">
+			<Filter>eem</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\efh\detection.cpp">
 			<Filter>efh</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\fool\detection.cpp">
+			<Filter>fool</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\freescape\detection.cpp">
 			<Filter>freescape</Filter>
@@ -494,6 +527,9 @@
 		</ClCompile>
 		<ClCompile Include="..\..\engines\hadesch\detection.cpp">
 			<Filter>hadesch</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\harvester\detection.cpp">
+			<Filter>harvester</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\hdb\detection.cpp">
 			<Filter>hdb</Filter>
@@ -540,6 +576,9 @@
 		<ClCompile Include="..\..\engines\m4\detection.cpp">
 			<Filter>m4</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\macs2\detection.cpp">
+			<Filter>macs2</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\macventure\detection.cpp">
 			<Filter>macventure</Filter>
 		</ClCompile>
@@ -584,6 +623,9 @@
 		</ClCompile>
 		<ClCompile Include="..\..\engines\pegasus\detection.cpp">
 			<Filter>pegasus</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\pelrock\detection.cpp">
+			<Filter>pelrock</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\petka\detection.cpp">
 			<Filter>petka</Filter>
@@ -765,6 +807,9 @@
 			<Filter>access</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\access\player.h">
+			<Filter>access</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\access\polygon.h">
 			<Filter>access</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\access\resources.h">
@@ -1235,10 +1280,16 @@
 		<ClInclude Include="..\..\engines\avalanche\highscore.h">
 			<Filter>avalanche</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\avalanche\intro.h">
+			<Filter>avalanche</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\avalanche\mainmenu.h">
 			<Filter>avalanche</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\avalanche\nim.h">
+			<Filter>avalanche</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\avalanche\outro.h">
 			<Filter>avalanche</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\avalanche\parser.h">
@@ -1254,6 +1305,9 @@
 			<Filter>avalanche</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\avalanche\timer.h">
+			<Filter>avalanche</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\avalanche\titlescreen.h">
 			<Filter>avalanche</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\awe\aifc_player.h">
@@ -1553,6 +1607,18 @@
 		<ClInclude Include="..\..\engines\bladerunner\zbuffer.h">
 			<Filter>bladerunner</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\bolt.h">
+			<Filter>bolt</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\detection.h">
+			<Filter>bolt</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\detection_tables.h">
+			<Filter>bolt</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\metaengine.h">
+			<Filter>bolt</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\buried\agent_evaluation.h">
 			<Filter>buried</Filter>
 		</ClInclude>
@@ -1763,6 +1829,9 @@
 		<ClInclude Include="..\..\engines\cge2\vmenu.h">
 			<Filter>cge2</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\chamber\amiga.h">
+			<Filter>chamber</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\chamber\anim.h">
 			<Filter>chamber</Filter>
 		</ClInclude>
@@ -1781,7 +1850,16 @@
 		<ClInclude Include="..\..\engines\chamber\decompr.h">
 			<Filter>chamber</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\chamber\detection.h">
+			<Filter>chamber</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\chamber\dialog.h">
+			<Filter>chamber</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\chamber\ega.h">
+			<Filter>chamber</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\chamber\ega_resource.h">
 			<Filter>chamber</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\chamber\enums.h">
@@ -1805,13 +1883,16 @@
 		<ClInclude Include="..\..\engines\chamber\print.h">
 			<Filter>chamber</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\chamber\renderer.h">
+			<Filter>chamber</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\chamber\resdata.h">
 			<Filter>chamber</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\chamber\room.h">
 			<Filter>chamber</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\chamber\savegame.h">
+		<ClInclude Include="..\..\engines\chamber\saveload.h">
 			<Filter>chamber</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\chamber\script.h">
@@ -1969,6 +2050,27 @@
 		</ClInclude>
 		<ClInclude Include="..\..\engines\cine\various.h">
 			<Filter>cine</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\colony\colony.h">
+			<Filter>colony</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\colony\console.h">
+			<Filter>colony</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\colony\detection.h">
+			<Filter>colony</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\colony\render_internal.h">
+			<Filter>colony</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\colony\renderer.h">
+			<Filter>colony</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\colony\renderer_opengl_shaders.h">
+			<Filter>colony</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\colony\sound.h">
+			<Filter>colony</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\composer\composer.h">
 			<Filter>composer</Filter>
@@ -2756,6 +2858,45 @@
 		<ClInclude Include="..\..\engines\dreamweb\structs.h">
 			<Filter>dreamweb</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\animation.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\audio.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\console.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\coords.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\detection.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\eem.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\font.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\installer.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\mac_sound_patches.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\music.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\mystery.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\resource.h">
+			<Filter>eem</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\eem\site.h">
+			<Filter>eem</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\efh\constants.h">
 			<Filter>efh</Filter>
 		</ClInclude>
@@ -2765,7 +2906,31 @@
 		<ClInclude Include="..\..\engines\efh\efh.h">
 			<Filter>efh</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\fool\detection.h">
+			<Filter>fool</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\fool\detection_tables.h">
+			<Filter>fool</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\fool\fool.h">
+			<Filter>fool</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\fool\fool_game.h">
+			<Filter>fool</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\fool\fool_prologue.h">
+			<Filter>fool</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\fool\messages.h">
+			<Filter>fool</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\fool\zbasic.h">
+			<Filter>fool</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\freescape\area.h">
+			<Filter>freescape</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\freescape\copylock.h">
 			<Filter>freescape</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\freescape\debugger.h">
@@ -2801,6 +2966,12 @@
 		<ClInclude Include="..\..\engines\freescape\gfx_tinygl_texture.h">
 			<Filter>freescape</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\freescape\music.h">
+			<Filter>freescape</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\freescape\sid.h">
+			<Filter>freescape</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\freescape\sound.h">
 			<Filter>freescape</Filter>
 		</ClInclude>
@@ -2808,6 +2979,9 @@
 			<Filter>freescape</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\freescape\wb.h">
+			<Filter>freescape</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\freescape\zx_tape.h">
 			<Filter>freescape</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\gamos\array2d.h">
@@ -2859,6 +3033,9 @@
 			<Filter>glk</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\glk\detection.h">
+			<Filter>glk</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\glk\dialogs.h">
 			<Filter>glk</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\glk\events.h">
@@ -3413,6 +3590,90 @@
 		<ClInclude Include="..\..\engines\hadesch\video.h">
 			<Filter>hadesch</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\art.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\cft_font.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\cheats.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\console.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\detection.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\detection_tables.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\dialogue.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\flow.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\fst_player.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\harvester.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\inventory.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\media_manager.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\menu.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\metaengine.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\monster.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\palette_utils.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\parse_utils.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\player.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\resources.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\room.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\room_combat.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\room_interaction.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\room_support.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\runtime_entity.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\saveload.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\script.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\text.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\harvester\xfile_archive.h">
+			<Filter>harvester</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\hdb\ai-player.h">
 			<Filter>hdb</Filter>
 		</ClInclude>
@@ -3453,6 +3714,27 @@
 			<Filter>hdb</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\hopkins\anim.h">
+			<Filter>hopkins</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\hopkins\base.h">
+			<Filter>hopkins</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\hopkins\base_data.h">
+			<Filter>hopkins</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\hopkins\base_engine.h">
+			<Filter>hopkins</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\hopkins\base_enhancements.h">
+			<Filter>hopkins</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\hopkins\base_enhancements_autoplay.h">
+			<Filter>hopkins</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\hopkins\base_renderer.h">
+			<Filter>hopkins</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\hopkins\base_types.h">
 			<Filter>hopkins</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\hopkins\computer.h">
@@ -4172,6 +4454,72 @@
 		<ClInclude Include="..\..\engines\m4\vars.h">
 			<Filter>m4</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\actionbar.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\amiga_archive.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\amiga_decode.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\character.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\debugtools.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\detection.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\detection_tables.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\dialogs.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\events.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\gameobjects.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\hotspot_names.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\macs2.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\macs2_constants.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\messages.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\metaengine.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\midiparser_macs2.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\music.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\pathfinding.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\scriptexecutor.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\sprite.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\text.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\macs2\view1.h">
+			<Filter>macs2</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\macventure\container.h">
 			<Filter>macventure</Filter>
 		</ClInclude>
@@ -4262,28 +4610,7 @@
 		<ClInclude Include="..\..\engines\made\sound.h">
 			<Filter>made</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\action.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\animation.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\assets.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\audio.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\camera.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\compression.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\conversations.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\debugger.h">
+		<ClInclude Include="..\..\engines\mads\console.h">
 			<Filter>mads</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mads\detection.h">
@@ -4292,79 +4619,7 @@
 		<ClInclude Include="..\..\engines\mads\detection_tables.h">
 			<Filter>mads</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\dialogs.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\events.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\font.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\game.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\game_data.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\globals.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\hotspots.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\inventory.h">
-			<Filter>mads</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\engines\mads\mads.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\menu_views.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\messages.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\mps_installer.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\msurface.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\palette.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\player.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\rails.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\resources.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\scene.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\scene_data.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\screen.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\sequence.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\sound.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\sprites.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\staticres.h">
-			<Filter>mads</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\user_interface.h">
 			<Filter>mads</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mediastation\actor.h">
@@ -4394,6 +4649,9 @@
 		<ClInclude Include="..\..\engines\mediastation\debugchannels.h">
 			<Filter>mediastation</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\mediastation\debugger.h">
+			<Filter>mediastation</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\mediastation\detection.h">
 			<Filter>mediastation</Filter>
 		</ClInclude>
@@ -4401,6 +4659,9 @@
 			<Filter>mediastation</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mediastation\dissolvepatterns.h">
+			<Filter>mediastation</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mediastation\events.h">
 			<Filter>mediastation</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mediastation\graphics.h">
@@ -4413,6 +4674,9 @@
 			<Filter>mediastation</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mediastation\profile.h">
+			<Filter>mediastation</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mediastation\statemachine.h">
 			<Filter>mediastation</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mm\detection.h">
@@ -4469,13 +4733,31 @@
 		<ClInclude Include="..\..\engines\mohawk\livingbooks.h">
 			<Filter>mohawk</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_animation.h">
+			<Filter>mohawk</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\mohawk\livingbooks_code.h">
+			<Filter>mohawk</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_constants.h">
 			<Filter>mohawk</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mohawk\livingbooks_graphics.h">
 			<Filter>mohawk</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_item.h">
+			<Filter>mohawk</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_itemscript.h">
+			<Filter>mohawk</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_itemtypes.h">
+			<Filter>mohawk</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\mohawk\livingbooks_lbx.h">
+			<Filter>mohawk</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_page.h">
 			<Filter>mohawk</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mohawk\mohawk.h">
@@ -4859,6 +5141,9 @@
 		<ClInclude Include="..\..\engines\nancy\input.h">
 			<Filter>nancy</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\nancy\movieplayer.h">
+			<Filter>nancy</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\nancy\nancy.h">
 			<Filter>nancy</Filter>
 		</ClInclude>
@@ -5165,6 +5450,78 @@
 		<ClInclude Include="..\..\engines\pegasus\util.h">
 			<Filter>pegasus</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\actions.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\backgroundbook.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\cdplayer.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\chrono.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\computer.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\console.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\detection.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\detection_tables.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\dialog.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\events.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\graphics.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\menu.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\metaengine.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\offsets.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\pathfinding.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\pelrock.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\resources.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\room.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\slidingpuzzle.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\sound.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\spellbook.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\types.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\util.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\pelrock\video.h">
+			<Filter>pelrock</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\petka\base.h">
 			<Filter>petka</Filter>
 		</ClInclude>
@@ -5210,6 +5567,12 @@
 		<ClInclude Include="..\..\engines\phoenixvr\commands.h">
 			<Filter>phoenixvr</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\commands_v1.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\commands_v2.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\phoenixvr\console.h">
 			<Filter>phoenixvr</Filter>
 		</ClInclude>
@@ -5234,6 +5597,9 @@
 		<ClInclude Include="..\..\engines\phoenixvr\pakf.h">
 			<Filter>phoenixvr</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\parser.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\phoenixvr\phoenixvr.h">
 			<Filter>phoenixvr</Filter>
 		</ClInclude>
@@ -5246,7 +5612,22 @@
 		<ClInclude Include="..\..\engines\phoenixvr\script.h">
 			<Filter>phoenixvr</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\script_v1.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\script_v2.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\subtitles.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\variables.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\phoenixvr\vr.h">
+			<Filter>phoenixvr</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\phoenixvr\wise.h">
 			<Filter>phoenixvr</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\pink\archive.h">
@@ -5391,6 +5772,9 @@
 			<Filter>private</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\private\grammar.h">
+			<Filter>private</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\private\paper.h">
 			<Filter>private</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\private\private.h">
@@ -5939,6 +6323,9 @@
 		<ClInclude Include="..\..\engines\scumm\boxes.h">
 			<Filter>scumm</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\bylerledecodeM68K.h">
+			<Filter>scumm</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\cdda.h">
 			<Filter>scumm</Filter>
 		</ClInclude>
@@ -6150,6 +6537,9 @@
 			<Filter>sky</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\sky\grid.h">
+			<Filter>sky</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\sky\ibasstext.h">
 			<Filter>sky</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\sky\intro.h">
@@ -6797,6 +7187,9 @@
 		<ClInclude Include="..\..\engines\tinsel\psx_archive.h">
 			<Filter>tinsel</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\tinsel\psx_japan_font.h">
+			<Filter>tinsel</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\tinsel\savescn.h">
 			<Filter>tinsel</Filter>
 		</ClInclude>
@@ -7370,9 +7763,6 @@
 		<ClInclude Include="..\..\engines\twp\thread.h">
 			<Filter>twp</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\twp\time.h">
-			<Filter>twp</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\engines\twp\tsv.h">
 			<Filter>twp</Filter>
 		</ClInclude>
@@ -7616,6 +8006,9 @@
 		<ClInclude Include="..\..\engines\waynesworld\waynesworld.h">
 			<Filter>waynesworld</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\waynesworld\wwintro.h">
+			<Filter>waynesworld</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\wintermute\achievements_tables.h">
 			<Filter>wintermute</Filter>
 		</ClInclude>
@@ -7705,6 +8098,9 @@
 		<None Include="..\..\engines\bladerunner\module.mk">
 			<Filter>bladerunner</Filter>
 		</None>
+		<None Include="..\..\engines\bolt\module.mk">
+			<Filter>bolt</Filter>
+		</None>
 		<None Include="..\..\engines\buried\module.mk">
 			<Filter>buried</Filter>
 		</None>
@@ -7722,6 +8118,9 @@
 		</None>
 		<None Include="..\..\engines\cine\module.mk">
 			<Filter>cine</Filter>
+		</None>
+		<None Include="..\..\engines\colony\module.mk">
+			<Filter>colony</Filter>
 		</None>
 		<None Include="..\..\engines\composer\module.mk">
 			<Filter>composer</Filter>
@@ -7762,8 +8161,14 @@
 		<None Include="..\..\engines\dreamweb\module.mk">
 			<Filter>dreamweb</Filter>
 		</None>
+		<None Include="..\..\engines\eem\module.mk">
+			<Filter>eem</Filter>
+		</None>
 		<None Include="..\..\engines\efh\module.mk">
 			<Filter>efh</Filter>
+		</None>
+		<None Include="..\..\engines\fool\module.mk">
+			<Filter>fool</Filter>
 		</None>
 		<None Include="..\..\engines\freescape\module.mk">
 			<Filter>freescape</Filter>
@@ -7794,6 +8199,9 @@
 		</None>
 		<None Include="..\..\engines\hadesch\module.mk">
 			<Filter>hadesch</Filter>
+		</None>
+		<None Include="..\..\engines\harvester\module.mk">
+			<Filter>harvester</Filter>
 		</None>
 		<None Include="..\..\engines\hdb\module.mk">
 			<Filter>hdb</Filter>
@@ -7840,6 +8248,9 @@
 		<None Include="..\..\engines\m4\module.mk">
 			<Filter>m4</Filter>
 		</None>
+		<None Include="..\..\engines\macs2\module.mk">
+			<Filter>macs2</Filter>
+		</None>
 		<None Include="..\..\engines\macventure\module.mk">
 			<Filter>macventure</Filter>
 		</None>
@@ -7884,6 +8295,9 @@
 		</None>
 		<None Include="..\..\engines\pegasus\module.mk">
 			<Filter>pegasus</Filter>
+		</None>
+		<None Include="..\..\engines\pelrock\module.mk">
+			<Filter>pelrock</Filter>
 		</None>
 		<None Include="..\..\engines\petka\module.mk">
 			<Filter>petka</Filter>

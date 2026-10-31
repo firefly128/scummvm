@@ -34,6 +34,8 @@
 
 #include "common/config-manager.h"
 
+#include "graphics/cursorman.h"
+
 #include "engines/util.h"
 
 #if defined(USE_TINYGL)
@@ -117,7 +119,7 @@ bool BaseRenderTinyGL::initRenderer(int width, int height, bool windowed) {
 	_width = width;
 	_height = height;
 
-	g_system->showMouse(false);
+	CursorMan.showMouse(false);
 
 	setViewport(0, 0, width, height);
 
@@ -154,7 +156,7 @@ bool BaseRenderTinyGL::flip() {
 
 	if (!dirtyAreas.empty()) {
 		for (Common::List<Common::Rect>::iterator itRect = dirtyAreas.begin(); itRect != dirtyAreas.end(); ++itRect) {
-			g_system->copyRectToScreen(glBuffer.getBasePtr((*itRect).left, (*itRect).top), glBuffer.pitch, (*itRect).left, (*itRect).top, (*itRect).width(), (*itRect).height());
+			g_system->copyRectToScreen(glBuffer.getBasePtr(itRect->left, itRect->top), glBuffer.pitch, itRect->left, itRect->top, itRect->width(), itRect->height());
 		}
 	}
 

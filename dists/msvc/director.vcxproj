@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{B1B852AB-C4F3-4DE8-BC73-FEB58A75F969}</ProjectGuid>
+		<ProjectGuid>{689CFD72-0B60-4688-978A-3F6B8916755B}</ProjectGuid>
 		<RootNamespace>director</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -187,7 +190,9 @@
 		<ClCompile Include="..\..\engines\director\debugger\dt-cast.cpp" />
 		<ClCompile Include="..\..\engines\director\debugger\dt-castdetails.cpp" />
 		<ClCompile Include="..\..\engines\director\debugger\dt-controlpanel.cpp" />
+		<ClCompile Include="..\..\engines\director\debugger\dt-help.cpp" />
 		<ClCompile Include="..\..\engines\director\debugger\dt-lists.cpp" />
+		<ClCompile Include="..\..\engines\director\debugger\dt-profiler.cpp" />
 		<ClCompile Include="..\..\engines\director\debugger\dt-save-state.cpp" />
 		<ClCompile Include="..\..\engines\director\debugger\dt-score.cpp" />
 		<ClCompile Include="..\..\engines\director\debugger\dt-script-d2.cpp" />
@@ -239,13 +244,17 @@
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\f\findfolder.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\f\findsys.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\f\findwin.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xlibs\f\flushmousexfcn.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\f\flushxobj.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\f\fplayxobj.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\f\fsutil.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\genutils.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\getpath.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\getscreenrectsxfcn.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\getscreensizexfcn.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\getsoundinlevel.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\getsoundxfcn.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\getuinfo.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\g\gpid.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\h\henry.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\h\hitmap.cpp" />
@@ -272,6 +281,7 @@
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\m\movieidxxobj.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\m\movutils.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\m\msfile.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xlibs\m\myfolder.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\m\mystisle.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\o\openbleedwindowxcmd.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\o\orthoplayxobj.cpp" />
@@ -298,6 +308,7 @@
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\s\smallutil.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\s\soundjam.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\s\spacemgr.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xlibs\s\stagectl.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\s\stagetc.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\s\syscolor.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\t\temnotaxobj.cpp" />
@@ -310,7 +321,7 @@
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\v\vmpresent.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\v\volumelist.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\v\voyagerxsound.cpp" />
-		<ClCompile Include="..\..\engines\director\lingo\xlibs\w\widgetxobj.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xlibs\w\widget.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\w\window.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\w\wininfo.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\w\winxobj.cpp" />
@@ -322,19 +333,30 @@
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\x\xwin.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xlibs\y\yasix.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\a\audio.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\b\border.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\b\budapi.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\d\datetime.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\d\directsound.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\d\displayres.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\f\fileflex.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\f\fileutil.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\f\filextra.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\f\filextra4.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\g\getdir.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\g\glu32.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\k\keypoll.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\m\masterapp.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\m\mbox.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\m\mui.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\n\netlingo.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\o\openurl.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\o\oscheck.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\p\paintx.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\q\qtvrxtra.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\r\registryreader.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\r\rtk.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\s\scrnutil.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras\s\setmouse.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\s\smacker.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\s\staytoonedball.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\s\staytoonedglop.cpp" />
@@ -344,6 +366,8 @@
 		<ClCompile Include="..\..\engines\director\lingo\xtras\s\staytoonedtoon.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\t\timextra.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\xtras\x\xsound.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras-cast\cursorxtra.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\xtras-cast\textxtra.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo-builtins.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo-bytecode.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo-code.cpp" />
@@ -356,6 +380,7 @@
 		<ClCompile Include="..\..\engines\director\lingo\lingo-object.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo-patcher.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo-preprocessor.cpp" />
+		<ClCompile Include="..\..\engines\director\lingo\lingo-profiler.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo-the.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo-utils.cpp" />
 		<ClCompile Include="..\..\engines\director\lingo\lingo.cpp" />
@@ -450,13 +475,17 @@
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\f\findfolder.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\f\findsys.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\f\findwin.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xlibs\f\flushmousexfcn.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\f\flushxobj.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\f\fplayxobj.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\f\fsutil.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\genutils.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\getpath.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\getscreenrectsxfcn.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\getscreensizexfcn.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\getsoundinlevel.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\getsoundxfcn.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\getuinfo.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\g\gpid.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\h\henry.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\h\hitmap.h" />
@@ -483,6 +512,7 @@
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\m\movieidxxobj.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\m\movutils.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\m\msfile.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xlibs\m\myfolder.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\m\mystisle.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\o\openbleedwindowxcmd.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\o\orthoplayxobj.h" />
@@ -509,6 +539,7 @@
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\s\smallutil.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\s\soundjam.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\s\spacemgr.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xlibs\s\stagectl.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\s\stagetc.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\s\syscolor.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\t\temnotaxobj.h" />
@@ -521,7 +552,7 @@
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\v\vmpresent.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\v\volumelist.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\v\voyagerxsound.h" />
-		<ClInclude Include="..\..\engines\director\lingo\xlibs\w\widgetxobj.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xlibs\w\widget.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\w\window.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\w\wininfo.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\w\winxobj.h" />
@@ -533,19 +564,30 @@
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\x\xwin.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xlibs\y\yasix.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\a\audio.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\b\border.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\b\budapi.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\d\datetime.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\d\directsound.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\d\displayres.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\f\fileflex.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\f\fileutil.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\f\filextra.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\f\filextra4.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\g\getdir.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\g\glu32.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\k\keypoll.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\m\masterapp.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\m\mbox.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\m\mui.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\n\netlingo.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\o\openurl.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\o\oscheck.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\p\paintx.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\q\qtvrxtra.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\r\registryreader.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\r\rtk.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\s\scrnutil.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras\s\setmouse.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\s\smacker.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\s\staytoonedball.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\s\staytoonedglop.h" />
@@ -555,6 +597,8 @@
 		<ClInclude Include="..\..\engines\director\lingo\xtras\s\staytoonedtoon.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\t\timextra.h" />
 		<ClInclude Include="..\..\engines\director\lingo\xtras\x\xsound.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras-cast\cursorxtra.h" />
+		<ClInclude Include="..\..\engines\director\lingo\xtras-cast\textxtra.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo-ast.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo-builtins.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo-bytecode.h" />
@@ -562,6 +606,7 @@
 		<ClInclude Include="..\..\engines\director\lingo\lingo-codegen.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo-gr.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo-object.h" />
+		<ClInclude Include="..\..\engines\director\lingo\lingo-profiler.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo-the.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo-utils.h" />
 		<ClInclude Include="..\..\engines\director\lingo\lingo.h" />

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{974B8C37-9C6D-44C3-BF92-04B6EDF46A01}</ProjectGuid>
+		<ProjectGuid>{C48CAEDC-DEB1-4FE3-9AA0-38FE4C8870A2}</ProjectGuid>
 		<RootNamespace>scummvm-detection</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -185,12 +188,14 @@
 		<ClCompile Include="..\..\engines\bagel\detection.cpp" />
 		<ClCompile Include="..\..\engines\bbvs\detection.cpp" />
 		<ClCompile Include="..\..\engines\bladerunner\detection.cpp" />
+		<ClCompile Include="..\..\engines\bolt\detection.cpp" />
 		<ClCompile Include="..\..\engines\buried\detection.cpp" />
 		<ClCompile Include="..\..\engines\cge\detection.cpp" />
 		<ClCompile Include="..\..\engines\cge2\detection.cpp" />
 		<ClCompile Include="..\..\engines\chamber\detection.cpp" />
 		<ClCompile Include="..\..\engines\chewy\detection.cpp" />
 		<ClCompile Include="..\..\engines\cine\detection.cpp" />
+		<ClCompile Include="..\..\engines\colony\detection.cpp" />
 		<ClCompile Include="..\..\engines\composer\detection.cpp" />
 		<ClCompile Include="..\..\engines\crab\detection.cpp" />
 		<ClCompile Include="..\..\engines\cruise\detection.cpp" />
@@ -204,7 +209,9 @@
 		<ClCompile Include="..\..\engines\dragons\detection.cpp" />
 		<ClCompile Include="..\..\engines\drascula\detection.cpp" />
 		<ClCompile Include="..\..\engines\dreamweb\detection.cpp" />
+		<ClCompile Include="..\..\engines\eem\detection.cpp" />
 		<ClCompile Include="..\..\engines\efh\detection.cpp" />
+		<ClCompile Include="..\..\engines\fool\detection.cpp" />
 		<ClCompile Include="..\..\engines\freescape\detection.cpp" />
 		<ClCompile Include="..\..\engines\gamos\detection.cpp" />
 		<ClCompile Include="..\..\engines\gnap\detection.cpp" />
@@ -214,6 +221,7 @@
 		<ClCompile Include="..\..\engines\grim\detection.cpp" />
 		<ClCompile Include="..\..\engines\groovie\detection.cpp" />
 		<ClCompile Include="..\..\engines\hadesch\detection.cpp" />
+		<ClCompile Include="..\..\engines\harvester\detection.cpp" />
 		<ClCompile Include="..\..\engines\hdb\detection.cpp" />
 		<ClCompile Include="..\..\engines\hopkins\detection.cpp" />
 		<ClCompile Include="..\..\engines\hpl1\detection.cpp" />
@@ -229,6 +237,7 @@
 		<ClCompile Include="..\..\engines\lilliput\detection.cpp" />
 		<ClCompile Include="..\..\engines\lure\detection.cpp" />
 		<ClCompile Include="..\..\engines\m4\detection.cpp" />
+		<ClCompile Include="..\..\engines\macs2\detection.cpp" />
 		<ClCompile Include="..\..\engines\macventure\detection.cpp" />
 		<ClCompile Include="..\..\engines\made\detection.cpp" />
 		<ClCompile Include="..\..\engines\mads\detection.cpp" />
@@ -244,6 +253,7 @@
 		<ClCompile Include="..\..\engines\ngi\detection.cpp" />
 		<ClCompile Include="..\..\engines\parallaction\detection.cpp" />
 		<ClCompile Include="..\..\engines\pegasus\detection.cpp" />
+		<ClCompile Include="..\..\engines\pelrock\detection.cpp" />
 		<ClCompile Include="..\..\engines\petka\detection.cpp" />
 		<ClCompile Include="..\..\engines\phoenixvr\detection.cpp" />
 		<ClCompile Include="..\..\engines\pink\detection.cpp" />
@@ -306,6 +316,7 @@
 		<ClInclude Include="..\..\engines\access\font.h" />
 		<ClInclude Include="..\..\engines\access\inventory.h" />
 		<ClInclude Include="..\..\engines\access\player.h" />
+		<ClInclude Include="..\..\engines\access\polygon.h" />
 		<ClInclude Include="..\..\engines\access\resources.h" />
 		<ClInclude Include="..\..\engines\access\room.h" />
 		<ClInclude Include="..\..\engines\access\screen.h" />
@@ -462,13 +473,16 @@
 		<ClInclude Include="..\..\engines\avalanche\graphics.h" />
 		<ClInclude Include="..\..\engines\avalanche\help.h" />
 		<ClInclude Include="..\..\engines\avalanche\highscore.h" />
+		<ClInclude Include="..\..\engines\avalanche\intro.h" />
 		<ClInclude Include="..\..\engines\avalanche\mainmenu.h" />
 		<ClInclude Include="..\..\engines\avalanche\nim.h" />
+		<ClInclude Include="..\..\engines\avalanche\outro.h" />
 		<ClInclude Include="..\..\engines\avalanche\parser.h" />
 		<ClInclude Include="..\..\engines\avalanche\sequence.h" />
 		<ClInclude Include="..\..\engines\avalanche\shootemup.h" />
 		<ClInclude Include="..\..\engines\avalanche\sound.h" />
 		<ClInclude Include="..\..\engines\avalanche\timer.h" />
+		<ClInclude Include="..\..\engines\avalanche\titlescreen.h" />
 		<ClInclude Include="..\..\engines\awe\aifc_player.h" />
 		<ClInclude Include="..\..\engines\awe\awe.h" />
 		<ClInclude Include="..\..\engines\awe\bitmap.h" />
@@ -568,6 +582,10 @@
 		<ClInclude Include="..\..\engines\bladerunner\vqa_player.h" />
 		<ClInclude Include="..\..\engines\bladerunner\waypoints.h" />
 		<ClInclude Include="..\..\engines\bladerunner\zbuffer.h" />
+		<ClInclude Include="..\..\engines\bolt\bolt.h" />
+		<ClInclude Include="..\..\engines\bolt\detection.h" />
+		<ClInclude Include="..\..\engines\bolt\detection_tables.h" />
+		<ClInclude Include="..\..\engines\bolt\metaengine.h" />
 		<ClInclude Include="..\..\engines\buried\agent_evaluation.h" />
 		<ClInclude Include="..\..\engines\buried\aidata.h" />
 		<ClInclude Include="..\..\engines\buried\animdata.h" />
@@ -638,13 +656,17 @@
 		<ClInclude Include="..\..\engines\cge2\text.h" />
 		<ClInclude Include="..\..\engines\cge2\vga13h.h" />
 		<ClInclude Include="..\..\engines\cge2\vmenu.h" />
+		<ClInclude Include="..\..\engines\chamber\amiga.h" />
 		<ClInclude Include="..\..\engines\chamber\anim.h" />
 		<ClInclude Include="..\..\engines\chamber\cga.h" />
 		<ClInclude Include="..\..\engines\chamber\chamber.h" />
 		<ClInclude Include="..\..\engines\chamber\common.h" />
 		<ClInclude Include="..\..\engines\chamber\cursor.h" />
 		<ClInclude Include="..\..\engines\chamber\decompr.h" />
+		<ClInclude Include="..\..\engines\chamber\detection.h" />
 		<ClInclude Include="..\..\engines\chamber\dialog.h" />
+		<ClInclude Include="..\..\engines\chamber\ega.h" />
+		<ClInclude Include="..\..\engines\chamber\ega_resource.h" />
 		<ClInclude Include="..\..\engines\chamber\enums.h" />
 		<ClInclude Include="..\..\engines\chamber\ifgm.h" />
 		<ClInclude Include="..\..\engines\chamber\input.h" />
@@ -652,9 +674,10 @@
 		<ClInclude Include="..\..\engines\chamber\menu.h" />
 		<ClInclude Include="..\..\engines\chamber\portrait.h" />
 		<ClInclude Include="..\..\engines\chamber\print.h" />
+		<ClInclude Include="..\..\engines\chamber\renderer.h" />
 		<ClInclude Include="..\..\engines\chamber\resdata.h" />
 		<ClInclude Include="..\..\engines\chamber\room.h" />
-		<ClInclude Include="..\..\engines\chamber\savegame.h" />
+		<ClInclude Include="..\..\engines\chamber\saveload.h" />
 		<ClInclude Include="..\..\engines\chamber\script.h" />
 		<ClInclude Include="..\..\engines\chamber\scrvars.h" />
 		<ClInclude Include="..\..\engines\chamber\sound.h" />
@@ -707,6 +730,13 @@
 		<ClInclude Include="..\..\engines\cine\texte.h" />
 		<ClInclude Include="..\..\engines\cine\unpack.h" />
 		<ClInclude Include="..\..\engines\cine\various.h" />
+		<ClInclude Include="..\..\engines\colony\colony.h" />
+		<ClInclude Include="..\..\engines\colony\console.h" />
+		<ClInclude Include="..\..\engines\colony\detection.h" />
+		<ClInclude Include="..\..\engines\colony\render_internal.h" />
+		<ClInclude Include="..\..\engines\colony\renderer.h" />
+		<ClInclude Include="..\..\engines\colony\renderer_opengl_shaders.h" />
+		<ClInclude Include="..\..\engines\colony\sound.h" />
 		<ClInclude Include="..\..\engines\composer\composer.h" />
 		<ClInclude Include="..\..\engines\composer\console.h" />
 		<ClInclude Include="..\..\engines\composer\detection.h" />
@@ -969,10 +999,31 @@
 		<ClInclude Include="..\..\engines\dreamweb\rnca_archive.h" />
 		<ClInclude Include="..\..\engines\dreamweb\sound.h" />
 		<ClInclude Include="..\..\engines\dreamweb\structs.h" />
+		<ClInclude Include="..\..\engines\eem\animation.h" />
+		<ClInclude Include="..\..\engines\eem\audio.h" />
+		<ClInclude Include="..\..\engines\eem\console.h" />
+		<ClInclude Include="..\..\engines\eem\coords.h" />
+		<ClInclude Include="..\..\engines\eem\detection.h" />
+		<ClInclude Include="..\..\engines\eem\eem.h" />
+		<ClInclude Include="..\..\engines\eem\font.h" />
+		<ClInclude Include="..\..\engines\eem\installer.h" />
+		<ClInclude Include="..\..\engines\eem\mac_sound_patches.h" />
+		<ClInclude Include="..\..\engines\eem\music.h" />
+		<ClInclude Include="..\..\engines\eem\mystery.h" />
+		<ClInclude Include="..\..\engines\eem\resource.h" />
+		<ClInclude Include="..\..\engines\eem\site.h" />
 		<ClInclude Include="..\..\engines\efh\constants.h" />
 		<ClInclude Include="..\..\engines\efh\detection.h" />
 		<ClInclude Include="..\..\engines\efh\efh.h" />
+		<ClInclude Include="..\..\engines\fool\detection.h" />
+		<ClInclude Include="..\..\engines\fool\detection_tables.h" />
+		<ClInclude Include="..\..\engines\fool\fool.h" />
+		<ClInclude Include="..\..\engines\fool\fool_game.h" />
+		<ClInclude Include="..\..\engines\fool\fool_prologue.h" />
+		<ClInclude Include="..\..\engines\fool\messages.h" />
+		<ClInclude Include="..\..\engines\fool\zbasic.h" />
 		<ClInclude Include="..\..\engines\freescape\area.h" />
+		<ClInclude Include="..\..\engines\freescape\copylock.h" />
 		<ClInclude Include="..\..\engines\freescape\debugger.h" />
 		<ClInclude Include="..\..\engines\freescape\detection.h" />
 		<ClInclude Include="..\..\engines\freescape\doodle.h" />
@@ -984,9 +1035,12 @@
 		<ClInclude Include="..\..\engines\freescape\gfx_opengl_texture.h" />
 		<ClInclude Include="..\..\engines\freescape\gfx_tinygl.h" />
 		<ClInclude Include="..\..\engines\freescape\gfx_tinygl_texture.h" />
+		<ClInclude Include="..\..\engines\freescape\music.h" />
+		<ClInclude Include="..\..\engines\freescape\sid.h" />
 		<ClInclude Include="..\..\engines\freescape\sound.h" />
 		<ClInclude Include="..\..\engines\freescape\sweepAABB.h" />
 		<ClInclude Include="..\..\engines\freescape\wb.h" />
+		<ClInclude Include="..\..\engines\freescape\zx_tape.h" />
 		<ClInclude Include="..\..\engines\gamos\array2d.h" />
 		<ClInclude Include="..\..\engines\gamos\blit.h" />
 		<ClInclude Include="..\..\engines\gamos\detection.h" />
@@ -1004,6 +1058,7 @@
 		<ClInclude Include="..\..\engines\glk\conf.h" />
 		<ClInclude Include="..\..\engines\glk\debugger.h" />
 		<ClInclude Include="..\..\engines\glk\detection.h" />
+		<ClInclude Include="..\..\engines\glk\dialogs.h" />
 		<ClInclude Include="..\..\engines\glk\events.h" />
 		<ClInclude Include="..\..\engines\glk\fonts.h" />
 		<ClInclude Include="..\..\engines\glk\game_description.h" />
@@ -1188,6 +1243,34 @@
 		<ClInclude Include="..\..\engines\hadesch\table.h" />
 		<ClInclude Include="..\..\engines\hadesch\tag_file.h" />
 		<ClInclude Include="..\..\engines\hadesch\video.h" />
+		<ClInclude Include="..\..\engines\harvester\art.h" />
+		<ClInclude Include="..\..\engines\harvester\cft_font.h" />
+		<ClInclude Include="..\..\engines\harvester\cheats.h" />
+		<ClInclude Include="..\..\engines\harvester\console.h" />
+		<ClInclude Include="..\..\engines\harvester\detection.h" />
+		<ClInclude Include="..\..\engines\harvester\detection_tables.h" />
+		<ClInclude Include="..\..\engines\harvester\dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\flow.h" />
+		<ClInclude Include="..\..\engines\harvester\fst_player.h" />
+		<ClInclude Include="..\..\engines\harvester\harvester.h" />
+		<ClInclude Include="..\..\engines\harvester\inventory.h" />
+		<ClInclude Include="..\..\engines\harvester\media_manager.h" />
+		<ClInclude Include="..\..\engines\harvester\menu.h" />
+		<ClInclude Include="..\..\engines\harvester\metaengine.h" />
+		<ClInclude Include="..\..\engines\harvester\monster.h" />
+		<ClInclude Include="..\..\engines\harvester\palette_utils.h" />
+		<ClInclude Include="..\..\engines\harvester\parse_utils.h" />
+		<ClInclude Include="..\..\engines\harvester\player.h" />
+		<ClInclude Include="..\..\engines\harvester\resources.h" />
+		<ClInclude Include="..\..\engines\harvester\room.h" />
+		<ClInclude Include="..\..\engines\harvester\room_combat.h" />
+		<ClInclude Include="..\..\engines\harvester\room_interaction.h" />
+		<ClInclude Include="..\..\engines\harvester\room_support.h" />
+		<ClInclude Include="..\..\engines\harvester\runtime_entity.h" />
+		<ClInclude Include="..\..\engines\harvester\saveload.h" />
+		<ClInclude Include="..\..\engines\harvester\script.h" />
+		<ClInclude Include="..\..\engines\harvester\text.h" />
+		<ClInclude Include="..\..\engines\harvester\xfile_archive.h" />
 		<ClInclude Include="..\..\engines\hdb\ai-player.h" />
 		<ClInclude Include="..\..\engines\hdb\ai.h" />
 		<ClInclude Include="..\..\engines\hdb\detection.h" />
@@ -1202,6 +1285,13 @@
 		<ClInclude Include="..\..\engines\hdb\sound.h" />
 		<ClInclude Include="..\..\engines\hdb\window.h" />
 		<ClInclude Include="..\..\engines\hopkins\anim.h" />
+		<ClInclude Include="..\..\engines\hopkins\base.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_data.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_engine.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_enhancements.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_enhancements_autoplay.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_renderer.h" />
+		<ClInclude Include="..\..\engines\hopkins\base_types.h" />
 		<ClInclude Include="..\..\engines\hopkins\computer.h" />
 		<ClInclude Include="..\..\engines\hopkins\debugger.h" />
 		<ClInclude Include="..\..\engines\hopkins\detection.h" />
@@ -1441,6 +1531,28 @@
 		<ClInclude Include="..\..\engines\m4\metaengine.h" />
 		<ClInclude Include="..\..\engines\m4\subtitles.h" />
 		<ClInclude Include="..\..\engines\m4\vars.h" />
+		<ClInclude Include="..\..\engines\macs2\actionbar.h" />
+		<ClInclude Include="..\..\engines\macs2\amiga_archive.h" />
+		<ClInclude Include="..\..\engines\macs2\amiga_decode.h" />
+		<ClInclude Include="..\..\engines\macs2\character.h" />
+		<ClInclude Include="..\..\engines\macs2\debugtools.h" />
+		<ClInclude Include="..\..\engines\macs2\detection.h" />
+		<ClInclude Include="..\..\engines\macs2\detection_tables.h" />
+		<ClInclude Include="..\..\engines\macs2\dialogs.h" />
+		<ClInclude Include="..\..\engines\macs2\events.h" />
+		<ClInclude Include="..\..\engines\macs2\gameobjects.h" />
+		<ClInclude Include="..\..\engines\macs2\hotspot_names.h" />
+		<ClInclude Include="..\..\engines\macs2\macs2.h" />
+		<ClInclude Include="..\..\engines\macs2\macs2_constants.h" />
+		<ClInclude Include="..\..\engines\macs2\messages.h" />
+		<ClInclude Include="..\..\engines\macs2\metaengine.h" />
+		<ClInclude Include="..\..\engines\macs2\midiparser_macs2.h" />
+		<ClInclude Include="..\..\engines\macs2\music.h" />
+		<ClInclude Include="..\..\engines\macs2\pathfinding.h" />
+		<ClInclude Include="..\..\engines\macs2\scriptexecutor.h" />
+		<ClInclude Include="..\..\engines\macs2\sprite.h" />
+		<ClInclude Include="..\..\engines\macs2\text.h" />
+		<ClInclude Include="..\..\engines\macs2\view1.h" />
 		<ClInclude Include="..\..\engines\macventure\container.h" />
 		<ClInclude Include="..\..\engines\macventure\controls.h" />
 		<ClInclude Include="..\..\engines\macventure\debug.h" />
@@ -1471,41 +1583,10 @@
 		<ClInclude Include="..\..\engines\made\script.h" />
 		<ClInclude Include="..\..\engines\made\scriptfuncs.h" />
 		<ClInclude Include="..\..\engines\made\sound.h" />
-		<ClInclude Include="..\..\engines\mads\action.h" />
-		<ClInclude Include="..\..\engines\mads\animation.h" />
-		<ClInclude Include="..\..\engines\mads\assets.h" />
-		<ClInclude Include="..\..\engines\mads\audio.h" />
-		<ClInclude Include="..\..\engines\mads\camera.h" />
-		<ClInclude Include="..\..\engines\mads\compression.h" />
-		<ClInclude Include="..\..\engines\mads\conversations.h" />
-		<ClInclude Include="..\..\engines\mads\debugger.h" />
+		<ClInclude Include="..\..\engines\mads\console.h" />
 		<ClInclude Include="..\..\engines\mads\detection.h" />
 		<ClInclude Include="..\..\engines\mads\detection_tables.h" />
-		<ClInclude Include="..\..\engines\mads\dialogs.h" />
-		<ClInclude Include="..\..\engines\mads\events.h" />
-		<ClInclude Include="..\..\engines\mads\font.h" />
-		<ClInclude Include="..\..\engines\mads\game.h" />
-		<ClInclude Include="..\..\engines\mads\game_data.h" />
-		<ClInclude Include="..\..\engines\mads\globals.h" />
-		<ClInclude Include="..\..\engines\mads\hotspots.h" />
-		<ClInclude Include="..\..\engines\mads\inventory.h" />
 		<ClInclude Include="..\..\engines\mads\mads.h" />
-		<ClInclude Include="..\..\engines\mads\menu_views.h" />
-		<ClInclude Include="..\..\engines\mads\messages.h" />
-		<ClInclude Include="..\..\engines\mads\mps_installer.h" />
-		<ClInclude Include="..\..\engines\mads\msurface.h" />
-		<ClInclude Include="..\..\engines\mads\palette.h" />
-		<ClInclude Include="..\..\engines\mads\player.h" />
-		<ClInclude Include="..\..\engines\mads\rails.h" />
-		<ClInclude Include="..\..\engines\mads\resources.h" />
-		<ClInclude Include="..\..\engines\mads\scene.h" />
-		<ClInclude Include="..\..\engines\mads\scene_data.h" />
-		<ClInclude Include="..\..\engines\mads\screen.h" />
-		<ClInclude Include="..\..\engines\mads\sequence.h" />
-		<ClInclude Include="..\..\engines\mads\sound.h" />
-		<ClInclude Include="..\..\engines\mads\sprites.h" />
-		<ClInclude Include="..\..\engines\mads\staticres.h" />
-		<ClInclude Include="..\..\engines\mads\user_interface.h" />
 		<ClInclude Include="..\..\engines\mediastation\actor.h" />
 		<ClInclude Include="..\..\engines\mediastation\audio.h" />
 		<ClInclude Include="..\..\engines\mediastation\bitmap.h" />
@@ -1515,13 +1596,16 @@
 		<ClInclude Include="..\..\engines\mediastation\cursors.h" />
 		<ClInclude Include="..\..\engines\mediastation\datafile.h" />
 		<ClInclude Include="..\..\engines\mediastation\debugchannels.h" />
+		<ClInclude Include="..\..\engines\mediastation\debugger.h" />
 		<ClInclude Include="..\..\engines\mediastation\detection.h" />
 		<ClInclude Include="..\..\engines\mediastation\detection_tables.h" />
 		<ClInclude Include="..\..\engines\mediastation\dissolvepatterns.h" />
+		<ClInclude Include="..\..\engines\mediastation\events.h" />
 		<ClInclude Include="..\..\engines\mediastation\graphics.h" />
 		<ClInclude Include="..\..\engines\mediastation\mediastation.h" />
 		<ClInclude Include="..\..\engines\mediastation\metaengine.h" />
 		<ClInclude Include="..\..\engines\mediastation\profile.h" />
+		<ClInclude Include="..\..\engines\mediastation\statemachine.h" />
 		<ClInclude Include="..\..\engines\mm\detection.h" />
 		<ClInclude Include="..\..\engines\mm\detection_tables.h" />
 		<ClInclude Include="..\..\engines\mm\mm.h" />
@@ -1540,9 +1624,15 @@
 		<ClInclude Include="..\..\engines\mohawk\graphics.h" />
 		<ClInclude Include="..\..\engines\mohawk\installer_archive.h" />
 		<ClInclude Include="..\..\engines\mohawk\livingbooks.h" />
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_animation.h" />
 		<ClInclude Include="..\..\engines\mohawk\livingbooks_code.h" />
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_constants.h" />
 		<ClInclude Include="..\..\engines\mohawk\livingbooks_graphics.h" />
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_item.h" />
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_itemscript.h" />
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_itemtypes.h" />
 		<ClInclude Include="..\..\engines\mohawk\livingbooks_lbx.h" />
+		<ClInclude Include="..\..\engines\mohawk\livingbooks_page.h" />
 		<ClInclude Include="..\..\engines\mohawk\mohawk.h" />
 		<ClInclude Include="..\..\engines\mohawk\myst.h" />
 		<ClInclude Include="..\..\engines\mohawk\myst_actions.h" />
@@ -1670,6 +1760,7 @@
 		<ClInclude Include="..\..\engines\nancy\graphics.h" />
 		<ClInclude Include="..\..\engines\nancy\iff.h" />
 		<ClInclude Include="..\..\engines\nancy\input.h" />
+		<ClInclude Include="..\..\engines\nancy\movieplayer.h" />
 		<ClInclude Include="..\..\engines\nancy\nancy.h" />
 		<ClInclude Include="..\..\engines\nancy\puzzledata.h" />
 		<ClInclude Include="..\..\engines\nancy\renderobject.h" />
@@ -1772,6 +1863,30 @@
 		<ClInclude Include="..\..\engines\pegasus\transition.h" />
 		<ClInclude Include="..\..\engines\pegasus\types.h" />
 		<ClInclude Include="..\..\engines\pegasus\util.h" />
+		<ClInclude Include="..\..\engines\pelrock\actions.h" />
+		<ClInclude Include="..\..\engines\pelrock\backgroundbook.h" />
+		<ClInclude Include="..\..\engines\pelrock\cdplayer.h" />
+		<ClInclude Include="..\..\engines\pelrock\chrono.h" />
+		<ClInclude Include="..\..\engines\pelrock\computer.h" />
+		<ClInclude Include="..\..\engines\pelrock\console.h" />
+		<ClInclude Include="..\..\engines\pelrock\detection.h" />
+		<ClInclude Include="..\..\engines\pelrock\detection_tables.h" />
+		<ClInclude Include="..\..\engines\pelrock\dialog.h" />
+		<ClInclude Include="..\..\engines\pelrock\events.h" />
+		<ClInclude Include="..\..\engines\pelrock\graphics.h" />
+		<ClInclude Include="..\..\engines\pelrock\menu.h" />
+		<ClInclude Include="..\..\engines\pelrock\metaengine.h" />
+		<ClInclude Include="..\..\engines\pelrock\offsets.h" />
+		<ClInclude Include="..\..\engines\pelrock\pathfinding.h" />
+		<ClInclude Include="..\..\engines\pelrock\pelrock.h" />
+		<ClInclude Include="..\..\engines\pelrock\resources.h" />
+		<ClInclude Include="..\..\engines\pelrock\room.h" />
+		<ClInclude Include="..\..\engines\pelrock\slidingpuzzle.h" />
+		<ClInclude Include="..\..\engines\pelrock\sound.h" />
+		<ClInclude Include="..\..\engines\pelrock\spellbook.h" />
+		<ClInclude Include="..\..\engines\pelrock\types.h" />
+		<ClInclude Include="..\..\engines\pelrock\util.h" />
+		<ClInclude Include="..\..\engines\pelrock\video.h" />
 		<ClInclude Include="..\..\engines\petka\base.h" />
 		<ClInclude Include="..\..\engines\petka\big_dialogue.h" />
 		<ClInclude Include="..\..\engines\petka\detection_tables.h" />
@@ -1787,6 +1902,8 @@
 		<ClInclude Include="..\..\engines\phoenixvr\arn.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\bigf.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\commands.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\commands_v1.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\commands_v2.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\console.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\dct_tables.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\detection.h" />
@@ -1795,11 +1912,17 @@
 		<ClInclude Include="..\..\engines\phoenixvr\math.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\metaengine.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\pakf.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\parser.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\phoenixvr.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\rectf.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\region_set.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\script.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\script_v1.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\script_v2.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\subtitles.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\variables.h" />
 		<ClInclude Include="..\..\engines\phoenixvr\vr.h" />
+		<ClInclude Include="..\..\engines\phoenixvr\wise.h" />
 		<ClInclude Include="..\..\engines\pink\archive.h" />
 		<ClInclude Include="..\..\engines\pink\audio_info_mgr.h" />
 		<ClInclude Include="..\..\engines\pink\cel_decoder.h" />
@@ -1848,6 +1971,7 @@
 		<ClInclude Include="..\..\engines\private\decompiler.h" />
 		<ClInclude Include="..\..\engines\private\detection.h" />
 		<ClInclude Include="..\..\engines\private\grammar.h" />
+		<ClInclude Include="..\..\engines\private\paper.h" />
 		<ClInclude Include="..\..\engines\private\private.h" />
 		<ClInclude Include="..\..\engines\private\savegame.h" />
 		<ClInclude Include="..\..\engines\private\symbol.h" />
@@ -2030,6 +2154,7 @@
 		<ClInclude Include="..\..\engines\scumm\base-costume.h" />
 		<ClInclude Include="..\..\engines\scumm\bomp.h" />
 		<ClInclude Include="..\..\engines\scumm\boxes.h" />
+		<ClInclude Include="..\..\engines\scumm\bylerledecodeM68K.h" />
 		<ClInclude Include="..\..\engines\scumm\cdda.h" />
 		<ClInclude Include="..\..\engines\scumm\charset.h" />
 		<ClInclude Include="..\..\engines\scumm\charset_v7.h" />
@@ -2101,6 +2226,7 @@
 		<ClInclude Include="..\..\engines\sky\debug.h" />
 		<ClInclude Include="..\..\engines\sky\disk.h" />
 		<ClInclude Include="..\..\engines\sky\grid.h" />
+		<ClInclude Include="..\..\engines\sky\ibasstext.h" />
 		<ClInclude Include="..\..\engines\sky\intro.h" />
 		<ClInclude Include="..\..\engines\sky\logic.h" />
 		<ClInclude Include="..\..\engines\sky\mouse.h" />
@@ -2316,6 +2442,7 @@
 		<ClInclude Include="..\..\engines\tinsel\play.h" />
 		<ClInclude Include="..\..\engines\tinsel\polygons.h" />
 		<ClInclude Include="..\..\engines\tinsel\psx_archive.h" />
+		<ClInclude Include="..\..\engines\tinsel\psx_japan_font.h" />
 		<ClInclude Include="..\..\engines\tinsel\savescn.h" />
 		<ClInclude Include="..\..\engines\tinsel\scene.h" />
 		<ClInclude Include="..\..\engines\tinsel\sched.h" />
@@ -2507,7 +2634,6 @@
 		<ClInclude Include="..\..\engines\twp\squtil.h" />
 		<ClInclude Include="..\..\engines\twp\task.h" />
 		<ClInclude Include="..\..\engines\twp\thread.h" />
-		<ClInclude Include="..\..\engines\twp\time.h" />
 		<ClInclude Include="..\..\engines\twp\tsv.h" />
 		<ClInclude Include="..\..\engines\twp\twp.h" />
 		<ClInclude Include="..\..\engines\twp\util.h" />
@@ -2589,6 +2715,7 @@
 		<ClInclude Include="..\..\engines\waynesworld\objectids.h" />
 		<ClInclude Include="..\..\engines\waynesworld\sound.h" />
 		<ClInclude Include="..\..\engines\waynesworld\waynesworld.h" />
+		<ClInclude Include="..\..\engines\waynesworld\wwintro.h" />
 		<ClInclude Include="..\..\engines\wintermute\achievements_tables.h" />
 		<ClInclude Include="..\..\engines\wintermute\coll_templ.h" />
 		<ClInclude Include="..\..\engines\wintermute\dcgf.h" />
@@ -2620,12 +2747,14 @@
 		<None Include="..\..\engines\bagel\module.mk" />
 		<None Include="..\..\engines\bbvs\module.mk" />
 		<None Include="..\..\engines\bladerunner\module.mk" />
+		<None Include="..\..\engines\bolt\module.mk" />
 		<None Include="..\..\engines\buried\module.mk" />
 		<None Include="..\..\engines\cge\module.mk" />
 		<None Include="..\..\engines\cge2\module.mk" />
 		<None Include="..\..\engines\chamber\module.mk" />
 		<None Include="..\..\engines\chewy\module.mk" />
 		<None Include="..\..\engines\cine\module.mk" />
+		<None Include="..\..\engines\colony\module.mk" />
 		<None Include="..\..\engines\composer\module.mk" />
 		<None Include="..\..\engines\crab\module.mk" />
 		<None Include="..\..\engines\cruise\module.mk" />
@@ -2639,7 +2768,9 @@
 		<None Include="..\..\engines\dragons\module.mk" />
 		<None Include="..\..\engines\drascula\module.mk" />
 		<None Include="..\..\engines\dreamweb\module.mk" />
+		<None Include="..\..\engines\eem\module.mk" />
 		<None Include="..\..\engines\efh\module.mk" />
+		<None Include="..\..\engines\fool\module.mk" />
 		<None Include="..\..\engines\freescape\module.mk" />
 		<None Include="..\..\engines\gamos\module.mk" />
 		<None Include="..\..\engines\glk\module.mk" />
@@ -2650,6 +2781,7 @@
 		<None Include="..\..\engines\grim\module.mk" />
 		<None Include="..\..\engines\groovie\module.mk" />
 		<None Include="..\..\engines\hadesch\module.mk" />
+		<None Include="..\..\engines\harvester\module.mk" />
 		<None Include="..\..\engines\hdb\module.mk" />
 		<None Include="..\..\engines\hopkins\module.mk" />
 		<None Include="..\..\engines\hpl1\module.mk" />
@@ -2665,6 +2797,7 @@
 		<None Include="..\..\engines\lilliput\module.mk" />
 		<None Include="..\..\engines\lure\module.mk" />
 		<None Include="..\..\engines\m4\module.mk" />
+		<None Include="..\..\engines\macs2\module.mk" />
 		<None Include="..\..\engines\macventure\module.mk" />
 		<None Include="..\..\engines\made\module.mk" />
 		<None Include="..\..\engines\mads\module.mk" />
@@ -2680,6 +2813,7 @@
 		<None Include="..\..\engines\ngi\module.mk" />
 		<None Include="..\..\engines\parallaction\module.mk" />
 		<None Include="..\..\engines\pegasus\module.mk" />
+		<None Include="..\..\engines\pelrock\module.mk" />
 		<None Include="..\..\engines\petka\module.mk" />
 		<None Include="..\..\engines\phoenixvr\module.mk" />
 		<None Include="..\..\engines\pink\module.mk" />

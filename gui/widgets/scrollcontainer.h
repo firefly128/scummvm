@@ -25,6 +25,7 @@
 #include "gui/widget.h"
 #include "common/str.h"
 #include "gui/widgets/scrollbar.h"
+#include "gui/animation/FluidScroll.h"
 
 namespace GUI {
 
@@ -36,8 +37,16 @@ class ScrollContainerWidget: public Widget, public CommandSender {
 	uint32 _reflowCmd;
 	ThemeEngine::WidgetBackground _backgroundType;
 	Common::String _dialogName;
+	static const int kDragThreshold = 5;
+	int _mouseDownY = 0;
+	int _mouseDownStartY = 0;
+	bool _isMouseDown = false;
+	bool _isDragging = false;
+	float _scrollPos = 0.0f;
+	FluidScroller *_fluidScroller = nullptr;
 
 	void recalc();
+	void applyScrollPos();
 
 public:
 	ScrollContainerWidget(GuiObject *boss, int x, int y, int w, int h, uint32 reflowCmd = 0);
@@ -53,6 +62,14 @@ public:
 	void setBackgroundType(ThemeEngine::WidgetBackground backgroundType);
 
 	void handleMouseWheel(int x, int y, int direction) override;
+	void handleMouseDown(int x, int y, int button, int clickCount) override;
+	void handleMouseUp(int x, int y, int button, int clickCount) override;
+	void handleMouseMoved(int x, int y, int button) override;
+	void handleTickle() override;
+	bool handleDragHook(Widget *origTarget, int state, int x, int y, int button) override;
+
+	void cancelDrag() override;
+	void cancelTickle() override;
 
 	// We overload getChildY to make sure child widgets are positioned correctly.
 	// Essentially this compensates for the space taken up by the tab title header.

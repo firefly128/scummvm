@@ -37,8 +37,15 @@ namespace Freescape {
 
 typedef Common::HashMap<uint16, Object *> ObjectMap;
 typedef Common::Array<Object *> ObjectArray;
+
 class Area {
 public:
+	enum RenderDepthLayer {
+		kRenderDepthAll,
+		kRenderDepthBackground,
+		kRenderDepthForeground
+	};
+
 	Area(uint16 areaID, uint16 areaFlags, ObjectMap *objectsByID, ObjectMap *entrancesByID, bool isCastle);
 	virtual ~Area();
 
@@ -57,25 +64,28 @@ public:
 	uint8 getScale();
 	void remapColor(int index, int color);
 	void unremapColor(int index);
-	void draw(Renderer *gfx, uint32 animationTicks, Math::Vector3d camera, Math::Vector3d direction, bool insideWait);
+	void draw(Renderer *gfx, uint32 animationTicks, Math::Vector3d camera, Math::Vector3d direction, float roll, bool insideWait, float fov, float aspectRatio, float nearClipPlane, float farClipPlane);
+	void drawDepthLayer(Renderer *gfx, uint32 animationTicks, Math::Vector3d camera, Math::Vector3d direction, float roll, bool insideWait, RenderDepthLayer depthLayer, float foregroundDistance, float fov, float aspectRatio, float nearClipPlane, float farClipPlane);
 	void drawGroup(Renderer *gfx, Group *group, bool runAnimation);
 	void show();
 
-	Object *checkCollisionRay(const Math::Ray &ray, int raySize);
+	Object *checkCollisionRay(const Math::Ray &ray, int raySize, bool skipTransparent = false);
 	bool checkInSight(const Math::Ray &ray, float maxDistance);
 	Math::Vector3d separateFromWall(const Math::Vector3d &position);
+	Math::Vector3d separateCameraFromWall(const Math::Vector3d &eye, float separation);
 	ObjectArray checkCollisions(const Math::AABB &boundingBox);
 	bool checkIfPlayerWasCrushed(const Math::AABB &boundingBox);
 	Math::Vector3d resolveCollisions(Math::Vector3d const &lastPosition, Math::Vector3d const &newPosition, int playerHeight);
 	void addObjectFromArea(int16 id, Area *global);
 	void addGroupFromArea(int16 id, Area *global);
 	void addObject(Object *obj);
-	void addFloor();
+	void addFloor(uint8 extraColor = 0);
 	void addStructure(Area *global);
 	void removeObject(int16 id);
 	void resetArea();
 	void resetAreaGroups();
 	bool isOutside();
+	bool hasDrawableObjects() const { return !_drawableObjects.empty(); }
 	bool hasActiveGroups();
 
 	Common::Array<Common::String> _conditionSources;
@@ -107,10 +117,28 @@ public:
 
 private:
 	Math::Vector3d _lastCameraPosition;
+	Math::Vector3d _lastCameraDirection;
+	float _lastCameraRoll;
+	float _lastFov;
+	float _lastAspectRatio;
+	float _lastNearClipPlane;
+	float _lastFarClipPlane;
 	ObjectArray _sortedObjects;
+	ObjectArray _depthLayerSortedObjects;
+	Math::Vector3d _lastDepthLayerCameraPosition;
+	Math::Vector3d _lastDepthLayerCameraDirection;
+	float _lastDepthLayerCameraRoll;
+	float _lastDepthLayerFov;
+	float _lastDepthLayerAspectRatio;
+	float _lastDepthLayerNearClipPlane;
+	float _lastDepthLayerFarClipPlane;
+	RenderDepthLayer _lastRenderDepthLayer;
+	float _lastForegroundDistance;
+	uint32 _lastDepthLayerTick;
 
 	uint16 _areaID;
 	uint16 _areaFlags;
+	bool _hasSyntheticFloor;
 	ObjectMap *_objectsByID;
 	ObjectMap *_entrancesByID;
 	ObjectArray _drawableObjects;

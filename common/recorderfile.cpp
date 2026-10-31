@@ -26,10 +26,10 @@
 #include "common/savefile.h"
 #include "common/bufferedstream.h"
 #include "graphics/thumbnail.h"
-#include "graphics/surface.h"
+#include "graphics/managed_surface.h"
 #include "graphics/scaler.h"
 
-#define RECORD_VERSION 1
+#define RECORD_VERSION 2
 
 namespace Common {
 
@@ -136,6 +136,7 @@ bool PlaybackFile::checkPlaybackFileVersion() {
 	_version = _readStream->readUint32BE();
 	switch (_version) {
 	case 1:
+	case 2:
 		break;
 	default:
 		warning("Unknown playback file version %d. Maximum supported version is %d.", _version, RECORD_VERSION);
@@ -337,7 +338,9 @@ bool PlaybackFile::hasNextEvent() const {
 RecorderEvent PlaybackFile::getNextEvent() {
 	if (!hasNextEvent()) {
 		debug(3, "end of recorder file reached.");
-		g_system->quit();
+		RecorderEvent result = {};
+		result.type = EVENT_QUIT;
+		return result;
 	}
 
 	assert(_mode == kRead);
@@ -366,6 +369,12 @@ RecorderEvent PlaybackFile::getNextEvent() {
 			}
 		}
 	}
+	if (isEventsBufferEmpty()) {
+		debug(3, "end of recorder file reached.");
+		RecorderEvent result = {};
+		result.type = EVENT_QUIT;
+		return result;
+	}
 	RecorderEvent result;
 	readEvent(result);
 	return result;
@@ -379,6 +388,7 @@ void PlaybackFile::readEvent(RecorderEvent& event) {
 	event.recordedtype = (RecorderEventType)_tmpPlaybackFile.readByte();
 	switch (event.recordedtype) {
 	case kRecorderEventTypeTimer:
+	case kRecorderEventTypePoll:
 		event.time = _tmpPlaybackFile.readUint32BE();
 		break;
 	case kRecorderEventTypeTimeDate:
@@ -455,7 +465,11 @@ void PlaybackFile::readEventsToBuffer(uint32 size) {
 	_eventsSize = size;
 }
 
-void PlaybackFile::saveScreenShot(Graphics::Surface &screen, byte md5[16]) {
+void PlaybackFile::saveScreenShot(const Graphics::ManagedSurface &screen, const byte md5[16]) {
+	saveScreenShot(screen.rawSurface(), md5);
+}
+
+void PlaybackFile::saveScreenShot(const Graphics::Surface &screen, const byte md5[16]) {
 	dumpRecordsToFile();
 	_writeStream->writeUint32BE(kMD5Tag);
 	_writeStream->writeUint32BE(16);
@@ -568,6 +582,7 @@ void PlaybackFile::writeEvent(const RecorderEvent &event) {
 	_tmpRecordFile.writeByte(event.recordedtype);
 	switch (event.recordedtype) {
 	case kRecorderEventTypeTimer:
+	case kRecorderEventTypePoll:
 		_tmpRecordFile.writeUint32BE(event.time);
 		break;
 	case kRecorderEventTypeTimeDate:
@@ -689,7 +704,7 @@ bool PlaybackFile::skipToNextScreenshot() {
 	return false;
 }
 
-Graphics::Surface *PlaybackFile::getScreenShot(int number) {
+Graphics::ManagedSurface *PlaybackFile::getScreenShot(int number) {
 	if (_mode != kRead) {
 		return NULL;
 	}
@@ -699,7 +714,7 @@ Graphics::Surface *PlaybackFile::getScreenShot(int number) {
 		if (screenCount == number) {
 			screenCount++;
 			_readStream->seek(-4, SEEK_CUR);
-			Graphics::Surface *thumbnail = nullptr;
+			Graphics::ManagedSurface *thumbnail = nullptr;
 			return Graphics::loadThumbnail(*_readStream, thumbnail) ? thumbnail : NULL;
 		} else {
 			uint32 size = _readStream->readUint32BE();

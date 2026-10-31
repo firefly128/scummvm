@@ -1,65 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="ad">
-			<UniqueIdentifier>3BF2EF0D-F6DE-4D6F-93FE-E946B4831715</UniqueIdentifier>
+			<UniqueIdentifier>8BCE2800-2544-4545-92A1-78B6952FFB9D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base">
-			<UniqueIdentifier>03A405C4-E8D7-49BB-8C9B-6B230473E55C</UniqueIdentifier>
+			<UniqueIdentifier>5037E807-2682-422A-A66A-AE78DB7FF357</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\file">
-			<UniqueIdentifier>C330B491-8CEE-4338-9A36-225AACBC836C</UniqueIdentifier>
+			<UniqueIdentifier>ED48ABC1-57EB-4C81-BB06-E34EFE794177</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\font">
-			<UniqueIdentifier>BFFD9DD3-5A0D-4321-9D92-231A82307333</UniqueIdentifier>
+			<UniqueIdentifier>05F6255B-5568-48F7-B5B8-5EE548AE6C93</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\gfx">
-			<UniqueIdentifier>D1D4B0C0-5B35-482E-8649-9505B7C061B3</UniqueIdentifier>
+			<UniqueIdentifier>78BF5A09-3D9C-494A-B665-3C8BB1A9D85A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\gfx\opengl">
-			<UniqueIdentifier>CE2F4A50-882C-4E23-B5F1-0173EC258B7A</UniqueIdentifier>
+			<UniqueIdentifier>0327D5EC-000E-46C4-BC6D-6672BDB7B3AC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\gfx\osystem">
-			<UniqueIdentifier>BBBE6843-175F-49E3-8459-85EE2A24EA7F</UniqueIdentifier>
+			<UniqueIdentifier>4CF834F6-7BEB-4175-A5C8-C9A159C24A7D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\gfx\tinygl">
-			<UniqueIdentifier>51B5B4E8-AE01-4738-A852-A39DEA578864</UniqueIdentifier>
+			<UniqueIdentifier>BBE51104-315B-4788-9299-1681F41D7F09</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\particles">
-			<UniqueIdentifier>9EA66F4C-AEA3-45F8-B569-1BB202E8F8F9</UniqueIdentifier>
+			<UniqueIdentifier>D14C9689-646B-4F88-9978-4009F30B816E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\scriptables">
-			<UniqueIdentifier>75CD45EB-2DA7-416D-9C9A-326A09FE7F3C</UniqueIdentifier>
+			<UniqueIdentifier>093827BD-049D-490F-B164-A0F84D53E3F7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\scriptables\debuggable">
-			<UniqueIdentifier>CD0134F3-AD93-48C2-9F6F-49028859EC83</UniqueIdentifier>
+			<UniqueIdentifier>E1E0589E-AC7F-4DED-900A-93DB6425EC09</UniqueIdentifier>
 		</Filter>
 		<Filter Include="base\sound">
-			<UniqueIdentifier>786A6B7B-DC1B-4D44-B4A7-2AA9A031FD8D</UniqueIdentifier>
+			<UniqueIdentifier>05EDC6AF-400B-4F93-8C21-10E51392A1EA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="debugger">
-			<UniqueIdentifier>B5692364-487C-4F3B-8828-AD74E90962F3</UniqueIdentifier>
+			<UniqueIdentifier>0A479D9B-7B75-4CAA-88B1-1B0E6E234C9C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="debugger\listing_providers">
-			<UniqueIdentifier>6B987D75-FCBD-41A9-A84E-70DA7C571CDC</UniqueIdentifier>
+			<UniqueIdentifier>D3C5F005-D519-4D8A-A28C-37931BD4472F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ext">
-			<UniqueIdentifier>2E163E54-9E60-4ED9-8E49-0FB519205A65</UniqueIdentifier>
+			<UniqueIdentifier>614F31A4-0D67-4F13-BAAD-4B85F2F12D35</UniqueIdentifier>
 		</Filter>
 		<Filter Include="math">
-			<UniqueIdentifier>54378ADB-FCAF-4AB0-BF19-88AE37F5D443</UniqueIdentifier>
+			<UniqueIdentifier>FE095BEA-5294-4FF6-97C5-5673029E1CEA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="system">
-			<UniqueIdentifier>928D7430-2CC9-4E6D-AE2A-E39F0B309ABD</UniqueIdentifier>
+			<UniqueIdentifier>05D5372E-A79B-4D3F-A8CD-3755A0E45D0C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ui">
-			<UniqueIdentifier>6ABE2FFD-6596-48D5-9904-C76011B2F933</UniqueIdentifier>
+			<UniqueIdentifier>3E2A6BE4-14AE-47A6-BEF2-B4233940E913</UniqueIdentifier>
 		</Filter>
 		<Filter Include="utils">
-			<UniqueIdentifier>C0DE5847-CC82-4619-AA7A-A66E4CB0E1DD</UniqueIdentifier>
+			<UniqueIdentifier>219131AB-BE7A-438D-AB01-207FA7D32FA5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="video">
-			<UniqueIdentifier>23796BC5-6A18-447F-AD77-42908010CD2D</UniqueIdentifier>
+			<UniqueIdentifier>5C42373B-2A42-4189-9C99-55B2B3EF365A</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

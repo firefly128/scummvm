@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="audio">
-			<UniqueIdentifier>E3FD9E3B-16BB-4035-B12C-C72009EB2BBE</UniqueIdentifier>
+			<UniqueIdentifier>29D13332-CD0C-4E8E-973C-4B12A00062C1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="dialogs">
-			<UniqueIdentifier>D0A61595-8790-4879-8EC3-8BEDE294F4CB</UniqueIdentifier>
+			<UniqueIdentifier>2C04C2CD-9CE4-45A5-B1F7-7C4CB7FC0B20</UniqueIdentifier>
 		</Filter>
 		<Filter Include="rooms">
-			<UniqueIdentifier>7AC188F0-2591-4970-AD83-377B16E37D79</UniqueIdentifier>
+			<UniqueIdentifier>3B8D3C6D-360A-4FE0-B7D1-C40115917D77</UniqueIdentifier>
 		</Filter>
 		<Filter Include="video">
-			<UniqueIdentifier>52E3EE1B-16D1-4044-BD11-F624F0F90DBF</UniqueIdentifier>
+			<UniqueIdentifier>A7579AF2-96B5-41D6-900C-3C75FB5AA6EE</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

@@ -19,12 +19,14 @@
  *
  */
 
+#include "common/config-manager.h"
 #include "common/file.h"
 #include "common/memstream.h"
 
 #include "freescape/freescape.h"
+#include "freescape/games/castle/ay.music.h"
 #include "freescape/games/castle/castle.h"
-#include "freescape/language/8bitDetokeniser.h"
+#include "freescape/language/variables.h"
 
 namespace Freescape {
 
@@ -115,6 +117,28 @@ byte mountainsData[288] {
 	0xaa, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
 };
 
+// Data for the thunder frames. This is not included in the original game for some reason
+// but all the other releases have it. This is coming from the ZX Spectrum version.
+// Each row stores two 2-byte variants side by side, so we decode it as a
+// 4-byte-wide bitmap and split it into the two thunder frames.
+byte thunderData[172] {
+	0x00, 0x40, 0x00, 0x40, 0x00, 0x40, 0x00, 0x40, 0x00, 0x40, 0x00, 0x40,
+	0x00, 0x40, 0x00, 0x80, 0x01, 0x80, 0x01, 0x00, 0x01, 0x00, 0x02, 0x00,
+	0x04, 0x00, 0x08, 0x00, 0x18, 0x00, 0x10, 0x00, 0x30, 0x00, 0x20, 0x00,
+	0x20, 0x00, 0x20, 0x00, 0x70, 0x00, 0x50, 0x00, 0x50, 0x00, 0x88, 0x00,
+	0x08, 0x00, 0x04, 0x00, 0x02, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00,
+	0x01, 0x00, 0x00, 0x80, 0x00, 0xc0, 0x00, 0x40, 0x00, 0x20, 0x00, 0x10,
+	0x00, 0x08, 0x00, 0x0c, 0x00, 0x1c, 0x00, 0x32, 0x00, 0x22, 0x00, 0xc2,
+	0x01, 0x81, 0x02, 0x01, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00,
+	0x02, 0x00, 0x02, 0x00, 0x06, 0x00, 0x04, 0x00, 0x04, 0x00, 0x0c, 0x00,
+	0x18, 0x00, 0x30, 0x00, 0x20, 0x00, 0x20, 0x00, 0x70, 0x00, 0x4c, 0x00,
+	0x86, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x80, 0x00, 0x80,
+	0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x80, 0x00, 0x60,
+	0x00, 0x30, 0x00, 0x08, 0x00, 0x08, 0x00, 0x06, 0x00, 0x02, 0x00, 0x02,
+	0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x02, 0x00, 0x03, 0x00, 0x01,
+	0x00, 0x01, 0x00, 0x00
+};
+
 
 
 // Expand a 5-byte CPC riddle frame row definition into a 240-pixel CLUT8 row.
@@ -170,13 +194,16 @@ void CastleEngine::loadAssetsCPCFullGame() {
 	if (!file.isOpen())
 		error("Failed to open TECODE.BIN/TE2.BI2");
 
-	loadMessagesVariableSize(&file, 0x16c6, 71);
+	int messagesOffset = -1;
+	int riddlesOffset = -1;
+	// Multi-language CM.BIN keeps per-language message/riddle blocks in-place:
+	// FR at 0x027B/0x0716, DE at 0x0A47/0x0EE2, EN at 0x16C6/0x1B61.
 	switch (_language) {
 		/*case Common::ES_ESP:
 			loadRiddles(&file, 0x1470 - 4 - 2 - 9 * 2, 9);
 			loadMessagesVariableSize(&file, 0xf3d, 71);
 			load8bitBinary(&file, 0x6aab - 2, 16);
-			loadSpeakerFxZX(&file, 0xca0, 0xcdc);
+			_sound = loadSpeakerFxZX(&file, 0xca0, 0xcdc, 25);
 
 			file.seek(0x1218 + 16);
 			for (int i = 0; i < 90; i++) {
@@ -189,26 +216,39 @@ void CastleEngine::loadAssetsCPCFullGame() {
 			_fontLoaded = true;
 
 			break;*/
+		case Common::FR_FRA:
+			messagesOffset = 0x027b;
+			riddlesOffset = 0x0716;
+			break;
+		case Common::DE_DEU:
+			messagesOffset = 0x0a47;
+			riddlesOffset = 0x0ee2;
+			break;
 		case Common::EN_ANY:
-			loadRiddles(&file, 0x1b75 - 2 - 9 * 2, 9);
-			load8bitBinary(&file, 0x791a, 16);
-			loadSoundsCPC(&file, 0x21E2, 48, 0x2212, 204, 0x2179, 105);
-
-			file.seek(0x2724);
-			for (int i = 0; i < 90; i++) {
-				Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
-				surface->create(8, 8, Graphics::PixelFormat::createFormatCLUT8());
-				chars.push_back(loadFrame(&file, surface, 1, 8, 1));
-			}
-			_font = Font(chars);
-			_font.setCharWidth(9);
-			_fontLoaded = true;
-
+			messagesOffset = 0x16c6;
+			riddlesOffset = 0x1b75 - 2 - 9 * 2;
 			break;
 		default:
 			error("Language not supported");
 			break;
 	}
+
+	// Castle Master CPC keeps the info-menu strings in entries 68..74, just before
+	// the tape/disk prompt block and before the riddle table for each language.
+	loadMessagesVariableSize(&file, messagesOffset, 75);
+	loadRiddles(&file, riddlesOffset, 9);
+	load8bitBinary(&file, 0x791a, 16);
+	_sound = loadSoundsCPC(&file, 0x21E2, 48, 0x2212, 204, 0x2179, 105);
+
+	file.seek(0x2724);
+	for (int i = 0; i < 90; i++) {
+		Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
+		surface->create(8, 8, Graphics::PixelFormat::createFormatCLUT8());
+		chars.push_back(loadFrame(&file, surface, 1, 8, 1));
+	}
+	_font = Font(chars);
+	_font.setCharWidth(9);
+	_fontLoaded = true;
 
 	loadColorPalette();
 
@@ -223,6 +263,21 @@ void CastleEngine::loadAssetsCPCFullGame() {
 	uint32 front = _gfx->_texturePixelFormat.ARGBToColor(0xFF, r, g, b);
 
 	_background = loadFrame(&mountainsStream, background, backgroundWidth, backgroundHeight, front);
+
+	Common::MemoryReadStream thunderStream(thunderData, sizeof(thunderData));
+	Graphics::ManagedSurface *thunderFrame = new Graphics::ManagedSurface();
+	thunderFrame->create(4 * 8, 43, _gfx->_texturePixelFormat);
+	thunderFrame->fillRect(Common::Rect(0, 0, 4 * 8, 43), 0);
+	thunderFrame = loadFrame(&thunderStream, thunderFrame, 4, 43, front);
+
+	_thunderFrames.push_back(new Graphics::ManagedSurface);
+	_thunderFrames.push_back(new Graphics::ManagedSurface);
+	_thunderFrames[0]->create(2 * 8, 43, _gfx->_texturePixelFormat);
+	_thunderFrames[1]->create(2 * 8, 43, _gfx->_texturePixelFormat);
+	_thunderFrames[0]->copyRectToSurface(*thunderFrame, 0, 0, Common::Rect(0, 0, 2 * 8, 43));
+	_thunderFrames[1]->copyRectToSurface(*thunderFrame, 0, 0, Common::Rect(2 * 8, 0, 4 * 8, 43));
+	thunderFrame->free();
+	delete thunderFrame;
 
 	// CPC UI Sprites stored as CLUT8 (indexed by ink 0-3).
 	// On real CPC hardware, the 4-color palette changes per area, automatically
@@ -477,6 +532,9 @@ void CastleEngine::loadAssetsCPCFullGame() {
 			it._value->addObjectFromArea(id, _areaMap[255]);
 		}
 	}
+
+	if (ConfMan.getBool("ay_music"))
+		_playerMusic = new CastleAYMusicPlayer(_mixer);
 }
 
 void CastleEngine::drawCPCUI(Graphics::Surface *surface) {
@@ -489,9 +547,10 @@ void CastleEngine::drawCPCUI(Graphics::Surface *surface) {
 	_gfx->readFromPalette(color, r, g, b);
 	uint32 front = _gfx->_texturePixelFormat.ARGBToColor(0xFF, r, g, b);
 
-	color = 1;
-
-	_gfx->readFromPalette(color, r, g, b);
+	// Castle CPC draws the message strip text through the UI row-pointer path,
+	// and the original string routine erases with zero pixels there. In the CPC
+	// HUD palette that is pen 0, i.e. black, not global CPC palette index 0.
+	_gfx->selectColorFromFourColorPalette(0, r, g, b);
 	uint32 back = _gfx->_texturePixelFormat.ARGBToColor(0xFF, r, g, b);
 
 	Common::Rect backRect(97, 181, 232, 190);

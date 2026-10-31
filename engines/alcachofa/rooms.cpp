@@ -42,8 +42,7 @@ Room::Room(World *world, SeekableReadStream &stream)
 	if (g_engine->isV1()) {
 		readRoomV1(stream);
 		readObjects(stream);
-	}
-	else
+	} else
 		readRoomV2and3(stream, false);
 	initBackground();
 }
@@ -61,19 +60,26 @@ static ObjectBase *readRoomObject(Room *room, const String &type, SeekableReadSt
 		return new Item(room, stream);
 	else if (type == PhysicalObject::kClassName)
 		return new PhysicalObject(room, stream);
-	else if (type == MainMenuButton::kClassName)
-		return new MainMenuButton(room, stream);
+	else if (type == MainMenuButton::kClassName) {
+		if (g_engine->isV2())
+			return new MainMenuButtonV2(room, stream);
+		else
+			return new MainMenuButton(room, stream);
+	}
 	else if (type == InternetMenuButton::kClassName)
 		return new InternetMenuButton(room, stream);
-	else if (type == OptionsMenuButton::kClassName)
-		return new OptionsMenuButton(room, stream);
+	else if (type == OptionsMenuButton::kClassName) {
+		if (g_engine->isV2())
+			return new OptionsMenuButtonV2(room, stream);
+		else
+			return new OptionsMenuButton(room, stream);
+	}
 	else if (type == EditBox::kClassName) {
 		if (g_engine->isV2())
 			return new EditBoxV2(room, stream);
 		else
 			return new EditBoxV3(room, stream);
-	}
-	else if (type == PushButton::kClassName)
+	} else if (type == PushButton::kClassName)
 		return new PushButton(room, stream);
 	else if (type == CheckBox::kClassName)
 		return new CheckBox(room, stream);
@@ -84,8 +90,7 @@ static ObjectBase *readRoomObject(Room *room, const String &type, SeekableReadSt
 			return new SlideButtonV2(room, stream);
 		else
 			return new SlideButtonV3(room, stream);
-	}
-	else if (type == IRCWindow::kClassName)
+	} else if (type == IRCWindow::kClassName)
 		return new IRCWindow(room, stream);
 	else if (type == MessageBox::kClassName)
 		return new MessageBox(room, stream);
@@ -399,7 +404,6 @@ bool OptionsMenu::updateInput() {
 void OptionsMenu::loadResources() {
 	Room::loadResources();
 	_lastSelectedObject = nullptr;
-	_currentSlideButton = nullptr;
 	_idleArm = getObjectByName("Brazo");
 }
 
@@ -640,7 +644,9 @@ ObjectBase *World::getObjectByName(MainCharacterKind character, const char *name
 		return getObjectByName(name);
 	const auto &player = g_engine->player();
 	ObjectBase *result = nullptr;
-	if (player.activeCharacterKind() == character && player.currentRoom() != player.activeCharacter()->room())
+	if (player.activeCharacterKind() == character &&
+		player.currentRoom() != nullptr &&
+		player.currentRoom() != player.activeCharacter()->room())
 		result = player.currentRoom()->getObjectByName(name);
 	if (result == nullptr)
 		result = player.activeCharacter()->room()->getObjectByName(name);
@@ -780,8 +786,8 @@ bool World::loadWorldFileV2(const char *path) {
 	};
 	readGlobalAnim(GlobalAnimationKind::GeneralFont, GlobalAnimationKind::DialogFont);
 	readGlobalAnim(GlobalAnimationKind::Cursor, GlobalAnimationKind::Count);
-	readGlobalAnim(GlobalAnimationKind::MortadeloIcon, GlobalAnimationKind::MortadeloDisabledIcon);
 	readGlobalAnim(GlobalAnimationKind::FilemonIcon, GlobalAnimationKind::FilemonDisabledIcon);
+	readGlobalAnim(GlobalAnimationKind::MortadeloIcon, GlobalAnimationKind::MortadeloDisabledIcon);
 	readGlobalAnim(GlobalAnimationKind::InventoryIcon, GlobalAnimationKind::InventoryDisabledIcon);
 
 	readRooms(file);
@@ -905,6 +911,12 @@ static char *trimTrailing(char *start, char *end) {
 	return end;
 }
 
+static bool isEmptyLine(const char *start, const char *end) {
+	while (start < end && isSpace(*start))
+		start++;
+	return start >= end;
+}
+
 void World::loadLocalizedNames() {
 	const char *filename = g_engine->game().getObjectFileName();
 	char textFileKey = g_engine->game().getTextFileKey();
@@ -940,6 +952,11 @@ void World::loadLocalizedNames() {
 		// key#value
 		while (lineStart < fileEnd) {
 			char *lineEnd = find(lineStart, fileEnd, '\n');
+			if (isEmptyLine(lineStart, lineEnd)) {
+				// empty lines are only in Corvino/Balones/Mamelucos
+				lineStart = lineEnd + 1;
+				continue;
+			}
 			char *keyEnd = find(lineStart, lineEnd, '#');
 			if (keyEnd == lineStart || keyEnd == lineEnd || keyEnd + 1 == lineEnd)
 				error("Invalid localized name line separator");
@@ -1018,7 +1035,7 @@ GameFileReference World::readFileRef(SeekableReadStream &stream) const {
 		stream.skip(size);
 		return { name, (uint32)_files.size(), offset, size };
 	} else
-		return GameFileReference(reencode(name));
+		return GameFileReference(g_engine->game().reencodePath(name));
 }
 
 ScopedPtr<SeekableReadStream> World::openFileRef(const GameFileReference &ref) const {
@@ -1056,7 +1073,7 @@ public:
 		// e.g. c:\myf2000\textos\dialogos.txt
 		// but the filenames alone do not clash so we flatten everything
 
-		skipVarString(*file);
+		skipVarString(*_file);
 		uint32 totalSize = _file->readUint32LE();
 		int64 endPosition = _file->pos() + totalSize;
 		_file->skip(2);
@@ -1074,8 +1091,7 @@ public:
 			if (lastSep == String::npos)
 				lastSep = 0;
 			auto fileName = String::format("%s.%s", fullPath.c_str() + lastSep, extension.c_str());
-			_members.emplace_back(
-				new EmbeddedArchiveMember(fileName, *this, fileOffset, fileOffset + fileSize));
+			_members.emplace_back(new EmbeddedArchiveMember(fileName, *this, fileOffset, fileOffset + fileSize)); //-V1023
 		}
 
 		if (_file->pos() > endPosition)

@@ -41,6 +41,8 @@
 		<def var = 'ListWidget.hlRightPadding' value = '0'/>
 		<def var = 'ListWidget.itemSpacing' value = '2'/>
 
+		<def var = 'GlkOptionsDialog.HeadingMinGap' value = '2'/>
+
 		<def var = 'ShowLauncherLogo' value = '1'/>
 		<def var = 'ShowGlobalMenuLogo' value = '1'/>
 		<def var = 'ShowSearchPic' value = '1'/>
@@ -411,7 +413,7 @@
 			<layout type = 'horizontal' padding = '0, 0, 2, 0' spacing = '2'>
 				<widget name = 'IconArea'/>
 			</layout>
-			<layout type = 'horizontal' padding = '0, 0, 2, 0' spacing = '2'>
+			<layout type = 'horizontal' padding = '0, 0, 4, 0' spacing = '2'>
 				<widget name = 'AddGameButton'
 						height = 'Globals.Button.Height'
 				/>
@@ -1164,6 +1166,11 @@
 				/>
 			</layout>
 			<layout type = 'horizontal' padding = '0, 0, 0, 0' spacing = '10' align = 'center'>
+				<widget name = 'KineticScrolling'
+						type = 'Checkbox'
+				/>
+			</layout>
+			<layout type = 'horizontal' padding = '0, 0, 0, 0' spacing = '10' align = 'center'>
 				<widget name = 'UseSystemDialogs'
 						type = 'Checkbox'
 				/>
@@ -1866,6 +1873,37 @@
 			<widget name = 'Checkintegrity'
 					type = 'Button'
 			/>
+		</layout>
+	</dialog>
+
+	<dialog name = 'GameOptions_Misc' overlays = 'Dialog.GameOptions.TabWidget'>
+		<layout type = 'vertical' padding = '0, 0, 0, 0'>
+			<widget name = 'Container'
+					type = 'ScrollContainerWidget'
+			/>
+		</layout>
+	</dialog>
+
+	<dialog name = 'GameOptions_Misc_Container' overlays = 'GameOptions_Misc.Container' shading = 'dim'>
+		<layout type = 'vertical' padding = '16, 16, 16, 16' spacing = '8'>
+			<layout type = 'horizontal' padding = '0, 0, 0, 0' spacing = '10' align = 'center'>
+				<widget name = 'EnableHotspots'
+						type = 'Checkbox'
+				/>
+			</layout>
+			<layout type = 'horizontal' padding = '0, 0, 0, 0' spacing = '10' align = 'center'>
+				<widget name = 'HotspotMarkerPopupDesc'
+						type = 'OptionsLabel'
+				/>
+				<widget name = 'HotspotMarkerPopup'
+						type = 'PopUp'
+				/>
+			</layout>
+			<layout type = 'horizontal' padding = '0, 0, 0, 0' spacing = '10' align = 'center'>
+				<widget name = 'ShowHotspotText'
+						type = 'Checkbox'
+				/>
+			</layout>
 		</layout>
 	</dialog>
 

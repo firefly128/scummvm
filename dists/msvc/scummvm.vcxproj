@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{2085C743-473A-4039-BF35-65919BF10340}</ProjectGuid>
+		<ProjectGuid>{20EC8D6E-1F9F-4A29-86C0-55AC42C8843B}</ProjectGuid>
 		<RootNamespace>scummvm</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>Application</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -309,6 +312,7 @@
 		<ClCompile Include="..\..\audio\decoders\g711.cpp" />
 		<ClCompile Include="..\..\audio\decoders\iff_sound.cpp" />
 		<ClCompile Include="..\..\audio\decoders\mac_snd.cpp" />
+		<ClCompile Include="..\..\audio\decoders\mac_snd_mace.cpp" />
 		<ClCompile Include="..\..\audio\decoders\mp3.cpp" />
 		<ClCompile Include="..\..\audio\decoders\qdm2.cpp" />
 		<ClCompile Include="..\..\audio\decoders\quicktime.cpp" />
@@ -319,6 +323,18 @@
 		<ClCompile Include="..\..\audio\decoders\wma.cpp" />
 		<ClCompile Include="..\..\audio\decoders\xa.cpp" />
 		<ClCompile Include="..\..\audio\decoders\xan_dpcm.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\envelope.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\filter1.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\mono_delay.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\phasor.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\resonator.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\reverb1.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\reverb2.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\ring_modulator.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\interfaces\stereo_delay.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\hmifxfp.cpp" />
+		<ClCompile Include="..\..\audio\effects\hmi\hmifxlib.cpp" />
+		<ClCompile Include="..\..\audio\mac\halestorm.cpp" />
 		<ClCompile Include="..\..\audio\mods\desktoptracker.cpp" />
 		<ClCompile Include="..\..\audio\mods\infogrames.cpp" />
 		<ClCompile Include="..\..\audio\mods\maxtrax.cpp" />
@@ -529,7 +545,6 @@
 		<ClCompile Include="..\..\backends\networking\http\connectionmanager.cpp" />
 		<ClCompile Include="..\..\backends\networking\http\httpjsonrequest.cpp" />
 		<ClCompile Include="..\..\backends\networking\http\httprequest.cpp" />
-		<ClCompile Include="..\..\backends\networking\http\networkreadstream.cpp" />
 		<ClCompile Include="..\..\backends\networking\http\postrequest.cpp" />
 		<ClCompile Include="..\..\backends\networking\http\request.cpp" />
 		<ClCompile Include="..\..\backends\networking\http\session.cpp" />
@@ -556,7 +571,7 @@
 		<ClCompile Include="..\..\backends\platform\sdl\win32\win32_wrapper.cpp" />
 		<ClCompile Include="..\..\backends\platform\sdl\sdl-window.cpp" />
 		<ClCompile Include="..\..\backends\platform\sdl\sdl.cpp" />
-		<ClCompile Include="..\..\backends\plugins\sdl\sdl-provider.cpp" />
+		<ClCompile Include="..\..\backends\plugins\firebee\firebee-provider.cpp" />
 		<ClCompile Include="..\..\backends\plugins\win32\win32-provider.cpp" />
 		<ClCompile Include="..\..\backends\printing\win32\win32-printman.cpp" />
 		<ClCompile Include="..\..\backends\saves\default\default-saves.cpp" />
@@ -574,12 +589,33 @@
 		<ClCompile Include="..\..\base\plugins.cpp" />
 		<ClCompile Include="..\..\base\test_new_standards.cpp" />
 		<ClCompile Include="..\..\base\version.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\action_packer.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\action_replay.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\byte_boiler.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\caution.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\ccs.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\cruel.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\eca.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\exomizer.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\expert.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\master_compressor.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\megabyte.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\pu_crunch.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\scanners.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\section8.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\tbc_multicomp.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\tcs_crunch.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\scanners\xtc.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\6502_emu.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\exo_util.cpp" />
+		<ClCompile Include="..\..\common\compression\unp64\unp64.cpp" />
 		<ClCompile Include="..\..\common\compression\clickteam.cpp" />
 		<ClCompile Include="..\..\common\compression\dcl.cpp" />
 		<ClCompile Include="..\..\common\compression\gentee_installer.cpp" />
 		<ClCompile Include="..\..\common\compression\gzio.cpp" />
 		<ClCompile Include="..\..\common\compression\installshield_cab.cpp" />
 		<ClCompile Include="..\..\common\compression\installshieldv3_archive.cpp" />
+		<ClCompile Include="..\..\common\compression\packice.cpp" />
 		<ClCompile Include="..\..\common\compression\powerpacker.cpp" />
 		<ClCompile Include="..\..\common\compression\rnc_deco.cpp" />
 		<ClCompile Include="..\..\common\compression\stuffit.cpp" />
@@ -598,6 +634,7 @@
 		<ClCompile Include="..\..\common\formats\po_parser.cpp" />
 		<ClCompile Include="..\..\common\formats\prodos.cpp" />
 		<ClCompile Include="..\..\common\formats\quicktime.cpp" />
+		<ClCompile Include="..\..\common\formats\spectrum_tape.cpp" />
 		<ClCompile Include="..\..\common\formats\winexe.cpp" />
 		<ClCompile Include="..\..\common\formats\winexe_ne.cpp" />
 		<ClCompile Include="..\..\common\formats\winexe_pe.cpp" />
@@ -719,6 +756,16 @@
 		<ClCompile Include="..\..\graphics\macgui\macwindow.cpp" />
 		<ClCompile Include="..\..\graphics\macgui\macwindowborder.cpp" />
 		<ClCompile Include="..\..\graphics\macgui\macwindowmanager.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\siphash\halfsip.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox_fileman.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox_menu.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox_pict.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox_quickdraw.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox_resman.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox_sound.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\toolbox_text.cpp" />
+		<ClCompile Include="..\..\graphics\mactoolbox\utils.cpp" />
 		<ClCompile Include="..\..\graphics\mfc\gfx\blitter.cpp" />
 		<ClCompile Include="..\..\graphics\mfc\gfx\cursor.cpp" />
 		<ClCompile Include="..\..\graphics\mfc\gfx\dialog_template.cpp" />
@@ -812,9 +859,11 @@
 		<ClCompile Include="..\..\graphics\big5.cpp" />
 		<ClCompile Include="..\..\graphics\color_quantizer.cpp" />
 		<ClCompile Include="..\..\graphics\cursorman.cpp" />
+		<ClCompile Include="..\..\graphics\dirtyrects.cpp" />
 		<ClCompile Include="..\..\graphics\font.cpp" />
 		<ClCompile Include="..\..\graphics\fontman.cpp" />
 		<ClCompile Include="..\..\graphics\framelimiter.cpp" />
+		<ClCompile Include="..\..\graphics\hotspot_renderer.cpp" />
 		<ClCompile Include="..\..\graphics\image-archive.cpp" />
 		<ClCompile Include="..\..\graphics\korfont.cpp" />
 		<ClCompile Include="..\..\graphics\larryScale.cpp" />
@@ -838,6 +887,7 @@
 		<ClCompile Include="..\..\graphics\wincursor.cpp" />
 		<ClCompile Include="..\..\graphics\yuv_to_rgb.cpp" />
 		<ClCompile Include="..\..\gui\animation\Animation.cpp" />
+		<ClCompile Include="..\..\gui\animation\FluidScroll.cpp" />
 		<ClCompile Include="..\..\gui\animation\RepeatAnimationWrapper.cpp" />
 		<ClCompile Include="..\..\gui\animation\SequenceAnimationComposite.cpp" />
 		<ClCompile Include="..\..\gui\widgets\editable.cpp" />
@@ -918,6 +968,7 @@
 		<ClCompile Include="..\..\image\ani.cpp" />
 		<ClCompile Include="..\..\image\bmp.cpp" />
 		<ClCompile Include="..\..\image\cel_3do.cpp" />
+		<ClCompile Include="..\..\image\cgbi.cpp" />
 		<ClCompile Include="..\..\image\cicn.cpp" />
 		<ClCompile Include="..\..\image\icocur.cpp" />
 		<ClCompile Include="..\..\image\iff.cpp" />
@@ -985,6 +1036,7 @@
 		<ClInclude Include="..\..\audio\decoders\g711.h" />
 		<ClInclude Include="..\..\audio\decoders\iff_sound.h" />
 		<ClInclude Include="..\..\audio\decoders\mac_snd.h" />
+		<ClInclude Include="..\..\audio\decoders\mac_snd_mace.h" />
 		<ClInclude Include="..\..\audio\decoders\mp3.h" />
 		<ClInclude Include="..\..\audio\decoders\mpc.h" />
 		<ClInclude Include="..\..\audio\decoders\qdm2.h" />
@@ -1002,6 +1054,20 @@
 		<ClInclude Include="..\..\audio\decoders\wmadata.h" />
 		<ClInclude Include="..\..\audio\decoders\xa.h" />
 		<ClInclude Include="..\..\audio\decoders\xan_dpcm.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\envelope.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\filter1.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\mono_delay.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\phasor.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\resonator.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\reverb1.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\reverb2.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\ring_modulator.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\interfaces\stereo_delay.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\hmi_interface.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\hmi_types.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\hmifxfp.h" />
+		<ClInclude Include="..\..\audio\effects\hmi\hmifxlib.h" />
+		<ClInclude Include="..\..\audio\mac\halestorm.h" />
 		<ClInclude Include="..\..\audio\mods\desktoptracker.h" />
 		<ClInclude Include="..\..\audio\mods\infogrames.h" />
 		<ClInclude Include="..\..\audio\mods\maxtrax.h" />
@@ -1065,6 +1131,7 @@
 		<ClInclude Include="..\..\audio\softsynth\opl\dosbox.h" />
 		<ClInclude Include="..\..\audio\softsynth\opl\mame.h" />
 		<ClInclude Include="..\..\audio\softsynth\opl\nuked.h" />
+		<ClInclude Include="..\..\audio\softsynth\opl\nuked_wf_rom.h" />
 		<ClInclude Include="..\..\audio\softsynth\ay8912.h" />
 		<ClInclude Include="..\..\audio\softsynth\cms.h" />
 		<ClInclude Include="..\..\audio\softsynth\emumidi.h" />
@@ -1085,6 +1152,7 @@
 		<ClInclude Include="..\..\audio\adlib_ctmidi.h" />
 		<ClInclude Include="..\..\audio\adlib_hmisos.h" />
 		<ClInclude Include="..\..\audio\adlib_ms.h" />
+		<ClInclude Include="..\..\audio\atari_ym2149.h" />
 		<ClInclude Include="..\..\audio\audiostream.h" />
 		<ClInclude Include="..\..\audio\casio.h" />
 		<ClInclude Include="..\..\audio\chip.h" />
@@ -1103,10 +1171,12 @@
 		<ClInclude Include="..\..\audio\mpu401.h" />
 		<ClInclude Include="..\..\audio\mt32gm.h" />
 		<ClInclude Include="..\..\audio\musicplugin.h" />
+		<ClInclude Include="..\..\audio\nfmopl.h" />
 		<ClInclude Include="..\..\audio\null.h" />
 		<ClInclude Include="..\..\audio\rate.h" />
 		<ClInclude Include="..\..\audio\rwopl3.h" />
 		<ClInclude Include="..\..\audio\sid.h" />
+		<ClInclude Include="..\..\audio\sine.h" />
 		<ClInclude Include="..\..\audio\timestamp.h" />
 		<ClInclude Include="..\..\audio\ym2149.h" />
 		<ClInclude Include="..\..\backends\audiocd\default\default-audiocd.h" />
@@ -1259,7 +1329,7 @@
 		<ClInclude Include="..\..\backends\platform\sdl\sdl-sys.h" />
 		<ClInclude Include="..\..\backends\platform\sdl\sdl-window.h" />
 		<ClInclude Include="..\..\backends\platform\sdl\sdl.h" />
-		<ClInclude Include="..\..\backends\plugins\sdl\sdl-provider.h" />
+		<ClInclude Include="..\..\backends\plugins\firebee\firebee-provider.h" />
 		<ClInclude Include="..\..\backends\plugins\win32\win32-provider.h" />
 		<ClInclude Include="..\..\backends\plugins\dynamic-plugin.h" />
 		<ClInclude Include="..\..\backends\printing\win32\win32-printman.h" />
@@ -1279,6 +1349,9 @@
 		<ClInclude Include="..\..\base\main.h" />
 		<ClInclude Include="..\..\base\plugins.h" />
 		<ClInclude Include="..\..\base\version.h" />
+		<ClInclude Include="..\..\common\compression\unp64\6502_emu.h" />
+		<ClInclude Include="..\..\common\compression\unp64\exo_util.h" />
+		<ClInclude Include="..\..\common\compression\unp64\unp64.h" />
 		<ClInclude Include="..\..\common\compression\clickteam.h" />
 		<ClInclude Include="..\..\common\compression\dcl.h" />
 		<ClInclude Include="..\..\common\compression\deflate.h" />
@@ -1286,10 +1359,12 @@
 		<ClInclude Include="..\..\common\compression\huffman.h" />
 		<ClInclude Include="..\..\common\compression\installshield_cab.h" />
 		<ClInclude Include="..\..\common\compression\installshieldv3_archive.h" />
+		<ClInclude Include="..\..\common\compression\packice.h" />
 		<ClInclude Include="..\..\common\compression\powerpacker.h" />
 		<ClInclude Include="..\..\common\compression\rnc_deco.h" />
 		<ClInclude Include="..\..\common\compression\stuffit.h" />
 		<ClInclude Include="..\..\common\compression\unarj.h" />
+		<ClInclude Include="..\..\common\compression\unp64.h" />
 		<ClInclude Include="..\..\common\compression\unzip.h" />
 		<ClInclude Include="..\..\common\compression\vise.h" />
 		<ClInclude Include="..\..\common\formats\cue.h" />
@@ -1302,6 +1377,7 @@
 		<ClInclude Include="..\..\common\formats\po_parser.h" />
 		<ClInclude Include="..\..\common\formats\prodos.h" />
 		<ClInclude Include="..\..\common\formats\quicktime.h" />
+		<ClInclude Include="..\..\common\formats\spectrum_tape.h" />
 		<ClInclude Include="..\..\common\formats\winexe.h" />
 		<ClInclude Include="..\..\common\formats\winexe_ne.h" />
 		<ClInclude Include="..\..\common\formats\winexe_pe.h" />
@@ -1481,6 +1557,9 @@
 		<ClInclude Include="..\..\graphics\macgui\macwindow.h" />
 		<ClInclude Include="..\..\graphics\macgui\macwindowborder.h" />
 		<ClInclude Include="..\..\graphics\macgui\macwindowmanager.h" />
+		<ClInclude Include="..\..\graphics\mactoolbox\siphash\halfsip.h" />
+		<ClInclude Include="..\..\graphics\mactoolbox\toolbox.h" />
+		<ClInclude Include="..\..\graphics\mactoolbox\utils.h" />
 		<ClInclude Include="..\..\graphics\mfc\gfx\blitter.h" />
 		<ClInclude Include="..\..\graphics\mfc\gfx\cursor.h" />
 		<ClInclude Include="..\..\graphics\mfc\gfx\dialog_template.h" />
@@ -1551,9 +1630,11 @@
 		<ClInclude Include="..\..\graphics\conversion.h" />
 		<ClInclude Include="..\..\graphics\cursor.h" />
 		<ClInclude Include="..\..\graphics\cursorman.h" />
+		<ClInclude Include="..\..\graphics\dirtyrects.h" />
 		<ClInclude Include="..\..\graphics\font.h" />
 		<ClInclude Include="..\..\graphics\fontman.h" />
 		<ClInclude Include="..\..\graphics\framelimiter.h" />
+		<ClInclude Include="..\..\graphics\hotspot_renderer.h" />
 		<ClInclude Include="..\..\graphics\image-archive.h" />
 		<ClInclude Include="..\..\graphics\korfont.h" />
 		<ClInclude Include="..\..\graphics\larryScale.h" />
@@ -1586,6 +1667,7 @@
 		<ClInclude Include="..\..\gui\animation\Animation.h" />
 		<ClInclude Include="..\..\gui\animation\DeccelerateInterpolator.h" />
 		<ClInclude Include="..\..\gui\animation\Drawable.h" />
+		<ClInclude Include="..\..\gui\animation\FluidScroll.h" />
 		<ClInclude Include="..\..\gui\animation\Interpolator.h" />
 		<ClInclude Include="..\..\gui\animation\ParallelAnimation.h" />
 		<ClInclude Include="..\..\gui\animation\RepeatAnimationWrapper.h" />
@@ -1668,6 +1750,7 @@
 		<ClInclude Include="..\..\image\codecs\jyv1.h" />
 		<ClInclude Include="..\..\image\codecs\mjpeg.h" />
 		<ClInclude Include="..\..\image\codecs\mpeg.h" />
+		<ClInclude Include="..\..\image\codecs\msmpeg4.h" />
 		<ClInclude Include="..\..\image\codecs\msrle.h" />
 		<ClInclude Include="..\..\image\codecs\msrle4.h" />
 		<ClInclude Include="..\..\image\codecs\msvideo1.h" />
@@ -1683,6 +1766,7 @@
 		<ClInclude Include="..\..\image\ani.h" />
 		<ClInclude Include="..\..\image\bmp.h" />
 		<ClInclude Include="..\..\image\cel_3do.h" />
+		<ClInclude Include="..\..\image\cgbi.h" />
 		<ClInclude Include="..\..\image\cicn.h" />
 		<ClInclude Include="..\..\image\codec-options.h" />
 		<ClInclude Include="..\..\image\gif.h" />
@@ -1798,328 +1882,377 @@
 			<FileType>Document</FileType>
 			<Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BuildInParallel>
 			<Command Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">true</BuildInParallel>
 			<Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BuildInParallel>
 			<Command Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">true</BuildInParallel>
 		</CustomBuild>
 		<CustomBuild Include="..\..\graphics\scaler\hq3x_i386.asm">
 			<FileType>Document</FileType>
 			<Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BuildInParallel>
 			<Command Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'">true</BuildInParallel>
 			<Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BuildInParallel>
 			<Command Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">nasm.exe -f win32 -g -o "$(IntDir)graphics_scaler_%(Filename).obj" "%(FullPath)"</Command>
 			<Outputs Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">$(IntDir)graphics_scaler_%(Filename).obj;%(Outputs)</Outputs>
+			<OutputItemType Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">Object</OutputItemType>
+			<BuildInParallel Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'">true</BuildInParallel>
 		</CustomBuild>
 	</ItemGroup>
 	<ItemGroup>
 	<ProjectReference Include="access.vcxproj">
-		<Project>{C6D5DBFD-AF06-461B-9AF0-B943A2502CC7}</Project>
+		<Project>{79243347-C2A9-4121-BA41-593C082B6C67}</Project>
 	</ProjectReference>
 	<ProjectReference Include="adl.vcxproj">
-		<Project>{BA3662A8-0289-43BF-B920-151A8D68A686}</Project>
+		<Project>{10B33348-9E2D-40FA-83C6-2D62DE0DA638}</Project>
 	</ProjectReference>
 	<ProjectReference Include="agi.vcxproj">
-		<Project>{16C9CDC4-1601-448E-8BC1-C0B8488BA950}</Project>
+		<Project>{5B65AC43-905C-41AF-9ED7-8F857C180F00}</Project>
 	</ProjectReference>
 	<ProjectReference Include="agos.vcxproj">
-		<Project>{9D814079-722A-4794-B4B2-1BF57C65C571}</Project>
+		<Project>{48A82201-9CD1-4E38-BEB1-C7DF5A9B26D6}</Project>
 	</ProjectReference>
 	<ProjectReference Include="ags.vcxproj">
-		<Project>{9DC16087-2E0D-4026-A340-66F59F97BD28}</Project>
+		<Project>{14C771BF-EFD7-4349-BE45-D254688A15FB}</Project>
 	</ProjectReference>
 	<ProjectReference Include="alcachofa.vcxproj">
-		<Project>{1CAA4EF4-9ADA-45D3-8F7E-2AD34C3F45AA}</Project>
+		<Project>{A621ADD4-DC38-465A-9D45-30A80912D241}</Project>
 	</ProjectReference>
 	<ProjectReference Include="alg.vcxproj">
-		<Project>{B79B25D3-9F33-40F5-9157-F6C9FE1CABFD}</Project>
+		<Project>{AFC4B565-A263-45B6-AAAD-93C572AF3485}</Project>
 	</ProjectReference>
 	<ProjectReference Include="asylum.vcxproj">
-		<Project>{AD33E9D5-8E4A-4D4C-A484-5E54E3EDDF89}</Project>
+		<Project>{3E5573C7-D7F7-450B-BFB9-231A9C075122}</Project>
+	</ProjectReference>
+	<ProjectReference Include="avalanche.vcxproj">
+		<Project>{CAFC1888-F4EB-4DE5-9470-A9FAA1195BCE}</Project>
 	</ProjectReference>
 	<ProjectReference Include="awe.vcxproj">
-		<Project>{9EB5EE55-CFE5-4857-97F2-AC31AF34A0F4}</Project>
+		<Project>{A3B2FCA6-037B-4F46-AAA5-7A1A66805C8E}</Project>
 	</ProjectReference>
 	<ProjectReference Include="bagel.vcxproj">
-		<Project>{1DA78742-2840-49AF-8ED3-E473C5353044}</Project>
+		<Project>{CD092EF5-DA1A-4A95-BF0F-D2B155C38DE0}</Project>
 	</ProjectReference>
 	<ProjectReference Include="bbvs.vcxproj">
-		<Project>{C8807703-ACF0-4672-8437-C93AD859377B}</Project>
+		<Project>{3E84D348-AE02-4C04-8854-B804F55533A0}</Project>
 	</ProjectReference>
 	<ProjectReference Include="bladerunner.vcxproj">
-		<Project>{0A6E23AF-B59C-4B81-974B-FC877EF400D5}</Project>
+		<Project>{671C94FA-71F9-4DB0-ADC5-BABC35A125F7}</Project>
+	</ProjectReference>
+	<ProjectReference Include="bolt.vcxproj">
+		<Project>{F0FC57A2-48B9-4767-A200-0B0BA6F052B3}</Project>
 	</ProjectReference>
 	<ProjectReference Include="buried.vcxproj">
-		<Project>{1CA60C59-EA73-468E-9065-AE1D67EC0F02}</Project>
+		<Project>{D48E0CF1-B4E0-490D-A49F-610D7E6261BD}</Project>
 	</ProjectReference>
 	<ProjectReference Include="cge.vcxproj">
-		<Project>{8E8B5EF3-64F9-414B-8B4F-C693C9809436}</Project>
+		<Project>{7E54145E-F102-4F94-858E-D955CC43EBAE}</Project>
 	</ProjectReference>
 	<ProjectReference Include="cge2.vcxproj">
-		<Project>{8955EA12-6349-4258-8D3F-0494BEBC7AC8}</Project>
+		<Project>{4AA3DE1D-7CD0-461C-9E8B-51F71BD1B252}</Project>
+	</ProjectReference>
+	<ProjectReference Include="chamber.vcxproj">
+		<Project>{C493B905-236C-43DC-94EF-FB6FFC8DC5B2}</Project>
 	</ProjectReference>
 	<ProjectReference Include="chewy.vcxproj">
-		<Project>{13195C55-0CDB-4B58-81C5-7196EA0C4D60}</Project>
+		<Project>{87D1CCDD-D862-4894-9C4D-33EBEAE65DCF}</Project>
 	</ProjectReference>
 	<ProjectReference Include="cine.vcxproj">
-		<Project>{F7A3F4E0-FA99-445D-A242-96B7EFB5C833}</Project>
+		<Project>{C118EBE5-E611-4859-B224-8A74535B348B}</Project>
 	</ProjectReference>
 	<ProjectReference Include="composer.vcxproj">
-		<Project>{3CDB3C09-E4E8-41FE-9379-ABBC9A794651}</Project>
+		<Project>{082193C3-3BDE-4A09-8420-EC4C159ED38C}</Project>
 	</ProjectReference>
 	<ProjectReference Include="crab.vcxproj">
-		<Project>{A210D233-85D1-48BC-8C68-9444CDDBF182}</Project>
+		<Project>{72276215-685D-4FD4-A552-68C0A47A3C5B}</Project>
 	</ProjectReference>
 	<ProjectReference Include="cruise.vcxproj">
-		<Project>{881D12E9-9325-479D-8239-18498FF315B4}</Project>
+		<Project>{29596028-E964-4AF8-85FA-85DBFA7B9AFA}</Project>
 	</ProjectReference>
 	<ProjectReference Include="cryomni3d.vcxproj">
-		<Project>{1CB7DC9D-CC4A-49F6-B7BB-DBB73FBE06D9}</Project>
+		<Project>{F14F524E-D57C-4C37-A171-71EB41676FD6}</Project>
 	</ProjectReference>
 	<ProjectReference Include="darkseed.vcxproj">
-		<Project>{B099D113-15BF-4967-B924-E98D2F367702}</Project>
+		<Project>{653F9A7A-97C3-4415-B586-F60E757E138E}</Project>
 	</ProjectReference>
 	<ProjectReference Include="dgds.vcxproj">
-		<Project>{69390D00-18B7-4363-908D-1F81424B2DFC}</Project>
+		<Project>{4954832E-2D82-49B3-824B-5F0B8F618089}</Project>
 	</ProjectReference>
 	<ProjectReference Include="director.vcxproj">
-		<Project>{B1B852AB-C4F3-4DE8-BC73-FEB58A75F969}</Project>
+		<Project>{689CFD72-0B60-4688-978A-3F6B8916755B}</Project>
+	</ProjectReference>
+	<ProjectReference Include="dm.vcxproj">
+		<Project>{AD2B6B7A-D2A3-4D91-87E9-C0AA15A571EC}</Project>
 	</ProjectReference>
 	<ProjectReference Include="draci.vcxproj">
-		<Project>{37541F55-2E35-4C6B-9F1D-E7C940E689DE}</Project>
+		<Project>{57F5E205-3C2D-4700-A45C-914C6E7AB9A1}</Project>
 	</ProjectReference>
 	<ProjectReference Include="dragons.vcxproj">
-		<Project>{F4510FD2-3E0A-4FF9-8533-63960EC2FCBB}</Project>
+		<Project>{2B2E1BA3-63D1-4ED4-A584-44F57DA20CE1}</Project>
 	</ProjectReference>
 	<ProjectReference Include="drascula.vcxproj">
-		<Project>{4AFD27EC-6486-44AB-90DA-AE5A7C2D57D3}</Project>
+		<Project>{C2A96BBC-FAFE-4388-BE18-8A6396E17946}</Project>
 	</ProjectReference>
 	<ProjectReference Include="dreamweb.vcxproj">
-		<Project>{1751DE3E-8245-47FB-B4DB-B6E890A05D26}</Project>
+		<Project>{614DED53-C847-4C27-98D2-8F0F62FB03A6}</Project>
+	</ProjectReference>
+	<ProjectReference Include="eem.vcxproj">
+		<Project>{DF10725B-60CF-435D-BA94-12A30248060B}</Project>
 	</ProjectReference>
 	<ProjectReference Include="efh.vcxproj">
-		<Project>{454E3F3C-40CC-4A04-89F7-8D18B47C2A25}</Project>
+		<Project>{B69F8DCB-1B07-44F7-985B-4A797B11353D}</Project>
+	</ProjectReference>
+	<ProjectReference Include="fool.vcxproj">
+		<Project>{ACB2930D-71F0-4BEB-8A48-997BE558C63E}</Project>
 	</ProjectReference>
 	<ProjectReference Include="freescape.vcxproj">
-		<Project>{5BD14D2B-3415-4308-8328-CE757F257762}</Project>
+		<Project>{848BB919-4B8F-4C5B-8F51-7176B6242370}</Project>
+	</ProjectReference>
+	<ProjectReference Include="gamos.vcxproj">
+		<Project>{79F767EA-BDC6-46ED-89F9-F72F18AD4726}</Project>
 	</ProjectReference>
 	<ProjectReference Include="glk.vcxproj">
-		<Project>{B275C5CB-ED38-4F98-930B-EAA7907FF7AF}</Project>
+		<Project>{7150C8ED-2F78-4EEE-8D42-DFA6C8BD21B7}</Project>
 	</ProjectReference>
 	<ProjectReference Include="gnap.vcxproj">
-		<Project>{BC51272A-7664-4C27-9405-8F7E795CA661}</Project>
+		<Project>{387BECBE-4430-4843-9C52-7B781F1B19E8}</Project>
 	</ProjectReference>
 	<ProjectReference Include="gob.vcxproj">
-		<Project>{FA345D19-D2C9-4A0B-92BC-A348D0099220}</Project>
+		<Project>{03B9D799-5747-41CB-8190-182067C84544}</Project>
 	</ProjectReference>
 	<ProjectReference Include="got.vcxproj">
-		<Project>{8A569FED-D06D-4727-BAB5-8E5A61C552C6}</Project>
+		<Project>{659116B7-9C9D-4739-876D-66603F61BF45}</Project>
 	</ProjectReference>
 	<ProjectReference Include="griffon.vcxproj">
-		<Project>{2D380BCB-EFE6-4B4D-87BA-9773E238802D}</Project>
+		<Project>{C25EE853-61F1-414C-8766-8A4D16F8A7A8}</Project>
 	</ProjectReference>
 	<ProjectReference Include="grim.vcxproj">
-		<Project>{E7B47383-76A6-468E-84DA-50998473C9D8}</Project>
+		<Project>{CA1EA271-DF09-45F3-94CA-611BB65ED5BE}</Project>
 	</ProjectReference>
 	<ProjectReference Include="groovie.vcxproj">
-		<Project>{849099E9-7D8D-4C12-8834-F5C36677536B}</Project>
+		<Project>{03389CD9-7CE0-4F98-9638-EE3E4F8AD95A}</Project>
 	</ProjectReference>
 	<ProjectReference Include="hadesch.vcxproj">
-		<Project>{F2FE6D6D-E6EC-44EA-99A1-980596745CAD}</Project>
+		<Project>{C30C60D0-AA1B-47A3-B0D7-4529DCA1958C}</Project>
+	</ProjectReference>
+	<ProjectReference Include="harvester.vcxproj">
+		<Project>{3E71B212-1DB0-46DE-9E51-9297BFCF618E}</Project>
 	</ProjectReference>
 	<ProjectReference Include="hdb.vcxproj">
-		<Project>{33882445-22D8-4130-9FCC-05A7011A84B9}</Project>
+		<Project>{AB5E8B67-C217-4438-B5ED-53CE54464183}</Project>
 	</ProjectReference>
 	<ProjectReference Include="hopkins.vcxproj">
-		<Project>{F2EA23DD-77BC-46C8-8F9B-9980470A610D}</Project>
+		<Project>{CC6A27DE-0D79-44C6-926E-1BFE719628DB}</Project>
 	</ProjectReference>
 	<ProjectReference Include="hugo.vcxproj">
-		<Project>{B319A88C-BC9C-444E-9301-4AD920671ED6}</Project>
+		<Project>{26EA9C11-2E7E-474F-8E1D-5D1A07A23B7F}</Project>
 	</ProjectReference>
 	<ProjectReference Include="hypno.vcxproj">
-		<Project>{458D8821-A6CD-460A-A93D-BED9334FE6D5}</Project>
+		<Project>{1C3AC29A-A993-4550-87D6-83915D92C922}</Project>
 	</ProjectReference>
 	<ProjectReference Include="illusions.vcxproj">
-		<Project>{68477D63-BEEF-422C-9209-45CFD0652E0A}</Project>
+		<Project>{576205CC-E1D9-4E4B-B261-F3BFEAA44B6A}</Project>
 	</ProjectReference>
 	<ProjectReference Include="kingdom.vcxproj">
-		<Project>{F73FF088-2162-4DEC-971A-6B35F16B2500}</Project>
+		<Project>{68F3FE0A-28AF-4858-B9E9-FB0C73C19B97}</Project>
 	</ProjectReference>
 	<ProjectReference Include="kyra.vcxproj">
-		<Project>{840DB0DF-C9EF-4D19-8F48-1F68BB937627}</Project>
+		<Project>{8D653B22-235D-4263-A9B0-B9953301721A}</Project>
 	</ProjectReference>
 	<ProjectReference Include="lab.vcxproj">
-		<Project>{F552C305-52B3-41E5-A407-F16507D703E8}</Project>
+		<Project>{99773DFC-EC59-4B6B-9D05-5A26244527A4}</Project>
 	</ProjectReference>
 	<ProjectReference Include="lastexpress.vcxproj">
-		<Project>{F452A160-749A-437B-A78D-39F5AE67E5FD}</Project>
+		<Project>{8C6BF053-41E0-48A3-8406-5FB41FB16EA2}</Project>
 	</ProjectReference>
 	<ProjectReference Include="lure.vcxproj">
-		<Project>{E3D42434-0300-45C9-A90A-70E503D6562F}</Project>
+		<Project>{96D6AE05-92F5-4E14-B4B1-B5302C6E7F6D}</Project>
 	</ProjectReference>
 	<ProjectReference Include="m4.vcxproj">
-		<Project>{95413E15-0E10-43B7-B3AC-BA486085384C}</Project>
+		<Project>{F23648BB-836C-419D-95AE-418C83B7FACB}</Project>
+	</ProjectReference>
+	<ProjectReference Include="macs2.vcxproj">
+		<Project>{875EEBE8-D5A3-40F9-B821-C2B3DBAA349F}</Project>
+	</ProjectReference>
+	<ProjectReference Include="macventure.vcxproj">
+		<Project>{87A3284C-1B0E-4291-A534-D5AEB3F9B2D2}</Project>
 	</ProjectReference>
 	<ProjectReference Include="made.vcxproj">
-		<Project>{CEAB279A-E1AB-4593-A352-0ACF9A366A07}</Project>
+		<Project>{FE38759A-18F6-4712-8280-C440B2446AA6}</Project>
 	</ProjectReference>
 	<ProjectReference Include="mads.vcxproj">
-		<Project>{6D9E09FB-516F-4AB7-B256-D065B6FCB9A8}</Project>
+		<Project>{9EA90868-903D-4B0F-9557-CE21827DE8C3}</Project>
 	</ProjectReference>
 	<ProjectReference Include="mm.vcxproj">
-		<Project>{A2CA1F15-E523-4090-BDB0-7F84A435C6DC}</Project>
+		<Project>{DC01D265-837E-450A-A728-EA74EA7C97CF}</Project>
 	</ProjectReference>
 	<ProjectReference Include="mohawk.vcxproj">
-		<Project>{CC4CE3CF-C54D-4004-81CB-47E9C6E8547B}</Project>
+		<Project>{B5314348-1E98-42A1-A9AF-33C4140B4358}</Project>
 	</ProjectReference>
 	<ProjectReference Include="mortevielle.vcxproj">
-		<Project>{0B7163EA-DCBB-4C60-924D-50CC824E78E0}</Project>
+		<Project>{BE1849F2-1B20-4C21-A167-D6858B2624AD}</Project>
 	</ProjectReference>
 	<ProjectReference Include="mtropolis.vcxproj">
-		<Project>{113CF583-B4A1-45CE-BC8C-09623E765525}</Project>
+		<Project>{16873D46-E631-404A-A86C-1316299C1DE3}</Project>
 	</ProjectReference>
 	<ProjectReference Include="myst3.vcxproj">
-		<Project>{2CCF5A81-FC10-4CB9-B6DC-31638663B89C}</Project>
+		<Project>{9F51DA2B-29DB-4021-B0D4-D69E8AACCE2A}</Project>
 	</ProjectReference>
 	<ProjectReference Include="nancy.vcxproj">
-		<Project>{F105ABCD-7C3D-4F13-940B-93C4A8553E47}</Project>
+		<Project>{DAF208D3-94E1-4282-96DE-941523363649}</Project>
 	</ProjectReference>
 	<ProjectReference Include="neverhood.vcxproj">
-		<Project>{C13E204E-E20F-4BCD-B3CE-0F4F89FA7C9F}</Project>
+		<Project>{6E83F075-991D-4BC7-88EB-3E753A2F8A79}</Project>
 	</ProjectReference>
 	<ProjectReference Include="ngi.vcxproj">
-		<Project>{C2FA157B-AB5C-421E-8D59-EF080E1C565C}</Project>
+		<Project>{3F0BE19D-465F-47B0-8FB8-752D7A2CBC6E}</Project>
 	</ProjectReference>
 	<ProjectReference Include="parallaction.vcxproj">
-		<Project>{15F6038C-603B-47E5-8218-0CE72885906D}</Project>
+		<Project>{DDABC0D4-A75B-4C3E-8A9F-7C579DA2F5BF}</Project>
 	</ProjectReference>
 	<ProjectReference Include="pegasus.vcxproj">
-		<Project>{5A3BC327-3955-4C1A-8C65-52B85614605F}</Project>
+		<Project>{06638C84-50C2-45B1-B20D-9B73A9E2D2D1}</Project>
+	</ProjectReference>
+	<ProjectReference Include="pelrock.vcxproj">
+		<Project>{71CD4E3A-398B-4565-828A-1BDB62B2407B}</Project>
 	</ProjectReference>
 	<ProjectReference Include="petka.vcxproj">
-		<Project>{CCCC0394-B878-4BF9-B548-A176A9446660}</Project>
+		<Project>{316E4B49-FC56-446A-8BD5-097D0FC6ABCA}</Project>
 	</ProjectReference>
 	<ProjectReference Include="pink.vcxproj">
-		<Project>{904FEFA2-2452-4669-949E-B109A82EF7B6}</Project>
+		<Project>{9377024C-3DE1-4CEC-833F-A252BD52E974}</Project>
 	</ProjectReference>
 	<ProjectReference Include="plumbers.vcxproj">
-		<Project>{CA854DF0-9D22-447D-9CDB-A1652DA21FCB}</Project>
+		<Project>{6FBC8E98-8DA0-492A-AB2E-86667BD6A716}</Project>
 	</ProjectReference>
 	<ProjectReference Include="prince.vcxproj">
-		<Project>{96E7A670-49DA-4D73-8906-79035C538378}</Project>
+		<Project>{AF9A673F-57E7-400C-AAE4-98AF503922D0}</Project>
 	</ProjectReference>
 	<ProjectReference Include="private.vcxproj">
-		<Project>{3BA67EF3-B773-4C28-B39C-4ACF1702A83F}</Project>
+		<Project>{042AACD2-F3A4-4397-8680-54750CBB6B9E}</Project>
 	</ProjectReference>
 	<ProjectReference Include="qdengine.vcxproj">
-		<Project>{6562DDEC-F3E8-40BF-9B7E-93067E811665}</Project>
+		<Project>{1BA90962-F164-4B46-94C7-8E4CF3AD4820}</Project>
 	</ProjectReference>
 	<ProjectReference Include="queen.vcxproj">
-		<Project>{21B639E4-3F67-46D5-9317-4A6D44D5007D}</Project>
+		<Project>{4FF3AED2-C979-43BD-ACEA-FE220518519C}</Project>
 	</ProjectReference>
 	<ProjectReference Include="saga.vcxproj">
-		<Project>{C7C929E7-DEA8-45F0-8E75-5B1FFD5B1D61}</Project>
+		<Project>{402E54E8-7038-41CB-821F-3AF7D4C8A1A8}</Project>
 	</ProjectReference>
 	<ProjectReference Include="saga2.vcxproj">
-		<Project>{015CC5F8-B1FC-456F-93C9-85EE9A394F0A}</Project>
+		<Project>{9F6A7D67-A921-4875-946B-DCE7389838FA}</Project>
 	</ProjectReference>
 	<ProjectReference Include="sci.vcxproj">
-		<Project>{EC785BFA-C2D1-44E9-821F-81805EAB15A5}</Project>
+		<Project>{31181395-8AF5-4E93-9B16-ECCBF2AA6094}</Project>
 	</ProjectReference>
 	<ProjectReference Include="scumm.vcxproj">
-		<Project>{A06BA9BB-59AE-4E07-B535-4A3206F7B396}</Project>
+		<Project>{18558AE6-4089-473E-B5C1-72A098AB335F}</Project>
 	</ProjectReference>
 	<ProjectReference Include="scummvm-detection.vcxproj">
-		<Project>{974B8C37-9C6D-44C3-BF92-04B6EDF46A01}</Project>
+		<Project>{C48CAEDC-DEB1-4FE3-9AA0-38FE4C8870A2}</Project>
 	</ProjectReference>
 	<ProjectReference Include="sherlock.vcxproj">
-		<Project>{6B83D631-C590-4E9F-A05D-78DEEA01AE8C}</Project>
+		<Project>{9A6D9A92-146B-421C-947B-8A534F6E0665}</Project>
 	</ProjectReference>
 	<ProjectReference Include="sky.vcxproj">
-		<Project>{B616D182-28D2-4983-AC8E-D2B8A8A4B2F8}</Project>
+		<Project>{7AA5CB08-2046-423F-BE23-33BDFE4F4042}</Project>
 	</ProjectReference>
 	<ProjectReference Include="sludge.vcxproj">
-		<Project>{5418B26D-8CD5-4DC4-BE1A-A6ABC9768A5A}</Project>
+		<Project>{E17A7B3F-0940-43C8-9EA0-2D50B9F4A4F7}</Project>
 	</ProjectReference>
 	<ProjectReference Include="stark.vcxproj">
-		<Project>{832BBB3B-65E1-4697-ABFC-1EEE1C3BFAFC}</Project>
+		<Project>{797B5A00-B11B-4231-B73D-87FC40873FB5}</Project>
 	</ProjectReference>
 	<ProjectReference Include="supernova.vcxproj">
-		<Project>{4DA4B6D8-9EBE-4879-9B45-66AA54078A75}</Project>
+		<Project>{3E7B052A-0DA4-4068-9674-997DE66CB674}</Project>
 	</ProjectReference>
 	<ProjectReference Include="sword1.vcxproj">
-		<Project>{35C4C082-EBBC-4252-904F-FBEE63D5DD4C}</Project>
+		<Project>{EC4C74B4-3C15-4B4C-89C9-2799B774112C}</Project>
 	</ProjectReference>
 	<ProjectReference Include="sword2.vcxproj">
-		<Project>{84E5239E-63AA-43AB-ADBE-9889376BF85A}</Project>
+		<Project>{D379D502-8B02-4D6F-AA06-47F530EE4B9F}</Project>
 	</ProjectReference>
 	<ProjectReference Include="sword25.vcxproj">
-		<Project>{52963F01-34CE-4435-8A5C-730786AF4A9F}</Project>
+		<Project>{E67413E1-2F90-46FC-A201-EFA38E0F20D4}</Project>
 	</ProjectReference>
 	<ProjectReference Include="teenagent.vcxproj">
-		<Project>{64ED5DC0-37E3-40DF-A3DA-BFA2E260C547}</Project>
+		<Project>{59F8D196-01AC-4180-84F5-EEBD2E55F07B}</Project>
 	</ProjectReference>
 	<ProjectReference Include="tetraedge.vcxproj">
-		<Project>{A75ED5B8-35F5-443E-9319-BA58CF4A22E7}</Project>
+		<Project>{DFEC5072-F320-4C85-9F22-E171ACE5289F}</Project>
 	</ProjectReference>
 	<ProjectReference Include="tinsel.vcxproj">
-		<Project>{3802A140-B9FC-4A6B-8B0F-002B4374869A}</Project>
+		<Project>{90A17869-D10C-45C7-A90D-472D30BCE1B5}</Project>
 	</ProjectReference>
 	<ProjectReference Include="titanic.vcxproj">
-		<Project>{E63B7423-1F86-4CEE-AA69-111439AA2620}</Project>
+		<Project>{9BDBCBC3-06EF-4E0C-84E7-BF7B4A70D9D9}</Project>
 	</ProjectReference>
 	<ProjectReference Include="toltecs.vcxproj">
-		<Project>{6B0E2907-8A3F-400F-ABFE-25B4590AA0A3}</Project>
+		<Project>{EB47EB35-8B9F-4616-A104-62D053DD6D8A}</Project>
 	</ProjectReference>
 	<ProjectReference Include="tony.vcxproj">
-		<Project>{647A659F-2F21-463D-8E96-0916B2119676}</Project>
+		<Project>{405DE8D7-9993-480F-90B4-B947AE5D792B}</Project>
 	</ProjectReference>
 	<ProjectReference Include="toon.vcxproj">
-		<Project>{319EC0F0-88A1-4E13-9859-1C43E833497F}</Project>
+		<Project>{04634DC6-C5D5-4168-BBDA-A89C5A6FE9A0}</Project>
 	</ProjectReference>
 	<ProjectReference Include="tot.vcxproj">
-		<Project>{F0E38506-B384-4B9E-BF4E-428919FA95E6}</Project>
+		<Project>{94CBDA06-AA7C-414F-AD47-FE201E12D629}</Project>
 	</ProjectReference>
 	<ProjectReference Include="touche.vcxproj">
-		<Project>{4B75BDD7-7D1B-4FA4-9797-B3FB376C7C5E}</Project>
+		<Project>{A6E5A372-4E6B-463B-8411-5A4CE0E28099}</Project>
 	</ProjectReference>
 	<ProjectReference Include="trecision.vcxproj">
-		<Project>{1DB7EE8F-A901-4DDB-B4E5-833B240BCE18}</Project>
+		<Project>{BFC5A6B8-D92C-4497-B4A8-152CA53AE764}</Project>
 	</ProjectReference>
 	<ProjectReference Include="tsage.vcxproj">
-		<Project>{BBCFE306-1EAA-4B67-92FC-A4A6016089C7}</Project>
+		<Project>{81E50873-519A-4A1C-A57B-EA7DF74F8FCF}</Project>
 	</ProjectReference>
 	<ProjectReference Include="tucker.vcxproj">
-		<Project>{A67FF9C2-7E1E-47E9-B5B6-95131D31F1A5}</Project>
+		<Project>{EE0CC31C-EC3A-48D4-B112-DDE197429806}</Project>
 	</ProjectReference>
 	<ProjectReference Include="twine.vcxproj">
-		<Project>{E852F7B2-D5B0-453B-A518-720BAA0B08DE}</Project>
+		<Project>{DDF51407-A87E-4F7C-BC68-0A1CD1E72008}</Project>
 	</ProjectReference>
 	<ProjectReference Include="twp.vcxproj">
-		<Project>{70AC7E9B-82E1-4EAB-9033-82AD3C98EC1D}</Project>
+		<Project>{F30C6D9D-3FBE-40B6-A369-551E689B38F3}</Project>
 	</ProjectReference>
 	<ProjectReference Include="ultima.vcxproj">
-		<Project>{EDF7FC4A-9D1D-442B-B82D-3C65F8BCC101}</Project>
+		<Project>{6750C88D-5C19-4A7F-B317-3FE9F2D12EEE}</Project>
 	</ProjectReference>
 	<ProjectReference Include="vcruise.vcxproj">
-		<Project>{5A5E1B58-78EA-460E-AFB5-8403341E151A}</Project>
+		<Project>{E24118DE-3211-46A1-B551-E44D174E98EC}</Project>
 	</ProjectReference>
 	<ProjectReference Include="voyeur.vcxproj">
-		<Project>{68352A40-B001-49B1-B8CC-E28B6C7B557F}</Project>
+		<Project>{56EE3C19-3B32-4B5A-89C3-839D99EC4EA1}</Project>
 	</ProjectReference>
 	<ProjectReference Include="wage.vcxproj">
-		<Project>{EB21AF8C-C218-41A8-892A-A3630A67ECE9}</Project>
+		<Project>{AC51B015-8B83-43E9-9A64-B1B392AF5F79}</Project>
 	</ProjectReference>
 	<ProjectReference Include="wintermute.vcxproj">
-		<Project>{74D6344C-FA5B-4441-A06E-A43436D2176C}</Project>
+		<Project>{F4B8DC9A-F3FD-4D1E-8738-1FA3C0686118}</Project>
 	</ProjectReference>
 	<ProjectReference Include="zvision.vcxproj">
-		<Project>{CBA10827-F1EA-4348-9D91-6E3D90D58964}</Project>
+		<Project>{64DF3865-8CE7-4553-B37F-A72CDC2E635C}</Project>
 	</ProjectReference>
 	</ItemGroup>
 	<ItemGroup>

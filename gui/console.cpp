@@ -201,8 +201,8 @@ void ConsoleDialog::close() {
 	Dialog::close();
 }
 
-void ConsoleDialog::drawDialog(DrawLayer layerToDraw) {
-	Dialog::drawDialog(layerToDraw);
+void ConsoleDialog::drawDialog(DrawLayer layerToDraw, bool resetClipping) {
+	Dialog::drawDialog(layerToDraw, resetClipping);
 
 	for (int line = 0; line < _linesPerPage; line++)
 		drawLine(line);
@@ -899,8 +899,7 @@ void ConsoleDialog::handleMouseDown(int x, int y, int button, int clickCount) {
 	w = findWidget(x, y);
 
 	if (w) {
-		if (!(w->getFlags() & WIDGET_IGNORE_DRAG))
-			_dragWidget = w;
+		_dragWidget = w;
 
 		if (w != _focusedWidget && w->wantsFocus()) {
 			setFocusWidget(w);

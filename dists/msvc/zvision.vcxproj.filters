@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="common">
-			<UniqueIdentifier>B80D0CA5-0D62-4E86-B23F-D55258512532</UniqueIdentifier>
+			<UniqueIdentifier>3328E18F-19AB-4A5F-B3CB-2680B54BAA6C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="core">
-			<UniqueIdentifier>7FC7E4A8-0DB8-419B-B7B7-881287DE4E32</UniqueIdentifier>
+			<UniqueIdentifier>EA6B70E4-73E4-45EC-8869-95E20327228F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="file">
-			<UniqueIdentifier>A8272DE2-73C1-461F-B3DD-1365B6FD29BA</UniqueIdentifier>
+			<UniqueIdentifier>A56B7CF7-9203-4D37-BFB4-9C1B47C87407</UniqueIdentifier>
 		</Filter>
 		<Filter Include="graphics">
-			<UniqueIdentifier>CFA58406-3386-4ACC-887F-2CB5932BD943</UniqueIdentifier>
+			<UniqueIdentifier>4858F97A-4817-4E14-B2B2-E4661CFAB50C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="graphics\cursors">
-			<UniqueIdentifier>090C2331-82C3-4C42-9E73-94BF3B9130A8</UniqueIdentifier>
+			<UniqueIdentifier>2123DD19-742A-47E0-98E6-64C76045E59F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="graphics\effects">
-			<UniqueIdentifier>849EF4F3-25D0-4FE5-B603-EF220CCCC47B</UniqueIdentifier>
+			<UniqueIdentifier>2B8F7524-DE25-4D44-8992-4EF169C7C57C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scripting">
-			<UniqueIdentifier>F6257866-F7D1-4C44-86C4-084BF1682EA4</UniqueIdentifier>
+			<UniqueIdentifier>F41C0E9E-7038-4C07-9970-9068A6FAC96B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scripting\controls">
-			<UniqueIdentifier>30AA2486-7A61-4618-BDAC-65630416088B</UniqueIdentifier>
+			<UniqueIdentifier>4EA5603B-7D1A-4563-99AF-11B9BB9F7590</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scripting\effects">
-			<UniqueIdentifier>52101098-66BD-4DB0-88C4-B0B2BFC52BCF</UniqueIdentifier>
+			<UniqueIdentifier>4A2595D0-5D7B-45D8-A82A-A668A909934E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound">
-			<UniqueIdentifier>F263541A-E7C6-451E-98B2-36C47E40D046</UniqueIdentifier>
+			<UniqueIdentifier>81504DB3-F5CE-4EF5-AEB9-272ECF21D851</UniqueIdentifier>
 		</Filter>
 		<Filter Include="text">
-			<UniqueIdentifier>DB751B96-5FDD-4480-BB87-12A337852C3B</UniqueIdentifier>
+			<UniqueIdentifier>438B3C88-C43A-471D-B9C8-855BA0586EF5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="video">
-			<UniqueIdentifier>630BB48B-8C2F-402C-BA7E-4D2E0FB1C3BA</UniqueIdentifier>
+			<UniqueIdentifier>E8728E89-E462-461E-A2E1-20AF290628BA</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

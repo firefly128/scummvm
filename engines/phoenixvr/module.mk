@@ -3,6 +3,9 @@ MODULE := engines/phoenixvr
 MODULE_OBJS = \
 	arn.o \
 	bigf.o \
+	commands.o \
+	commands_v1.o \
+	commands_v2.o \
 	game_state.o \
 	console.o \
 	metaengine.o \
@@ -11,7 +14,12 @@ MODULE_OBJS = \
 	rectf.o \
 	region_set.o \
 	script.o \
-	vr.o
+	script_v1.o \
+	script_v2.o \
+	subtitles.o \
+	variables.o \
+	vr.o \
+	wise.o
 
 # This module can be built as a plugin
 ifeq ($(ENABLE_PHOENIXVR), DYNAMIC_PLUGIN)

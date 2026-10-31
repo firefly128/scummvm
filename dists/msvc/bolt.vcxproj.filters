@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="carnival">
+			<UniqueIdentifier>F88C91DF-7D57-43BB-9878-2F0FCDCC2687</UniqueIdentifier>
+		</Filter>
+		<Filter Include="carnival\booths">
+			<UniqueIdentifier>4992C122-5430-461E-9E60-D56AA2836412</UniqueIdentifier>
+		</Filter>
+		<Filter Include="crete">
+			<UniqueIdentifier>F1E53BB2-7F0A-4AAE-8791-6780B1E95986</UniqueIdentifier>
+		</Filter>
+		<Filter Include="merlin">
+			<UniqueIdentifier>140E7811-3E42-4B4E-A7FC-1FACB2797268</UniqueIdentifier>
+		</Filter>
+		<Filter Include="xplib">
+			<UniqueIdentifier>0344B50A-10D9-4E63-AE99-7AD4AC5082E3</UniqueIdentifier>
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\engines\bolt\carnival\booths\fred.cpp">
+			<Filter>carnival\booths</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\booths\george.cpp">
+			<Filter>carnival\booths</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\booths\huck.cpp">
+			<Filter>carnival\booths</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\booths\scooby.cpp">
+			<Filter>carnival\booths</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\booths\topcat.cpp">
+			<Filter>carnival\booths</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\booths\yogi.cpp">
+			<Filter>carnival\booths</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\barker.cpp">
+			<Filter>carnival</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\booth.cpp">
+			<Filter>carnival</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\carnival.cpp">
+			<Filter>carnival</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\carnival\resource.cpp">
+			<Filter>carnival</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\crete\crete.cpp">
+			<Filter>crete</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\merlin\merlin.cpp">
+			<Filter>merlin</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\blit.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\cursor.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\display.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\events.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\file.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\palette.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\random.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\sound.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\timer.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\xplib\xplib.cpp">
+			<Filter>xplib</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\bolt\anim.cpp" />
+		<ClCompile Include="..\..\engines\bolt\av.cpp" />
+		<ClCompile Include="..\..\engines\bolt\bolt.cpp" />
+		<ClCompile Include="..\..\engines\bolt\metaengine.cpp" />
+		<ClCompile Include="..\..\engines\bolt\resource.cpp" />
+		<ClCompile Include="..\..\engines\bolt\rtf.cpp" />
+		<ClCompile Include="..\..\engines\bolt\ssprite.cpp" />
+		<ClCompile Include="..\..\engines\bolt\state.cpp" />
+		<ClCompile Include="..\..\engines\bolt\swap.cpp" />
+		<ClCompile Include="..\..\engines\bolt\utils.cpp" />
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\engines\bolt\bolt.h" />
+		<ClInclude Include="..\..\engines\bolt\carnival\carnival.h">
+			<Filter>carnival</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\crete\crete.h">
+			<Filter>crete</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\merlin\merlin.h">
+			<Filter>merlin</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\xplib\xplib.h">
+			<Filter>xplib</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\bolt\detection.h" />
+		<ClInclude Include="..\..\engines\bolt\detection_tables.h" />
+		<ClInclude Include="..\..\engines\bolt\metaengine.h" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\engines\bolt\module.mk" />
+	</ItemGroup>
+</Project>

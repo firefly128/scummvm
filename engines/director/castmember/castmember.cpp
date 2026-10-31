@@ -26,6 +26,7 @@
 #include "director/cast.h"
 #include "director/movie.h"
 #include "director/castmember/castmember.h"
+#include "director/castmember/script.h"
 #include "director/lingo/lingo-the.h"
 #include "director/util.h"
 
@@ -284,7 +285,7 @@ void CastMember::setField(int field, const Datum &d) {
 			castInfo->fileName = filename;
 			castInfo->directory = rawPath.substr(0, MAX((uint)0, rawPath.size() - filename.size() - 1));
 			_needsReload = true;
-			_modified = true;
+			setModified(true);
 		}
 		return;
 	case kTheForeColor:
@@ -295,7 +296,7 @@ void CastMember::setField(int field, const Datum &d) {
 		return;
 	case kTheHilite:
 		_hilite = (bool)d.asInt();
-		_modified = true;
+		setModified(true);
 		return;
 	case kTheName:
 		if (!castInfo) {
@@ -303,6 +304,7 @@ void CastMember::setField(int field, const Datum &d) {
 			return;
 		}
 		castInfo->name = d.asString();
+		setModified(true);
 		_cast->rebuildCastNameCache();
 		return;
 	case kTheRect:
@@ -321,8 +323,14 @@ void CastMember::setField(int field, const Datum &d) {
 			warning("CastMember::setField(): CastMember info for %d not found", _castId);
 			return;
 		}
-		_cast->_lingoArchive->replaceCode(*d.u.s, kCastScript, _castId);
+		{
+			ScriptType scriptType = kCastScript;
+			if (_type == kCastLingoScript)
+				scriptType = static_cast<ScriptCastMember *>(this)->_scriptType;
+			_cast->_lingoArchive->replaceCode(*d.u.s, scriptType, _castId);
+		}
 		castInfo->script = d.asString();
+		setModified(true);
 		return;
 	case kTheWidth:
 		warning("BUILDBOT: CastMember::setField(): Attempt to set read-only field \"%s\" of cast %d", g_lingo->field2str(field), _castId);
@@ -383,7 +391,7 @@ uint32 CastMember::writeCAStResource(Common::SeekableWriteStream *writeStream) {
 		if (castInfoToWrite) {
 			_cast->writeCastInfo(writeStream, _castId);
 		}
-	} else if (_cast->_version >= kFileVer500 && _cast->_version < kFileVer600) {
+	} else if (_cast->_version >= kFileVer500 && _cast->_version < kFileVer1200) {
 		writeStream->writeUint32BE((uint32)_type);
 		writeStream->writeUint32BE(castInfoToWrite);
 		writeStream->writeUint32BE(castDataToWrite);
@@ -400,28 +408,12 @@ uint32 CastMember::writeCAStResource(Common::SeekableWriteStream *writeStream) {
 	return 0;
 }
 
-// This is the data that is inside the 'CASt' resource
-// These functions (getCastDataSize() and writeCastData() default implementations, are not supposed to be called
-// If the data is modified in the cast member, we implement a custom getCastDataSize() and writeCastData() for that member
-// If it is not modified, then we write it as it is from the original source in the overridden
-// writeCAStResource(Common::MemoryWriteStream, uint32, uint32) function which doesn't call these default functions
 uint32 CastMember::getCastDataSize() {
-	warning("CastMember::getDataSize(): Defualt implementation of 'CASt' resource data size");
-	return _castDataSize;
+	return 0;
 }
 
 void CastMember::writeCastData(Common::SeekableWriteStream *writeStream) {
-	warning("CastMember::getDataSize(): Defualt implementation of 'CASt' resource data");
-
-	if (_cast->_version >= kFileVer400 && _cast->_version < kFileVer500) {
-		if (_flags1 != 0xFF) {
-			writeStream->write(0, _castDataSize - 2);
-		} else {
-			writeStream->write(0, _castDataSize - 1);
-		}
-	} else {
-		writeStream->write(0, _castDataSize);
-	}
+	warning("CastMember::writeCastData(): no writer for %s cast member %d", castType2str(_type), _castId);
 }
 
 // This is the info that is inside the 'CASt' resource
@@ -439,8 +431,7 @@ uint32 CastMember::getCastResourceSize() {
 		if (_flags1 != 0xFF) {
 			headerSize += 1;
 		}
-	} else if (_cast->_version >= kFileVer500 && _cast->_version < kFileVer600) {
-		// Header size for director version 5
+	} else if (_cast->_version >= kFileVer500 && _cast->_version < kFileVer1200) {
 		headerSize = 12;		// See Cast::loadCastData() for director version 5
 	}
 

@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="formats">
-			<UniqueIdentifier>E3A924D3-3700-4E58-9ABA-F28CE7E9FA15</UniqueIdentifier>
+			<UniqueIdentifier>7D2FB7B0-DAAC-48B2-8854-C63594949AEA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gfx">
-			<UniqueIdentifier>C02036CE-9AB1-4358-969B-4E8E30CD3520</UniqueIdentifier>
+			<UniqueIdentifier>14A10EB1-E0FC-40B9-97A2-DEBF6A069BA2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="model">
-			<UniqueIdentifier>D4AE8891-887F-4481-BEBC-5DAFA9A9AD20</UniqueIdentifier>
+			<UniqueIdentifier>ED49265C-AF59-477F-94A3-5056AFCCB52D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="movement">
-			<UniqueIdentifier>60EBC8A2-ADE4-4685-9E1F-697089DB76D6</UniqueIdentifier>
+			<UniqueIdentifier>EE210F30-FD13-4755-9F3D-F57AAB15E7ED</UniqueIdentifier>
 		</Filter>
 		<Filter Include="resources">
-			<UniqueIdentifier>8A68754F-99F6-445D-851F-DBAA740F6DC5</UniqueIdentifier>
+			<UniqueIdentifier>A54F1633-D809-49BC-940F-50DAE479FC66</UniqueIdentifier>
 		</Filter>
 		<Filter Include="services">
-			<UniqueIdentifier>8FDCA311-7609-4151-9414-26FEA22990B3</UniqueIdentifier>
+			<UniqueIdentifier>51361F7C-D8CD-45C0-9A4F-01BED28BBE83</UniqueIdentifier>
 		</Filter>
 		<Filter Include="tools">
-			<UniqueIdentifier>5B6E6246-ACE0-4C1F-B49F-4F1CEF2F515F</UniqueIdentifier>
+			<UniqueIdentifier>4BA3D465-0324-4F12-83A2-56AFA86FA3F9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ui">
-			<UniqueIdentifier>1CC67868-2FBF-484E-AA09-68210E704DD6</UniqueIdentifier>
+			<UniqueIdentifier>8049EBE2-BDE2-42A3-925A-063B641EC640</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ui\menu">
-			<UniqueIdentifier>96158DB6-C4DE-47EC-AC23-7E052EB742B6</UniqueIdentifier>
+			<UniqueIdentifier>8EB3DC8B-85F8-4E3D-9019-18BEE7F73990</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ui\world">
-			<UniqueIdentifier>6BD4F016-3C2B-4696-9744-D06B71E4A066</UniqueIdentifier>
+			<UniqueIdentifier>E1D56DAA-CE01-4D74-BC94-34FE31144F27</UniqueIdentifier>
 		</Filter>
 		<Filter Include="visual">
-			<UniqueIdentifier>88279050-4C7D-4CBA-8880-CFA892CCE2B9</UniqueIdentifier>
+			<UniqueIdentifier>2F7D9BBC-B30D-45A7-A799-23CB8C68A49E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="visual\effects">
-			<UniqueIdentifier>891B1584-7FAD-4E8B-B492-6FAF9FBED2D7</UniqueIdentifier>
+			<UniqueIdentifier>E9065573-F480-4F80-8A4B-7EBC5A2F0287</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

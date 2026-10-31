@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="logic">
-			<UniqueIdentifier>7386176D-A121-4D4B-9859-D59FE553E927</UniqueIdentifier>
+			<UniqueIdentifier>CE5DEE1C-36F9-4855-A807-3F1567E768B6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="video">
-			<UniqueIdentifier>88ADB853-9D6C-4006-859B-0076A1A3EE96</UniqueIdentifier>
+			<UniqueIdentifier>37C9B05E-B76E-4CA6-899F-77567305A7D0</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

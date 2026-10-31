@@ -23,7 +23,7 @@
 
 #include "freescape/freescape.h"
 #include "freescape/games/castle/castle.h"
-#include "freescape/language/8bitDetokeniser.h"
+#include "freescape/language/variables.h"
 
 namespace Freescape {
 
@@ -46,69 +46,91 @@ void CastleEngine::loadAssetsZXFullGame() {
 	uint8 r, g, b;
 	Common::Array<Graphics::ManagedSurface *> chars;
 
-	file.open("castlemaster.zx.title");
+	Common::Path titleFile(isCastleMaster2() ? "castlemaster2.zx.title" : "castlemaster.zx.title");
+	Common::Path borderFile(isCastleMaster2() ? "castlemaster2.zx.border" : "castlemaster.zx.border");
+	Common::Path dataFile(isCastleMaster2() ? "castlemaster2.zx.data" : "castlemaster.zx.data");
+
+	file.open(titleFile);
 	if (file.isOpen()) {
 		_title = loadAndConvertScrImage(&file);
 	} else
-		error("Unable to find castlemaster.zx.title");
+		error("Unable to find %s", titleFile.toString().c_str());
 
 	file.close();
-	file.open("castlemaster.zx.border");
+	file.open(borderFile);
 	if (file.isOpen()) {
 		_border = loadAndConvertScrImage(&file);
 	} else
-		error("Unable to find castlemaster.zx.border");
+		error("Unable to find %s", borderFile.toString().c_str());
 	file.close();
 
-	file.open("castlemaster.zx.data");
+	file.open(dataFile);
 	if (!file.isOpen())
-		error("Failed to open castlemaster.zx.data");
+		error("Failed to open %s", dataFile.toString().c_str());
 
-	loadMessagesVariableSize(&file, 0x4bd, 71);
-	switch (_language) {
-		case Common::ES_ESP:
-			loadRiddles(&file, 0x1458, 9);
-			load8bitBinary(&file, 0x6aa9, 16);
-			loadSpeakerFxZX(&file, 0xca0, 0xcdc);
+	if (isCastleMaster2()) {
+		// 41 game text entries at 0x02B9, then 40 area names at 0x0549
+		loadMessagesCastleMaster2(&file, 0x02b9, 41 + 40);
 
-			file.seek(0x1228);
-			for (int i = 0; i < 90; i++) {
-				Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
-				surface->create(8, 8, Graphics::PixelFormat::createFormatCLUT8());
-				chars.push_back(loadFrame(&file, surface, 1, 8, 1));
-			}
-			_font = Font(chars);
-			_font.setCharWidth(9);
-			_fontLoaded = true;
+		load8bitBinary(&file, 0x6682, 16);
+		_sound = loadSpeakerFxZX(&file, 0x0bbf, 0x0bfb, 25);
 
-			break;
-		case Common::EN_ANY:
-			if (_variant & GF_ZX_RETAIL) {
-				loadRiddles(&file, 0x1448, 9);
-				load8bitBinary(&file, 0x6a3b, 16);
-				loadSpeakerFxZX(&file, 0xc91, 0xccd);
-				file.seek(0x1219);
-			} else if (_variant & GF_ZX_DISC) {
-				loadRiddles(&file, 0x1457, 9);
-				load8bitBinary(&file, 0x6a9b, 16);
-				loadSpeakerFxZX(&file, 0xca0, 0xcdc);
+		file.seek(0x1147);
+		for (int i = 0; i < 90; i++) {
+			Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
+			surface->create(8, 8, Graphics::PixelFormat::createFormatCLUT8());
+			chars.push_back(loadFrame(&file, surface, 1, 8, 1));
+		}
+		_font = Font(chars);
+		_font.setCharWidth(9);
+		_fontLoaded = true;
+	} else {
+		loadMessagesVariableSize(&file, 0x4bd, 71);
+		switch (_language) {
+			case Common::ES_ESP:
+				loadRiddles(&file, 0x1458, 9);
+				load8bitBinary(&file, 0x6aa9, 16);
+				_sound = loadSpeakerFxZX(&file, 0xca0, 0xcdc, 25);
+
 				file.seek(0x1228);
-			} else {
-				error("Unknown Castle Master ZX variant");
-			}
-			for (int i = 0; i < 90; i++) {
-				Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
-				surface->create(8, 8, Graphics::PixelFormat::createFormatCLUT8());
-				chars.push_back(loadFrame(&file, surface, 1, 8, 1));
-			}
-			_font = Font(chars);
-			_font.setCharWidth(9);
-			_fontLoaded = true;
+				for (int i = 0; i < 90; i++) {
+					Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
+					surface->create(8, 8, Graphics::PixelFormat::createFormatCLUT8());
+					chars.push_back(loadFrame(&file, surface, 1, 8, 1));
+				}
+				_font = Font(chars);
+				_font.setCharWidth(9);
+				_fontLoaded = true;
 
-			break;
-		default:
-			error("Language not supported");
-			break;
+				break;
+			case Common::EN_ANY:
+				if (_variant & GF_ZX_RETAIL) {
+					loadRiddles(&file, 0x1448, 9);
+					load8bitBinary(&file, 0x6a3b, 16);
+					_sound = loadSpeakerFxZX(&file, 0xc91, 0xccd, 25);
+					file.seek(0x1219);
+				} else if (_variant & GF_ZX_DISC) {
+					loadRiddles(&file, 0x1457, 9);
+					load8bitBinary(&file, 0x6a9b, 16);
+					_sound = loadSpeakerFxZX(&file, 0xca0, 0xcdc, 25);
+					file.seek(0x1228);
+				} else {
+					error("Unknown Castle Master ZX variant");
+				}
+				for (int i = 0; i < 90; i++) {
+					Graphics::ManagedSurface *surface = new Graphics::ManagedSurface();
+					surface->create(8, 8, Graphics::PixelFormat::createFormatCLUT8());
+					chars.push_back(loadFrame(&file, surface, 1, 8, 1));
+				}
+				_font = Font(chars);
+				_font.setCharWidth(9);
+				_fontLoaded = true;
+
+				break;
+			default:
+				error("Language not supported");
+				break;
+		}
 	}
 
 	loadColorPalette();
@@ -118,10 +140,18 @@ void CastleEngine::loadAssetsZXFullGame() {
 	_gfx->readFromPalette(7, r, g, b);
 	uint32 white = _gfx->_texturePixelFormat.ARGBToColor(0xFF, r, g, b);
 
-	_keysBorderFrames.push_back(loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xe06 : 0xdf7, red, white));
+	if (isCastleMaster2()) {
+		_keysBorderFrames.push_back(loadFrameWithHeader(&file, 0x0d25, red, white));
+	} else {
+		_keysBorderFrames.push_back(loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xe06 : 0xdf7, red, white));
+	}
 
 	uint32 green = _gfx->_texturePixelFormat.ARGBToColor(0xFF, 0, 0xff, 0);
-	_spiritsMeterIndicatorFrame = loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xe5e : 0xe4f, green, white);
+	if (isCastleMaster2()) {
+		_spiritsMeterIndicatorFrame = loadFrameWithHeader(&file, 0x0d7d, green, white);
+	} else {
+		_spiritsMeterIndicatorFrame = loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xe5e : 0xe4f, green, white);
+	}
 
 	_gfx->readFromPalette(4, r, g, b);
 	uint32 front = _gfx->_texturePixelFormat.ARGBToColor(0xFF, r, g, b);
@@ -132,17 +162,27 @@ void CastleEngine::loadAssetsZXFullGame() {
 	background->create(backgroundWidth * 8, backgroundHeight, _gfx->_texturePixelFormat);
 	background->fillRect(Common::Rect(0, 0, backgroundWidth * 8, backgroundHeight), 0);
 
-	file.seek(_variant & GF_ZX_DISC ? 0xfd3 : 0xfc4);
+	if (isCastleMaster2()) {
+		file.seek(0x0ef2);
+	} else {
+		file.seek(_variant & GF_ZX_DISC ? 0xfd3 : 0xfc4);
+	}
 	_background = loadFrame(&file, background, backgroundWidth, backgroundHeight, front);
 
 	_gfx->readFromPalette(6, r, g, b);
 	uint32 yellow = _gfx->_texturePixelFormat.ARGBToColor(0xFF, r, g, b);
 	uint32 black = _gfx->_texturePixelFormat.ARGBToColor(0xFF, 0, 0, 0);
-	_strenghtBackgroundFrame = loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xee6 : 0xed7, yellow, black);
-	_strenghtBarFrame = loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xf72 : 0xf63, yellow, black);
-	_strenghtWeightsFrames = loadFramesWithHeader(&file, _variant & GF_ZX_DISC ? 0xf92 : 0xf83, 4, yellow, black);
-
-	_flagFrames = loadFramesWithHeader(&file, (_variant & GF_ZX_DISC ? 0x10e4 + 15 : 0x10e4), 4, green, black);
+	if (isCastleMaster2()) {
+		_strenghtBackgroundFrame = loadFrameWithHeader(&file, 0x0e05, yellow, black);
+		_strenghtBarFrame = loadFrameWithHeader(&file, 0x0e91, yellow, black);
+		_strenghtWeightsFrames = loadFramesWithHeader(&file, 0x0eb1, 4, yellow, black);
+		_flagFrames = loadFramesWithHeader(&file, 0x1012, 4, green, black);
+	} else {
+		_strenghtBackgroundFrame = loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xee6 : 0xed7, yellow, black);
+		_strenghtBarFrame = loadFrameWithHeader(&file, _variant & GF_ZX_DISC ? 0xf72 : 0xf63, yellow, black);
+		_strenghtWeightsFrames = loadFramesWithHeader(&file, _variant & GF_ZX_DISC ? 0xf92 : 0xf83, 4, yellow, black);
+		_flagFrames = loadFramesWithHeader(&file, (_variant & GF_ZX_DISC ? 0x10e4 + 15 : 0x10e4), 4, green, black);
+	}
 
 	file.skip(24);
 	int thunderWidth = 4;
@@ -161,27 +201,29 @@ void CastleEngine::loadAssetsZXFullGame() {
 	_thunderFrames[0]->copyRectToSurface(*thunderFrame, 0, 0, Common::Rect(0, 0, thunderWidth * 8 / 2, thunderHeight));
 	_thunderFrames[1]->copyRectToSurface(*thunderFrame, 0, 0, Common::Rect(thunderWidth * 8 / 2, 0, thunderWidth * 8, thunderHeight));
 
-	Graphics::Surface *tmp;
-	tmp = loadBundledImage("castle_riddle_top_frame");
-	_riddleTopFrame = new Graphics::ManagedSurface;
-	_riddleTopFrame->copyFrom(*tmp);
-	tmp->free();
-	delete tmp;
-	_riddleTopFrame->convertToInPlace(_gfx->_texturePixelFormat);
+	if (!isCastleMaster2()) {
+		Graphics::Surface *tmp;
+		tmp = loadBundledImage("castle_riddle_top_frame");
+		_riddleTopFrame = new Graphics::ManagedSurface;
+		_riddleTopFrame->copyFrom(*tmp);
+		tmp->free();
+		delete tmp;
+		_riddleTopFrame->convertToInPlace(_gfx->_texturePixelFormat);
 
-	tmp = loadBundledImage("castle_riddle_background_frame");
-	_riddleBackgroundFrame = new Graphics::ManagedSurface();
-	_riddleBackgroundFrame->copyFrom(*tmp);
-	tmp->free();
-	delete tmp;
-	_riddleBackgroundFrame->convertToInPlace(_gfx->_texturePixelFormat);
+		tmp = loadBundledImage("castle_riddle_background_frame");
+		_riddleBackgroundFrame = new Graphics::ManagedSurface();
+		_riddleBackgroundFrame->copyFrom(*tmp);
+		tmp->free();
+		delete tmp;
+		_riddleBackgroundFrame->convertToInPlace(_gfx->_texturePixelFormat);
 
-	tmp = loadBundledImage("castle_riddle_bottom_frame");
-	_riddleBottomFrame = new Graphics::ManagedSurface();
-	_riddleBottomFrame->copyFrom(*tmp);
-	tmp->free();
-	delete tmp;
-	_riddleBottomFrame->convertToInPlace(_gfx->_texturePixelFormat);
+		tmp = loadBundledImage("castle_riddle_bottom_frame");
+		_riddleBottomFrame = new Graphics::ManagedSurface();
+		_riddleBottomFrame->copyFrom(*tmp);
+		tmp->free();
+		delete tmp;
+		_riddleBottomFrame->convertToInPlace(_gfx->_texturePixelFormat);
+	}
 }
 
 void CastleEngine::drawZXUI(Graphics::Surface *surface) {

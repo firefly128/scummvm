@@ -2615,6 +2615,37 @@ static const SciScriptPatcherEntry freddypharkasSignatures[] = {
 
 // ===========================================================================
 
+// WORKAROUND
+// The Hoyle1 demo gets stuck waiting for a sound to stop in ScummVM because the
+//  User script skips calling kGetEvent. ScummVM updates SCI0 music cues from
+//  kGetEvent based on the assumption that it's a frequently called function.
+//
+// We work around this by disabling the code in User:doit that skips kGetEvent.
+//  This doesn't have any noticeable affect on this short demo. The game scrips
+//  already disable the player and prevent input.
+//
+// Applies to: PC Demo
+// Responsible method: User:doit
+static const uint16 hoyle1SignatureDemoEvents[] = {
+	SIG_MAGICDWORD,
+	0x80, SIG_UINT16(0x0302),          // lag 0302 [ demo flag ]
+	0x30,                              // bnt
+	SIG_END
+};
+
+static const uint16 hoyle1PatchDemoEvents[] = {
+	0x34, PATCH_UINT16(0x0000),       // ldi 0000
+	PATCH_END
+};
+
+//          script, description,                                      signature                         patch
+static const SciScriptPatcherEntry hoyle1Signatures[] = {
+	{  true,   996, "demo events",                                 1, hoyle1SignatureDemoEvents,        hoyle1PatchDemoEvents },
+	SCI_SIGNATUREENTRY_TERMINATOR
+};
+
+// ===========================================================================
+
 // During Bridge, Declarer_Second_NT:think performs a bitwise or against an
 //  object due to a script typo. This operation is supposed to be against
 //  (bridgeHand:highCard):rank but instead it's against bridgeHand:highCard.
@@ -2947,7 +2978,7 @@ static const uint16 hoyle5PatchDisableGame[] = {
 	PATCH_END
 };
 
-// Hoyle School House Math is similar to the Children's Collection and Bridge
+// Hoyle School House is similar to the Children's Collection and Bridge
 //  versions above, where the individual card games were launched externally
 //  by passing a config file to the interpreter. The menus for this game are
 //  present, although they are still using Hoyle4 graphics, but they are missing
@@ -3081,6 +3112,57 @@ static const uint16 hoyle5PatchHeartsStrategy[] = {
 	PATCH_END
 };
 
+// Checkers can crash when the script calculates the computer's next move.
+//  Tree:alphaBeta is a large method that evaluates moves and potentially adds
+//  and removes elements to a List object. At the end, it sometimes selects a
+//  random move from the List, but without verifying that the List is not empty.
+//  There are codepaths where the List remains empty but is accessed anyway.
+//
+// We fix this by adding a check to skip selecting a random move when movLst is
+//  empty. This does not prevent the computer from making a move, as the script
+//  has already selected a default move.
+//
+// Applies to: All versions
+// Responsible method: Tree:alphaBeta
+// Fixes bug: #17020
+static const uint16 hoyle5SignatureCheckersAiWindows[] = {
+	0x31, 0x3d,                        // bnt 3d [ skip rng ]
+	SIG_ADDTOOFFSET(+17),              // acc = movLst:size
+	0x36,                              // push
+	0x35, 0x01, SIG_MAGICDWORD,        // ldi 01
+	0x04,                              // sub
+	0x36,                              // push
+	0x43, 0x3c, SIG_UINT16(0x0004),    // callk Random 04
+	0xa5, 0x00,                        // sat 00 [ unused ]
+	SIG_END
+};
+
+static const uint16 hoyle5PatchCheckersAiWindows[] = {
+	PATCH_ADDTOOFFSET(+19),
+	0x31, 0x2a,                        // bnt 2a [ skip rng if movLst:size == 0 ]
+	PATCH_GETORIGINALBYTES(19, 9),
+	PATCH_END
+};
+
+static const uint16 hoyle5SignatureCheckersAiMac[] = {
+	0x31, 0x31,                        // bnt 31 [ skip rng ]
+	SIG_ADDTOOFFSET(+11),              // acc = movLst:size
+	0x36,                              // push
+	0x35, 0x01, SIG_MAGICDWORD,        // ldi 01
+	0x04,                              // sub
+	0x36,                              // push
+	0x43, 0x3c, SIG_UINT16(0x0004),    // callk Random 04
+	0xa5, 0x00,                        // sat 00 [ unused ]
+	SIG_END
+};
+
+static const uint16 hoyle5PatchCheckersAiMac[] = {
+	PATCH_ADDTOOFFSET(+13),
+	0x31, 0x24,                        // bnt 24 [ skip rng if movLst:size == 0 ]
+	PATCH_GETORIGINALBYTES(13, 9),
+	PATCH_END
+};
+
 //          script, description,                                      signature                         patch
 static const SciScriptPatcherEntry hoyle5Signatures[] = {
 	{  true,     0, "disable volume reset on startup",             1, sci2VolumeResetSignature,         sci2VolumeResetPatch },
@@ -3089,6 +3171,8 @@ static const SciScriptPatcherEntry hoyle5Signatures[] = {
 	{  true,   200, "fix setScale calls",                         11, hoyle5SetScaleSignature,          hoyle5PatchSetScale },
 	{  true,   300, "hearts strategy",                             1, hoyle5SignatureHeartsStrategy,    hoyle5PatchHeartsStrategy },
 	{  true,   500, "remove kGetTime spin",                        1, hoyle5SignatureSpinLoop,          hoyle5PatchSpinLoop },
+	{  true,  1202, "fix checkers ai",                             1, hoyle5SignatureCheckersAiWindows, hoyle5PatchCheckersAiWindows },
+	{  true,  1202, "fix checkers ai",                             1, hoyle5SignatureCheckersAiMac,     hoyle5PatchCheckersAiMac },
 	{  true,  6001, "fix solitaire init",                          1, hoyle5SignatureSolitaireInit,     hoyle5PatchSolitaireInit },
 	{  true,  6002, "fix solitaire init",                          1, hoyle5SignatureSolitaireInit,     hoyle5PatchSolitaireInit },
 	{  true,  6004, "fix solitaire init",                          1, hoyle5SignatureSolitaireInit,     hoyle5PatchSolitaireInit },
@@ -10507,6 +10591,31 @@ static const uint16 larry6HiresLockerPathfindingPatch[] = {
 	PATCH_END
 };
 
+// When Cavaricchi kills Larry in room 440, a flag is set by the death dialog
+//  when playing the narrator's speech. If Larry is killed a second time, the
+//  narrator's speech does not play because the flag is not reset.
+//
+// We fix this by resetting the flag before displaying the death dialog.
+//
+// Applies to: All versions
+// Responsible method: talkToCavScr:changeState(13)
+// Fixes bug: #17018
+static const uint16 larry6HiresResetCavDeathFlagSignature[] = {
+	SIG_MAGICDWORD,
+	0x43, 0x11, SIG_UINT16(0x0004),     // callk ShakeScreen 04
+	0x35, 0x78,                         // ldi 78
+	0x65, 0x22,                         // aTop ticks [ ticks = 120 ]
+	0x32,                               // jmp [ end of switch ]
+	SIG_END
+};
+
+static const uint16 larry6HiresResetCavDeathFlagPatch[] = {
+	PATCH_ADDTOOFFSET(+8),
+	0x76,                               // push0
+	0xab, 0x03,                         // ssl 03 [ local3 = 0 ]
+	PATCH_END
+};
+
 //          script, description,                                      signature                             patch
 static const SciScriptPatcherEntry larry6HiresSignatures[] = {
 	{  true,     0, "disable mac volume restore",                  1, larry6HiresMacVolumeRestoreSignature, larry6HiresMacVolumeRestorePatch },
@@ -10520,6 +10629,7 @@ static const SciScriptPatcherEntry larry6HiresSignatures[] = {
 	{  true,   270, "fix incorrect setScale call",                 1, larry6HiresSetScaleSignature,         larry6HiresSetScalePatch },
 	{  true,   330, "fix whale oil lamp lockup",                   1, larry6HiresWhaleOilLampSignature,     larry6HiresWhaleOilLampPatch },
 	{  true,   340, "fix locker pathfinding",                      1, larry6HiresLockerPathfindingSignature,larry6HiresLockerPathfindingPatch },
+	{  true,   440, "reset Cavaricchi death flag",                 1, larry6HiresResetCavDeathFlagSignature,larry6HiresResetCavDeathFlagPatch },
 	{  true,   610, "phone operator crash",                        1, larry6HiresPhoneOperatorSignature,    larry6HiresPhoneOperatorPatch },
 	{  true,   620, "bathroom door sound",                         1, larry6HiresBathroomDoorSoundSignature,larry6HiresBathroomDoorSoundPatch },
 	{  true,   680, "room 680 exits",                              1, larry6HiresRoom680ExitsSignature,     larry6HiresRoom680ExitsPatch },
@@ -25477,6 +25587,47 @@ static const uint16 ramaDemoBrokenButtonsPatch[] = {
 	PATCH_END
 };
 
+// The Bangkok addition/subtraction puzzle has an incompatibility with ScummVM's
+//  SCI32 drawing algorithm, causing digits to float in the upper left corner.
+//  The script uses many View objects to display its question digits, but does
+//  not explicitly hide them when they are not in use. Instead it merely sets
+//  their coordinates to (0,0). This appears to be an oversight, as the answer
+//  digits are correctly hidden by setting their cels to a transparent image.
+//  As the question digits have no fixed priority, the interpreter sets their
+//  priority to their y value, leaving them with priority zero. This is the same
+//  as the background view. In SSCI this happened to work because its last-ditch
+//  sorting algorithm used each screen item's internal memory address.
+//
+// We fix this by setting unused digit coordinates to (-2,-2) instead of (0,0),
+//  causing their priority to be set to -2 and hidden below the background view.
+//  A priority of -1 would probably also work, but there are places in scripts
+//  where -1 is a sentinel value, so it is safer to use a different value.
+//
+// Applies to: All versions
+// Responsible methods: quesDigit1:init, quesDigit2:init, ...
+// Fixes bugs: #10261, #16837
+static const uint16 ramaDigitPriorityPcSignature[] = {
+	SIG_MAGICDWORD,
+	0x35, 0x00,                    // ldi 00
+	0x65, 0x1e,                    // aTop x
+	                               // line
+	                               // aTop y
+	SIG_END
+};
+
+static const uint16 ramaDigitPriorityMacSignature[] = {
+	SIG_MAGICDWORD,
+	0x35, 0x00,                    // ldi 00
+	0x65, 0x36,                    // aTop x
+	                               // aTop y
+	SIG_END
+};
+
+static const uint16 ramaDigitPriorityPatch[] = {
+	0x35, 0xfe,                   // ldi fe [ -2 ]
+	PATCH_END
+};
+
 static const SciScriptPatcherEntry ramaSignatures[] = {
 	{  true,     0, "disable video benchmarking",                     1, sci2BenchmarkSignature,          sci2BenchmarkReversePatch },
 	{  true,    12, "disable video benchmarking",                     1, sci2BenchmarkSignature,          sci2BenchmarkReversePatch },
@@ -25485,6 +25636,8 @@ static const SciScriptPatcherEntry ramaSignatures[] = {
 	{  true,    85, "fix SaveManager to use normal readWord calls",   1, ramaSerializeRegTSignature1,     ramaSerializeRegTPatch1 },
 	{  true,    90, "demo: remove broken button handlers",            1, ramaDemoBrokenButtonsSignature,  ramaDemoBrokenButtonsPatch },
 	{  true,   201, "fix crash restoring save games using NukeTimer", 1, ramaNukeTimerSignature,          ramaNukeTimerPatch },
+	{  true,  4008, "fix digit priority",                            17, ramaDigitPriorityPcSignature,    ramaDigitPriorityPatch },
+	{  true,  4008, "fix digit priority",                            17, ramaDigitPriorityMacSignature,   ramaDigitPriorityPatch },
 	{  true, 64928, "Narrator lockup fix",                            1, sciNarratorLockupSignature,      sciNarratorLockupPatch },
 	{  true, 64990, "disable change directory button",                1, ramaChangeDirSignature,          ramaChangeDirPatch },
 	SCI_SIGNATUREENTRY_TERMINATOR
@@ -26070,6 +26223,67 @@ static const uint16 sq6TrashCanPatch[] = {
 	PATCH_END
 };
 
+// WORKAROUND: Pathfinding algorithm difference
+//
+// In the shuttle bay entrance (room 440), clicking on either door button
+//  while the security guard Chesboro is on the floor causes Roger to skip
+//  walking to the door and instead animate from his current position.
+//
+// The polygon deadChesbroPoly is a barred-access polygon that extends beyond
+//  the room's contained-access polygon (gaurdsDead) by one. This causes our
+//  pathfinding algorithm to conclude that the door buttons are unreachable.
+//  This is unrelated to other pathfinding issues in this room, where Roger
+//  can walk up the walls when standing in the left or right alcoves.
+//
+// We work around this by lowering the top edge of deadChesbroPoly by one pixel.
+//
+// Applies to: All versions
+// Responsible method: deadChesbroPoly:init
+// Fixes bug: #9749
+static const uint16 sq6ChesboroPolygonSignature[] = {
+	SIG_MAGICDWORD,
+	0x38, SIG_UINT16(0x00cc),           // pushi 00cc [ x: 204 ]
+	0x39, 0x71,                         // pushi 71   [ y: 113 ]
+	0x38, SIG_UINT16(0x00dd),           // pushi 00dd [ x: 221 ]
+	0x39, 0x71,                         // pushi 71   [ y: 113 ]
+	SIG_END
+};
+
+static const uint16 sq6ChesboroPolygonPatch[] = {
+	PATCH_ADDTOOFFSET(+3),
+	0x39, 0x72,                         // pushi 72   [ y: 114 ]
+	PATCH_ADDTOOFFSET(+3),
+	0x39, 0x72,                         // pushi 72   [ y: 114 ]
+	PATCH_END
+};
+
+// WORKAROUND: Pathfinding algorithm difference
+//
+// In Stella's brain (room 740) ego can walk out of bounds from the upper right
+//  area with the ship to the lower area. This skips solving a puzzle and leaves
+//  the game in a broken state.
+//
+// We work around this by adjusting the upper right polygon. It has a narrow
+//  spike with one point at the end, and our pathfinding algorithm seems to have
+//  trouble with that. By moving a second point near the end, the problematic
+//  spike shape is removed while keeping the same effective walking area.
+//
+// Applies to: All versions
+// Responsible method: rm740:init
+// Fixes bug: #9589
+static const uint16 sq6BrainPolygonSignature[] = {
+	SIG_MAGICDWORD,
+	0x38, SIG_UINT16(0x0337),           // pushi 0337 [ x: 823 ]
+	0x39, 0x0c,                         // pushi 0c   [ y: 12  ]
+	SIG_END
+};
+
+static const uint16 sq6BrainPolygonPatch[] = {
+	0x38, PATCH_UINT16(0x2df),          // pushi 02df [ x: 735 ]
+	0x39, 0x00,                         // pushi 00   [ y: 0   ]
+	PATCH_END
+};
+
 //          script, description,                                      signature                        patch
 static const SciScriptPatcherEntry sq6Signatures[] = {
 	{  true,     0, "fix slow transitions",                        1, sq6SlowTransitionSignature2,     sq6SlowTransitionPatch2 },
@@ -26084,11 +26298,13 @@ static const SciScriptPatcherEntry sq6Signatures[] = {
 	{  true,   330, "fix polysorbate lx music volume",             1, sq6PolysorbateVolumeSignature,   sq6PolysorbateVolumePatch },
 	{  true,   390, "fix trash can",                               1, sq6TrashCanSignature,            sq6TrashCanPatch },
 	{  true,   410, "fix slow transitions",                        1, sq6SlowTransitionSignature2,     sq6SlowTransitionPatch2 },
+	{  true,   440, "pathfinding: chesboro polygon",               1, sq6ChesboroPolygonSignature,     sq6ChesboroPolygonPatch },
 	{  true,   460, "fix invalid array construction",              1, sci21IntArraySignature,          sci21IntArrayPatch },
 	{  true,   490, "fix invalid cockpit icon bar",                1, sq6CockpitIconBarSignature,      sq6CockpitIconBarPatch },
 	{  true,   500, "fix slow transitions",                        1, sq6SlowTransitionSignature1,     sq6SlowTransitionPatch1 },
 	{  true,   510, "fix invalid array construction",              1, sci21IntArraySignature,          sci21IntArrayPatch },
 	{  true,   690, "fix duplicate points",                        1, sq6DuplicatePointsSignature,     sq6DuplicatePointsPatch },
+	{  true,   740, "pathfinding: brain polygon",                  1, sq6BrainPolygonSignature,        sq6BrainPolygonPatch },
 	{  true,    40, "SQNarrator lockup fix",                       1, sq6NarratorLockupSignature,      sq6NarratorLockupPatch },
 	{  true,    40, "SQNarrator lockup fix",                       1, sciNarratorLockupLineSignature,  sciNarratorLockupLinePatch },
 	{  true, 64928, "Narrator lockup fix",                         1, sciNarratorLockupSignature,      sciNarratorLockupPatch },
@@ -26164,96 +26380,76 @@ static const uint16 torinVolumeResetPatch2[] = {
 // move through it to continue the cutscene. This patch fixes the fast-forward
 // code 'soBoogleBackUp::ff' in the seraglio so that Boogle's in-the-bag flag
 // is set when fast-forwarding.
-// Applies to at least: English CD, Spanish CD
+//
+// Applies to: All versions
+// Responsible method: soBoogleBackUp:ff
 // Fixes bug: #9836
-static const uint16 torinSeraglioBoogleFlagSignature[] = {
-	0x35, 0x00,                 // ldi 0
+static const uint16 torinSeraglioBoogleFlagSignature1[] = {
 	SIG_MAGICDWORD,
-	0xa3, 0x00,                 // sal local[0]
-	0x38, SIG_SELECTOR16(test), // pushi test
-	SIG_ADDTOOFFSET(+0x5a),     // all the rest of the method
-	// CHECKME: Spanish version seems to have a total of 0x5d bytes from this point to the ret
-	// FIXME: Check for end of method (e.g. ret) and add different signatures in case localized versions are different
+	0x35, 0x00,                    // ldi 00
+	0xa3, 0x00,                    // sal 00 [ local0 = 0 ]
+	0x38, SIG_SELECTOR16(test),    // pushi test
+	0x78,                          // push1
+	0x39, 0x5e,                    // pushi 5e
+	SIG_ADDTOOFFSET(+9),           // [ ScriptID 64017 0 ]
+	0x4a, SIG_UINT16(0x0006),      // send 06 [ oFlags test: 94 ]
+	0x30, SIG_UINT16(0x0031),      // bnt 0031
+	0x38, SIG_SELECTOR16(get),     // pushi get
+	0x78,                          // push1
+	0x38, SIG_SELECTOR16(get),     // pushi get
+	0x78,                          // push1
+	0x39, 0x14,                    // pushi 14
+	SIG_ADDTOOFFSET(+9),           // [ ScriptID 64001 0 ]
+	0x4a, SIG_UINT16(0x0006),      // send 06 [ oInvHandler get: 20 ]
 	SIG_END
 };
 
-static const uint16 torinSeraglioBoogleFlagPatch[] = {
-	// @1e5f
-	// ldi 0, sal local[0] removed from here (+4 bytes)
+static const uint16 torinSeraglioBoogleFlagPatch1[] = {
+	0xa3, 0x00,                    // sal 00 [ local0 = 0, acc is always zero ]
+	0x38, PATCH_SELECTOR16(set),   // pushi set
+	0x78,                          // push1
+	0x38, PATCH_UINT16(0x00e8),    // pushi 00e8
+	PATCH_GETORIGINALBYTES(4, 6),  // pushi test / push1 / pushi 5e
+	0x78,                          // push1
+	0x38, PATCH_UINT16(0xfa11),    // pushi fa11
+	0x43, 0x02,	PATCH_UINT16(0x0002), // callk ScriptID 02 [ ScriptID 64017 ]
+	0x4a, PATCH_UINT16(0x000c),    // send 0c [ oFlags set 232: test: 94 ]
+	0x31, 0x2e,                    // bnt 2e
+	0x38, PATCH_SELECTOR16(get),   // pushi get
+	0x3c,                          // dup
+	0x78,                          // push1
+	0x39, 0x14,                    // pushi 14
+	0x78,                          // push1
+	0x38, PATCH_UINT16(0xfa01),    // pushi fa01
+	0x43, 0x02,	PATCH_UINT16(0x0002), // callk ScriptID 02 [ ScriptID 64001 ]
+	0x4a, PATCH_UINT16(0x0006),    // send 06 [ oInvHandler get: 20 ]
+	0x78,                          // push1
+	PATCH_END
+};
 
-	// @1e5f (+4 bytes)
-	// local[0] = /* oFlags */ ScriptID(64017, 0);
-	0x7a,                               // push2
-	0x38, PATCH_UINT16(0xfa11),         // pushi 64017
-	0x76,                               // push0
-	0x43, 0x02, PATCH_UINT16(0x0004),   // callk ScriptID[2], 4
-	0xa3, 0x00,                         // sal local[0] (-2 bytes)
+// Alternate patch for versions with debug line numbers (French, German)
+static const uint16 torinSeraglioBoogleFlagSignature2[] = {
+	0x7e, SIG_ADDTOOFFSET(+2),     // line
+	SIG_MAGICDWORD,
+	0x35, 0x00,                    // ldi 00
+	0xa3, 0x00,                    // sal 00 [ local0 = 0 ]
+	0x7e, SIG_ADDTOOFFSET(+2),     // line
+	0x38, SIG_SELECTOR16(test),    // pushi test
+	0x78,                          // push1
+	0x39, 0x5e,                    // pushi 5e
+	SIG_ADDTOOFFSET(+9),
+	0x4a, SIG_UINT16(0x0006),      // send 06 [ oFlags test: 94 ]
+	SIG_END
+};
 
-	// @1e6a (+2 bytes)
-	// acc = local[0].test(94);
-	0x38, PATCH_SELECTOR16(test),       // pushi test
-	0x78,                               // push1
-	0x39, 0x5e,                         // pushi 94
-	0x4a, PATCH_UINT16(0x0006),         // send 6
-
-	// @1e73 (+2 bytes)
-	// if (!acc) goto elseCase;
-	0x30, PATCH_UINT16(0x0034),         // bnt 0x31 + 3
-
-	// @1e76 (+2 bytes)
-	// global[0].get(ScriptID(64001, 0).get(20));
-	0x38, PATCH_SELECTOR16(get),        // pushi get
-	0x78,                               // push1
-	0x38, PATCH_SELECTOR16(get),        // pushi get
-	0x78,                               // push1
-	0x39, 0x14,                         // pushi 20
-	0x7a,                               // push2
-	0x38, PATCH_UINT16(0xfa01),         // pushi 64001
-	0x76,                               // push0
-	0x43, 0x02, PATCH_UINT16(0x0004),   // callk ScriptID[2], 4
-	0x4a, PATCH_UINT16(0x0006),         // send 6
-	0x36,                               // push
-	0x81, 0x00,                         // lag global[0] (ego)
-	0x4a, PATCH_UINT16(0x0006),         // send 6
-
-	// @1e92 (+2 bytes)
-	// local[0].set(52);
-	0x38, PATCH_SELECTOR16(set),        // pushi set
-	0x78,                               // push1
-	0x39, 0x34,                         // pushi 52
-	0x83, 0x00,                         // lal local[0] (+7 byte)
-	0x4a, PATCH_UINT16(0x0006),         // send 6
-
-	// @1e9d (+9 bytes)
-	// goto endOfBranch;
-	0x33, 0x0b,                         // jmp [to end of conditional branch] (+1 byte)
-
-	// @1e9f (+10 bytes)
-	// elseCase: local[0].clear(97);
-	0x38, PATCH_SELECTOR16(clear),      // pushi clear
-	0x78,                               // push1
-	0x39, 0x61,                         // pushi 97
-	0x83, 0x00,                         // lal local[0] (+7 bytes)
-	0x4a, PATCH_UINT16(0x0006),         // send 6
-
-	// @1eaa (+17 bytes)
-	// endOfBranch: local[0].set(232);
-	0x38, PATCH_SELECTOR16(set),        // pushi set (-3 bytes)
-	0x78,                               // push1 (-1 byte)
-	0x38, PATCH_UINT16(0x00e8),         // pushi 232 (Boogle-in-bag flag) (-3 bytes)
-	0x83, 0x00,                         // lal local[0] (-2 bytes)
-	0x4a, PATCH_UINT16(0x0006),         // send 6 (-3 bytes)
-
-	// @1eb6 (+5 bytes)
-	// local[0] = 0; self.dispose();
-	0x38, PATCH_SELECTOR16(dispose),    // pushi dispose
-	0x76,                               // push0
-	0x3c,                               // dup (-1 byte)
-	0xab, 0x00,                         // ssl local[0] (-2 bytes)
-	0x54, PATCH_UINT16(0x0004),         // self 4
-	0x48,                               // ret
-
-	// @1ec1 (+2 bytes)
+static const uint16 torinSeraglioBoogleFlagPatch2[] = {
+	0x76,                          // push0
+	0xab, 0x00,                    // ssl 00 [ local0 = 0 ]
+	0x38, PATCH_SELECTOR16(set),   // pushi set
+	0x78,                          // push1
+	0x38, PATCH_UINT16(0x00e8),    // pushi 00e8
+	PATCH_ADDTOOFFSET(+15),
+	0x4a, PATCH_UINT16(0x000c),    // send 0c [ oFlags set: 232 test: 94 ]
 	PATCH_END
 };
 
@@ -26264,6 +26460,11 @@ static const uint16 torinSeraglioBoogleFlagPatch[] = {
 // (it will just explode later when mismatched selectors are used). So, here we
 // are hot-patching all of the wrong offsets in the original heap to match the
 // patched script.
+//
+// The German PointSoft release (and possibly others) contains the same mismatch
+// in the resource volume, but it includes 20700.HEP and 20700.SCR patch files
+// from TORINPAT that override the mismatch.
+//
 // Applies to at least: French PointSoft CD release
 static const uint16 torinPointSoft20700HeapSignature[] = {
 	0xe1, 0x15, 0x23, 0x16, // end of patched 20700.SCR (so we don't
@@ -26358,10 +26559,43 @@ static const uint16 torinPointSoft20700HeapPatch[] = {
 	PATCH_END
 };
 
+// In the German version, the game crashes if the crystcorder is playing when
+//  Torin is throw into the Null Void. The room script attempts to stop the
+//  crystcorder but the crystcorder script was compiled with English selectors.
+//
+// At least the PointSoft release contains patch files from Sierra's TORINPAT
+//  and additional patch files for the crystcorder's script 56000. All of these
+//  patched scripts were compiled using the English version's selector table.
+//  Only a few selector values are different, but they involve the crystcorder.
+//  The jail cell (room 50500) is the one German script that sends a selector
+//  whose value changed to a patched script that expects English selectors.
+//
+// We fix this by patching the German jail cell script to send the English
+//  stopCorder selector to oCrystCorder in 56000. This patch is only enabled
+//  when the unique version of script 56000 with English selectors is present.
+//
+// Applies to at least: German PointSoft release
+// Responsible method: soPlayMovie2:changeState(8)
+static const uint16 torinGermanCrystcorderSignature[] = {
+	SIG_MAGICDWORD,
+	0x38, SIG_UINT16(0x04f5),      // pushi stopCorder [ German selector ]
+	0x76,                          // push0
+	0x7a,                          // push2
+	0x38, SIG_UINT16(0xdac0),      // pushi dac0 [ oCrystCorder script ] 
+	SIG_END
+};
+
+static const uint16 torinGermanCrystcorderPatch[] = {
+	0x38, PATCH_UINT16(0x04fe),    // pushi stopCorder [ English selector ]
+	PATCH_END
+};
+
 //          script, description,                                      signature                         patch
 static const SciScriptPatcherEntry torinSignatures[] = {
-	{  true, 20600, "fix wrong boogle bag flag on fast-forward",   1, torinSeraglioBoogleFlagSignature,  torinSeraglioBoogleFlagPatch },
+	{  true, 20600, "fix boogle bag flag on fast-forward",         1, torinSeraglioBoogleFlagSignature1, torinSeraglioBoogleFlagPatch1 },
+	{  true, 20600, "fix boogle bag flag on fast-forward",         1, torinSeraglioBoogleFlagSignature2, torinSeraglioBoogleFlagPatch2 },
 	{  true, 20700, "fix bad heap in PointSoft release",           1, torinPointSoft20700HeapSignature,  torinPointSoft20700HeapPatch },
+	{ false, 50500, "fix German crystcorder selector",             1, torinGermanCrystcorderSignature,   torinGermanCrystcorderPatch },
 	{  true, 64000, "disable volume reset on startup (1/2)",       1, torinVolumeResetSignature1,        torinVolumeResetPatch1 },
 	{  true, 64000, "disable volume reset on startup (2/2)",       1, torinVolumeResetSignature2,        torinVolumeResetPatch2 },
 	{  true, 64866, "increase number of save games",               1, torinLarry7NumSavesSignature,      torinLarry7NumSavesPatch },
@@ -26835,6 +27069,9 @@ void ScriptPatcher::processScript(uint16 scriptNr, SciSpan<byte> scriptData) {
 	case GID_FREDDYPHARKAS:
 		signatureTable = freddypharkasSignatures;
 		break;
+	case GID_HOYLE1:
+		signatureTable = hoyle1Signatures;
+		break;
 	case GID_HOYLE4:
 		signatureTable = hoyle4Signatures;
 		break;
@@ -27042,7 +27279,7 @@ void ScriptPatcher::processScript(uint16 scriptNr, SciSpan<byte> scriptData) {
 				break;
 			case GID_HOYLE5:
 				if (g_sci->getResMan()->testResource(ResourceId(kResourceTypeView, 21))) {
-					// Hoyle school house math
+					// Hoyle school house
 					enablePatch(signatureTable, "disable sierra logo");
 					enablePatch(signatureTable, "disable main menu buttons");
 					enablePatch(signatureTable, "disable Euchre and Bridge");
@@ -27169,6 +27406,16 @@ void ScriptPatcher::processScript(uint16 scriptNr, SciSpan<byte> scriptData) {
 			case GID_SQ6:
 				if (g_sci->isDemo()) {
 					enablePatch(signatureTable, "demo: fix inventory crash");
+				}
+				break;
+			case GID_TORIN:
+				if (!g_sci->isDemo()) {
+					// Enable patch to fix incompatible selectors when the German
+					// crystcorder script containing English selectors is present.
+					Resource *crystcorderScript = g_sci->getResMan()->findResource(ResourceId(kResourceTypeScript, 56000), false);
+					if (crystcorderScript && crystcorderScript->size() == 4104) {
+						enablePatch(signatureTable, "fix German crystcorder selector");
+					}
 				}
 				break;
 			default:

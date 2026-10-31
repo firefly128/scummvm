@@ -72,7 +72,7 @@ public:
 	/**
 	 * Load a video from a generic read stream. The ownership of the
 	 * stream object transfers to this VideoDecoder instance, which is
-	 * hence also responsible for eventually deleting it.
+	 * hence also responsible for eventually deleting it even in case of failure.
 	 *
 	 * Implementations of this function are required to call addTrack()
 	 * for each track in the video upon success.
@@ -499,6 +499,27 @@ public:
 	bool setAudioTrack(int index);
 
 	/**
+	 * Get the mute status of an audio track.
+	 *
+	 * Has no effect if the container does not support this.
+	 * @see supportsAudioTrackSwitching()
+	 *
+	 * @param index The index of the track, whose meaning is dependent on the container
+	 */
+	bool getAudioTrackMute(int index);
+
+	/**
+	 * Mute or unmute an audio track.
+	 *
+	 * Has no effect if the container does not support this.
+	 * @see supportsAudioTrackSwitching()
+	 *
+	 * @param index The index of the track, whose meaning is dependent on the container
+	 * @param muted Whether to mute the track or not.
+	 */
+	bool setAudioTrackMute(int index, bool muted);
+
+	/**
 	 * Get the number of internal audio tracks.
 	 */
 	uint getAudioTrackCount() const;
@@ -597,8 +618,8 @@ protected:
 		VideoTrack() {}
 		virtual ~VideoTrack() {}
 
-		TrackType getTrackType() const  { return kTrackTypeVideo; }
-		virtual bool endOfTrack() const;
+		TrackType getTrackType() const override { return kTrackTypeVideo; }
+		bool endOfTrack() const override;
 
 		/**
 		 * Get the width of this track
@@ -715,9 +736,9 @@ protected:
 		FixedRateVideoTrack() {}
 		virtual ~FixedRateVideoTrack() {}
 
-		uint32 getNextFrameStartTime() const;
-		virtual Audio::Timestamp getDuration() const;
-		Audio::Timestamp getFrameTime(uint frame) const;
+		uint32 getNextFrameStartTime() const override;
+		Audio::Timestamp getDuration() const override;
+		Audio::Timestamp getFrameTime(uint frame) const override;
 
 		/**
 		 * Get the frame that should be displaying at the given time. This is
@@ -740,9 +761,9 @@ protected:
 		AudioTrack(Audio::Mixer::SoundType soundType);
 		virtual ~AudioTrack() {}
 
-		TrackType getTrackType() const { return kTrackTypeAudio; }
+		TrackType getTrackType() const override { return kTrackTypeAudio; }
 
-		virtual bool endOfTrack() const;
+		bool endOfTrack() const override;
 
 		/**
 		 * Start playing this track
@@ -809,12 +830,17 @@ protected:
 		uint32 getRunningTime() const;
 
 		/**
+		 * Get the current muted status.
+		 */
+		bool getMute() { return _muted; }
+
+		/**
 		 * Mute the track
 		 */
 		void setMute(bool mute);
 
 	protected:
-		void pauseIntern(bool shouldPause);
+		void pauseIntern(bool shouldPause) override;
 
 		/**
 		 * Get the AudioStream that is the representation of this AudioTrack
@@ -839,11 +865,11 @@ protected:
 		RewindableAudioTrack(Audio::Mixer::SoundType soundType) : AudioTrack(soundType) {}
 		virtual ~RewindableAudioTrack() {}
 
-		bool isRewindable() const { return true; }
-		bool rewind();
+		bool isRewindable() const override { return true; }
+		bool rewind() override;
 
 	protected:
-		Audio::AudioStream *getAudioStream() const;
+		Audio::AudioStream *getAudioStream() const override;
 
 		/**
 		 * Get the RewindableAudioStream pointer to be used by this class
@@ -861,13 +887,13 @@ protected:
 		SeekableAudioTrack(Audio::Mixer::SoundType soundType) : AudioTrack(soundType) {}
 		virtual ~SeekableAudioTrack() {}
 
-		bool isSeekable() const { return true; }
-		bool seek(const Audio::Timestamp &time);
+		bool isSeekable() const override { return true; }
+		bool seek(const Audio::Timestamp &time) override;
 
-		Audio::Timestamp getDuration() const;
+		Audio::Timestamp getDuration() const override;
 
 	protected:
-		Audio::AudioStream *getAudioStream() const;
+		Audio::AudioStream *getAudioStream() const override;
 
 		/**
 		 * Get the SeekableAudioStream pointer to be used by this class
@@ -895,7 +921,7 @@ protected:
 
 	protected:
 		Audio::SeekableAudioStream *_stream;
-		Audio::SeekableAudioStream *getSeekableAudioStream() const { return _stream; }
+		Audio::SeekableAudioStream *getSeekableAudioStream() const override { return _stream; }
 	};
 
 	/**

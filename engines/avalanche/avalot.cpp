@@ -27,6 +27,7 @@
 /* AVALOT		The kernel of the program. */
 
 #include "avalanche/avalanche.h"
+#include "avalanche/outro.h"
 
 #include "common/random.h"
 #include "common/system.h"
@@ -115,6 +116,22 @@ Room AvalancheEngine::_whereIs[29] = {
 
 void AvalancheEngine::handleKeyDown(Common::Event &event) {
 	_sound->click();
+
+	if (event.kbd.flags & Common::KBD_ALT) {
+		switch (event.kbd.keycode) {
+		case Common::KEYCODE_b:
+			callVerb(kVerbCodeBoss);
+			return;
+		case Common::KEYCODE_x:
+			callVerb(kVerbCodeQuit);
+			return;
+		case Common::KEYCODE_d:
+			_dialogs->displayText("Wrong game!");
+			return;
+		default:
+			break;
+		}
+	}
 
 	if ((Common::KEYCODE_F1 <= event.kbd.keycode) && (event.kbd.keycode <= Common::KEYCODE_F15))
 		_parser->handleFunctionKey(event);
@@ -249,8 +266,7 @@ void AvalancheEngine::runAvalot() {
 		if (delay <= 55)
 			_system->delayMillis(55 - delay); // Replaces slowdown(); 55 comes from 18.2 Hz (B Flight).
 	};
-
-	_closing->exitGame();
+	_outro->run();
 }
 
 void AvalancheEngine::init() {
@@ -610,6 +626,11 @@ void AvalancheEngine::enterRoom(Room roomId, byte ped) {
 		break;
 
 	case kRoomSpludwicks:
+		if (!_talkedToCrapulus || _lustieIsAsleep)
+			_spludwickAtHome = true;
+		else
+			_spludwickAtHome = !((_roomCount[kRoomWiseWomans] % 3) == 1);
+
 		if (_spludwickAtHome) {
 			AnimationType *spr1 = _animation->_sprites[1];
 			if (ped > 0) {
@@ -1295,6 +1316,7 @@ void AvalancheEngine::minorRedraw() {
 	for (int i = 0; i < 3; i++)
 		_scoreToDisplay[i] = -1; // impossible digits
 	drawScore();
+	drawToolbar();
 
 	fadeIn();
 }
@@ -1383,7 +1405,7 @@ void AvalancheEngine::resetVariables() {
 	_totalTime = 0;
 	_jumpStatus = 0;
 	_mushroomGrowing = false;
-	_spludwickAtHome = false;
+	_spludwickAtHome = true;
 	_lastRoom = kRoomDummy;
 	_lastRoomNotMap = kRoomDummy;
 	_crapulusWillTell = false;
@@ -1466,6 +1488,7 @@ void AvalancheEngine::newGame() {
 	enterRoom(kRoomYours, 1);
 	avvy->_visible = false;
 	drawScore();
+	drawToolbar();
 	_dropdown->setup();
 	_clock->update();
 	spriteRun();
@@ -1681,10 +1704,14 @@ void AvalancheEngine::openDoor(Room whither, byte ped, byte magicnum) {
 }
 
 void AvalancheEngine::setRoom(People persId, Room roomId) {
+	if (persId < kPeopleAvalot || persId > kPeopleWisewoman)
+		return;
 	_whereIs[persId - kPeopleAvalot] = roomId;
 }
 
 Room AvalancheEngine::getRoom(People persId) {
+	if (persId < kPeopleAvalot || persId > kPeopleWisewoman)
+		return kRoomNowhere;
 	return _whereIs[persId - kPeopleAvalot];
 }
 } // End of namespace Avalanche

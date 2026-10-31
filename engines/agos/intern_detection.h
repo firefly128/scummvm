@@ -19,6 +19,9 @@
  *
  */
 
+#ifndef AGOS_INTERN_DETECTION_H
+#define AGOS_INTERN_DETECTION_H
+
 // Game detection - related enums, taken from agos/intern.h
 
 namespace AGOS {
@@ -74,9 +77,12 @@ enum GameFileTypes {
 	GAME_TEXTFILE = 1 << 10,
 	GAME_VGAFILE  = 1 << 11,
 	GAME_GFXIDXFILE = 1 << 12,
-	GAME_CABFILE  = 1 << 13
+	GAME_CABFILE  = 1 << 13,
+	GAME_LANGFILE = 1 << 14
 
 };
 
 
 } // End of namespace AGOS
+
+#endif // AGOS_INTERN_DETECTION_H

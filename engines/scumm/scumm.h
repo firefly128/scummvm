@@ -345,6 +345,18 @@ class ResourceManager;
 #define AMIGA_PAL_VBLANK_RATE  200.0
 
 /**
+ * C64 timing constants
+ *
+ * While we don't detect from the game if it's for PAL or NTSC, we
+ * do allow the user to specify by using an engine setting. The music
+ * plays slower on PAL systems, so we have to adjust the frame rate
+ * from 60Hz for NTSC to 50Hz for PAL.
+ */
+
+#define C64_NTSC_VBLANK_RATE 240.0
+#define C64_PAL_VBLANK_RATE  200.0
+
+/**
  * Game saving/loading outcome codes
  */
 
@@ -499,8 +511,21 @@ enum ScummAction {
 	kScummActionInsaneAttack,
 	kScummActionInsaneSwitch,
 	kScummActionInsaneCheat,
+	kScummActionInsaneBack,
+	kScummActionInsaneSkip,
 
 	kScummActionCount
+};
+
+enum ScummBackendAction {
+	kScummBackendActionRebel1AxisUp = 11000,
+	kScummBackendActionRebel1AxisDown,
+	kScummBackendActionRebel1AxisLeft,
+	kScummBackendActionRebel1AxisRight,
+	kScummBackendActionRebel2AxisUp,
+	kScummBackendActionRebel2AxisDown,
+	kScummBackendActionRebel2AxisLeft,
+	kScummBackendActionRebel2AxisRight
 };
 
 extern const char *const insaneKeymapId;
@@ -553,6 +578,7 @@ public:
 	bool _enableAudioOverride = false;
 	bool _enableCOMISong = false;
 	bool _isAmigaPALSystem = false;
+	bool _isC64PALSystem = false;
 	bool _quitFromScriptCmd = false;
 	bool _isHE995 = false;
 	bool _enableHECompetitiveOnlineMods = false;
@@ -589,6 +615,7 @@ public:
 	bool canLoadGameStateCurrently(Common::U32String *msg = nullptr) override;
 	Common::Error saveGameState(int slot, const Common::String &desc, bool isAutosave = false) override;
 	bool canSaveGameStateCurrently(Common::U32String *msg = nullptr) override;
+	Common::String getSaveStateName(int slot) const override { return makeSavegameName(slot, false); }
 
 	void pauseEngineIntern(bool pause) override;
 
@@ -877,12 +904,12 @@ public:
 		byte _sputmCmdEnterCount = 0;
 		Common::String _sputmCmdBuf;
 		Common::String _name;
-		
+
 		void reset();
 		bool tryLoadPlayback(ScummEngine *engine, const Common::Path &path = Common::Path("demo.rec"));
 		bool startPlayback(ScummEngine *engine);
 		void playbackPump(ScummEngine *engine);
-		
+
 		//MI2 DOS NI Demo specific playback helpers
 		void mi2DemoArmPlaybackByRoom(ScummEngine *engine);
 		void mi2DemoPlaybackJumpRoom(ScummEngine *engine, int room);
@@ -1029,6 +1056,7 @@ protected:
 
 	/* Script VM - should be in Script class */
 	uint32 _localScriptOffsets[1024];
+	Common::HashMap<int, byte *> _scriptOverrides;
 	const byte *_scriptPointer = nullptr;
 	const byte *_scriptOrgPointer = nullptr;
 	const byte * const *_lastCodePtr = nullptr;
@@ -1074,6 +1102,7 @@ protected:
 	virtual void runInventoryScript(int i);
 	virtual void runInventoryScriptEx(int i);
 	virtual void checkAndRunSentenceScript();
+	bool monkey1HermanNoteWorkaround(const SentenceTab &st);
 	void runExitScript();
 	void runEntryScript();
 	void runQuitScript();
@@ -1156,6 +1185,8 @@ protected:
 //	void nukeResource(ResType type, ResId idx);
 	int getResourceRoomNr(ResType type, ResId idx);
 	virtual uint32 getResourceRoomOffset(ResType type, ResId idx);
+
+	void scriptOverride(ResId room, int script);
 
 public:
 	int getResourceSize(ResType type, ResId idx);
@@ -1722,7 +1753,7 @@ protected:
 	void wrapSegaCDText();
 	void debugMessage(const byte *msg);
 	virtual void showMessageDialog(const byte *msg);
-	
+
 #ifdef USE_TTS
 	void sayText(const Common::String &text, Common::TextToSpeechManager::Action action = Common::TextToSpeechManager::QUEUE) const;
 	void stopTextToSpeech() const;

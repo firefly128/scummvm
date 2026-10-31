@@ -22,7 +22,7 @@
 #ifndef NANCY_ACTION_RIDDLEPUZZLE_H
 #define NANCY_ACTION_RIDDLEPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 
 namespace Nancy {
 
@@ -30,10 +30,10 @@ struct RiddlePuzzleData;
 
 namespace Action {
 
-class RiddlePuzzle : public RenderActionRecord {
+class RiddlePuzzle : public PuzzleRecord {
 public:
 	enum SolveState { kWaitForSound, kNotSolved, kFailed, kSolvedOne, kSolvedAll };
-	RiddlePuzzle() : RenderActionRecord(7) {}
+	RiddlePuzzle() : PuzzleRecord(7) {}
 	virtual ~RiddlePuzzle();
 
 	void init() override;
@@ -42,6 +42,8 @@ public:
 	void execute() override;
 	void onPause(bool paused) override;
 	void handleInput(NancyInput &input) override;
+
+	bool isViewportRelative() const override { return true; }
 
 protected:
 	struct Riddle {
@@ -55,7 +57,6 @@ protected:
 	};
 
 	Common::String getRecordTypeName() const override { return "RiddlePuzzle"; }
-	bool isViewportRelative() const override { return true; }
 
 	void drawText();
 
@@ -65,11 +66,7 @@ protected:
 	SoundDescription _typeSound;
 	SoundDescription _eraseSound;
 	SoundDescription _enterSound;
-	SceneChangeWithFlag _successSceneChange;
-	SoundDescription _successSound;
-	SceneChangeWithFlag _exitSceneChange;
 	SoundDescription _exitSound;
-	Common::Rect _exitHotspot;
 	Common::Array<Riddle> _riddles;
 
 	Time _nextBlinkTime;

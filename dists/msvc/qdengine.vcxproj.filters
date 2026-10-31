@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="debugger">
-			<UniqueIdentifier>A4528861-0DEA-434D-A063-B580389C0FC3</UniqueIdentifier>
+			<UniqueIdentifier>90312A5C-75CB-4311-AA83-07E3EE1572D0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="minigames">
-			<UniqueIdentifier>C826D8FB-6C3B-4930-BD26-BB88507F020E</UniqueIdentifier>
+			<UniqueIdentifier>882D032B-7A42-4677-8A75-DA7E8BDC92FB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="minigames\adv">
-			<UniqueIdentifier>3532103A-8CDA-4B40-98D4-016114652337</UniqueIdentifier>
+			<UniqueIdentifier>DF73B300-D8C6-46C0-A512-F9048369FB1D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="parser">
-			<UniqueIdentifier>25D82D54-F7D2-4CFE-9F47-211A930F89A6</UniqueIdentifier>
+			<UniqueIdentifier>23D30170-1D80-48B4-92C0-9E270F098AE2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="qdcore">
-			<UniqueIdentifier>4DC42B4F-F4E9-49D7-AE9D-5093DFE27EE1</UniqueIdentifier>
+			<UniqueIdentifier>3DB8610F-F97F-4DEB-BDDB-DB4851604D2C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="qdcore\util">
-			<UniqueIdentifier>E9799DB8-704C-4859-A2E8-3C1A46B703EB</UniqueIdentifier>
+			<UniqueIdentifier>9DD7F9A5-E672-4BA5-B2F3-BAF2B4C8583F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="system">
-			<UniqueIdentifier>6133E264-E987-4C72-870E-9ED75E1D5EEE</UniqueIdentifier>
+			<UniqueIdentifier>2B2F5E7A-ED16-449B-9DF1-6A446DBD77FE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="system\graphics">
-			<UniqueIdentifier>06B27FFD-86FA-475F-9990-6B3F7B93FDE2</UniqueIdentifier>
+			<UniqueIdentifier>C25E1486-3CB1-4148-A296-ED1E4E652746</UniqueIdentifier>
 		</Filter>
 		<Filter Include="system\input">
-			<UniqueIdentifier>EF46DA63-DD75-4ECE-B929-700A821110F7</UniqueIdentifier>
+			<UniqueIdentifier>96791531-6FBD-43B5-A1BD-3F4E71BF6FB1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="system\sound">
-			<UniqueIdentifier>40F3D5CD-5A90-4910-8B39-EBB37372B7FE</UniqueIdentifier>
+			<UniqueIdentifier>FB8C52C7-B7E6-4E49-8582-B424836FB710</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

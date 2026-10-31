@@ -4,6 +4,7 @@ MODULE_OBJS := \
 	ani.o \
 	bmp.o \
 	cel_3do.o \
+	cgbi.o \
 	cicn.o \
 	icocur.o \
 	iff.o \
@@ -40,6 +41,11 @@ endif
 ifdef USE_MPEG2
 MODULE_OBJS += \
 	codecs/mpeg.o
+endif
+
+ifdef USE_MSMPEG4
+MODULE_OBJS += \
+	codecs/msmpeg4.o
 endif
 
 ifdef USE_CDTOONS

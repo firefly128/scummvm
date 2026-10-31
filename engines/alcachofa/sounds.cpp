@@ -30,6 +30,7 @@
 #include "audio/decoders/wave.h"
 #include "audio/decoders/adpcm.h"
 #include "audio/decoders/raw.h"
+#include "audio/decoders/mp3.h"
 
 using namespace Common;
 using namespace Audio;
@@ -81,8 +82,47 @@ void Sounds::update() {
 	}
 }
 
+class XORReadStream final : public SeekableReadStream {
+public:
+	XORReadStream(SeekableReadStream *parent, byte key, DisposeAfterUse::Flag disposeAfterUse)
+		: _parent(parent, disposeAfterUse)
+		, _key(key) {}
+
+	uint32 read(void *dataPtr, uint32 maxSize) override {
+		uint32 size = _parent->read(dataPtr, maxSize);
+		byte *bytePtr = (byte *)dataPtr;
+		for (uint32 i = 0; i < size; i++)
+			*(bytePtr++) ^= _key;
+		return size;
+	}
+
+	bool eos() const override {
+		return _parent->eos();
+	}
+
+	int64 pos() const override {
+		return _parent->pos();
+	}
+
+	int64 size() const override {
+		return _parent->size();
+	}
+
+	bool seek(int64 offset, int whence) override {
+		return _parent->seek(offset, whence);
+	}
+
+private:
+	DisposablePtr<SeekableReadStream> _parent;
+	const byte _key;
+};
+
 static AudioStream *loadSND(File *file) {
-	// SND files are just WAV files with removed headers
+	// only in V2.0 SND files are raw U8 PCM in mono 22100 encrypted with XOR
+	if (g_engine->isV20())
+		return makeRawStream(new XORReadStream(file, 0x55, DisposeAfterUse::YES), 22100, FLAG_UNSIGNED);
+
+	// everywhere else SND files are just WAV files with removed headers
 	const uint32 endOfFormat = file->readUint32LE() + 2 * sizeof(uint32);
 	if (endOfFormat < 24)
 		error("Invalid SND format size");
@@ -128,6 +168,18 @@ static AudioStream *openAudio(const String &basePath) {
 	path.setChar('V', path.size() - 1);
 	if (file->open(path.c_str()))
 		return makeWAVStream(file, DisposeAfterUse::YES);
+
+	// Steam releases of V2 games use mp3 files
+	path.setChar('M', path.size() - 3);
+	path.setChar('P', path.size() - 2);
+	path.setChar('3', path.size() - 1);
+	if (file->open(path.c_str())) {
+#ifdef USE_MAD
+		return makeMP3Stream(file, DisposeAfterUse::YES);
+#else
+		return nullptr;
+#endif
+	}
 
 	delete file;
 	g_engine->game().missingSound(basePath);
@@ -316,7 +368,7 @@ void Sounds::startMusic(int musicId) {
 	auto path = g_engine->game().getMusicPath(musicId);
 	_musicSoundID = playSoundInternal(path, Mixer::kMaxChannelVolume, Mixer::kMusicSoundType);
 	_isMusicPlaying = true;
-	_nextMusicID = musicId;
+	_nextMusicID = g_engine->game().shouldMusicLoop() ? musicId : -1;
 }
 
 void Sounds::queueMusic(int musicId) {

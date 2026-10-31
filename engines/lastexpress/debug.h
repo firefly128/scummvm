@@ -32,22 +32,6 @@ void onImGuiRender();
 void onImGuiCleanup();
 #endif
 
-enum {
-	kLastExpressDebugGraphics = 1,
-	kLastExpressDebugResource,
-	kLastExpressDebugCursor,
-	kLastExpressDebugSound,
-	kLastExpressDebugSubtitle,
-	kLastExpressDebugSavegame,
-	kLastExpressDebugLogic,
-	kLastExpressDebugScenes,
-	kLastExpressDebugUnknown,
-};
-
-enum LastExpressDebugChannels {
-	kDebugConsole = 0
-};
-
 class LastExpressEngine;
 
 class Debugger : public GUI::Debugger {

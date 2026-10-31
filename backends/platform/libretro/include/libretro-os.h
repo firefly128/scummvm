@@ -51,7 +51,7 @@ public:
 	};
 };
 
-class OSystem_libretro : public EventsBaseBackend, public ModularGraphicsBackend {
+class OSystem_libretro : virtual public BaseBackend, public Common::EventSource, public ModularGraphicsBackend {
 private:
 	int _relMouseX;
 	int _relMouseY;
@@ -114,6 +114,8 @@ public:
 	Audio::Mixer *getMixer(void) override;
 	Common::Path getDefaultConfigFileName(void) override;
 	void logMessage(LogMessageType::Type type, const char *message) override;
+	bool hasFeature(Feature f) override;
+	bool openUrl(const Common::String &url) override;
 	int testGame(const char *filedata, bool autodetect);
 	void addSysArchivesToSearchSet(Common::SearchSet &s, int priority = 0) override;
 	const char *const *buildHelpDialogData() override;

@@ -258,6 +258,8 @@ uint8 *DarkMoonEngine::loadFMTownsShape(Common::SeekableReadStream *stream) {
 void DarkMoonEngine::generateMonsterPalettes(const char *file, int16 monsterIndex) {
 	if (_flags.platform == Common::kPlatformAmiga)
 		return;
+	// EOB II FM-TOWNS version will also never arrive here, see DarkMoonEngine::loadMonsterShapes().
+	// So there is no need to worry about how the following code could ever work in hicolor mode.
 
 	int cp = _screen->setCurPage(2);
 	_screen->loadShapeSetBitmap(file, 3, 3);
@@ -589,8 +591,8 @@ void DarkMoonEngine::restParty_npc() {
 
 	_items[createItemOnCurrentBlock(28)].value = 26;
 
-	gui_drawPlayField(false);
-	gui_drawAllCharPortraitsWithStats();
+	gui_drawPlayField(false, false);
+	gui_drawAllCharPortraitsWithStats(false);
 
 	_screen->setClearScreenDim(10);
 	_screen->set16bitShadingLevel(4);

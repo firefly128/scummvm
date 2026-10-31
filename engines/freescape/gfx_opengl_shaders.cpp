@@ -32,7 +32,7 @@
 
 namespace Freescape {
 
-static const GLfloat bitmapVertices[] = {
+const GLfloat bitmapVertices[] = {
 	// XS   YT
 	0.0, 0.0,
 	1.0, 0.0,
@@ -286,18 +286,48 @@ void OpenGLShaderRenderer::drawThunder(Texture *texture, const Math::Vector3d po
 void OpenGLShaderRenderer::updateProjectionMatrix(float fov, float aspectRatio, float nearClipPlane, float farClipPlane) {
 	float xmaxValue = nearClipPlane * tan(Math::deg2rad(fov) / 2);
 	float ymaxValue = xmaxValue / aspectRatio;
-	_projectionMatrix = Math::makeFrustumMatrix(xmaxValue, -xmaxValue, -ymaxValue, ymaxValue, nearClipPlane, farClipPlane);
+	if (_stereoEye == kStereoEyeLeft || _stereoEye == kStereoEyeRight) {
+		float stereoOffset = getStereoFrustumOffset(nearClipPlane, true);
+		_projectionMatrix = Math::makeFrustumMatrix(xmaxValue + stereoOffset, -xmaxValue + stereoOffset, -ymaxValue, ymaxValue, nearClipPlane, farClipPlane);
+	} else {
+		_projectionMatrix = Math::makeFrustumMatrix(xmaxValue, -xmaxValue, -ymaxValue, ymaxValue, nearClipPlane, farClipPlane);
+	}
 }
 
 void OpenGLShaderRenderer::positionCamera(const Math::Vector3d &pos, const Math::Vector3d &interest, float rollAngle) {
 	Math::Vector3d up_vec(0, 1, 0);
 
-	Math::Matrix4 lookMatrix = Math::makeLookAtMatrix(pos, interest, up_vec);
+	Math::Matrix4 lookMatrix;
+	Math::Vector3d viewPosition;
+	if (_stereoEye == kStereoEyeLeft || _stereoEye == kStereoEyeRight) {
+		Math::Vector3d eyePos;
+		Math::Vector3d eyeInterest;
+		getStereoCamera(pos, interest, eyePos, eyeInterest);
+		lookMatrix = Math::makeLookAtMatrix(eyePos, eyeInterest, up_vec);
+		viewPosition = eyePos;
+	} else {
+		lookMatrix = Math::makeLookAtMatrix(pos, interest, up_vec);
+		viewPosition = pos;
+	}
 	Math::Matrix4 viewMatrix;
-	viewMatrix.translate(-pos);
+	viewMatrix.translate(-viewPosition);
 	viewMatrix.transpose();
 
-	_modelViewMatrix = viewMatrix * lookMatrix;
+	// Roll around the camera's forward axis. The matrix is stored in the
+	// same transposed convention as lookMatrix (row-major storage that
+	// becomes column-major when handed to GL via getData()), so the entries
+	// are the transpose of the standard glRotatef(rollAngle, 0, 0, 1).
+	float c = cos(Math::deg2rad(rollAngle));
+	float s = sin(Math::deg2rad(rollAngle));
+	Math::Matrix4 rollMatrix;
+	rollMatrix(0, 0) = c;
+	rollMatrix(0, 1) = s;
+	rollMatrix(1, 0) = -s;
+	rollMatrix(1, 1) = c;
+	rollMatrix(2, 2) = 1.0f;
+	rollMatrix(3, 3) = 1.0f;
+
+	_modelViewMatrix = viewMatrix * rollMatrix * lookMatrix;
 
 	Math::Matrix4 proj = _projectionMatrix;
 	Math::Matrix4 model = _modelViewMatrix;
@@ -477,6 +507,7 @@ void OpenGLShaderRenderer::drawCelestialBody(const Math::Vector3d position, floa
 	uint8 r1, g1, b1, r2, g2, b2;
 	byte *stipple = nullptr;
 	getRGBAt(color, 0, r1, g1, b1, r2, g2, b2, stipple);
+	setStippleData(stipple);
 	useColor(r1, g1, b1);
 
 	// === Build circular vertex fan ===
@@ -796,17 +827,41 @@ void OpenGLShaderRenderer::useStipple(bool enabled) {
 	}
 }
 
+void OpenGLShaderRenderer::setStereoEye(StereoEye eye) {
+	Renderer::setStereoEye(eye);
+	if (eye == kStereoEyeNone)
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	else if (eye == kStereoEyeLeft)
+		glColorMask(GL_TRUE, GL_FALSE, GL_FALSE, GL_TRUE);
+	else if (eye == kStereoEyeRight)
+		glColorMask(GL_FALSE, GL_FALSE, GL_TRUE, GL_TRUE);
+	else if (eye == kStereoEyeFlatAnaglyph)
+		glColorMask(GL_TRUE, GL_FALSE, GL_TRUE, GL_TRUE);
+}
+
 void OpenGLShaderRenderer::useColor(uint8 r, uint8 g, uint8 b) {
+	if (_stereoEye != kStereoEyeNone)
+		applyStereoTint(r, g, b);
 	Math::Vector3d color(r / 256.0, g / 256.0, b / 256.0);
 	_triangleShader->use();
 	_triangleShader->setUniform("color", color);
 }
 
 void OpenGLShaderRenderer::clear(uint8 r, uint8 g, uint8 b, bool ignoreViewport) {
+	if (_stereoEye != kStereoEyeNone)
+		applyStereoTint(r, g, b);
 	if (ignoreViewport)
 		glDisable(GL_SCISSOR_TEST);
 	glClearColor(r / 255., g / 255., b / 255., 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (ignoreViewport)
+		glEnable(GL_SCISSOR_TEST);
+}
+
+void OpenGLShaderRenderer::clearDepthBuffer(bool ignoreViewport) {
+	if (ignoreViewport)
+		glDisable(GL_SCISSOR_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
 	if (ignoreViewport)
 		glEnable(GL_SCISSOR_TEST);
 }
@@ -825,6 +880,42 @@ void OpenGLShaderRenderer::drawFloor(uint8 color) {
 	glVertexPointer(3, GL_FLOAT, 0, _verts);
 	glDrawArrays(GL_QUADS, 0, 4);
 	glDisableClientState(GL_VERTEX_ARRAY);*/
+}
+
+void OpenGLShaderRenderer::fillViewportStippled(uint8 r1, uint8 g1, uint8 b1, uint8 r2, uint8 g2, uint8 b2, byte *stipple) {
+	Math::Matrix4 identity;
+	identity(0, 0) = 1.0;
+	identity(1, 1) = 1.0;
+	identity(2, 2) = 1.0;
+	identity(3, 3) = 1.0;
+
+	_triangleShader->use();
+	_triangleShader->setUniform("mvpMatrix", identity);
+	_triangleShader->setUniform("shakeOffset", Math::Vector2d(0, 0));
+
+	glDepthMask(GL_FALSE);
+
+	useColor(r1, g1, b1);
+	setStippleData(stipple);
+	useStipple(true);
+	useColor(r2, g2, b2);
+
+	// Clockwise, since the renderer treats that as the front face
+	copyToVertexArray(0, Math::Vector3d(-1, 1, 0));
+	copyToVertexArray(1, Math::Vector3d(1, 1, 0));
+	copyToVertexArray(2, Math::Vector3d(1, -1, 0));
+	copyToVertexArray(3, Math::Vector3d(-1, -1, 0));
+
+	glBindBuffer(GL_ARRAY_BUFFER, _triangleVBO);
+	glBufferData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), _verts, GL_DYNAMIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+	useStipple(false);
+	glDepthMask(GL_TRUE);
+	// The rest of the frame is still drawn with the camera set up by positionCamera()
+	_triangleShader->setUniform("shakeOffset",
+		Math::Vector2d(_shakeOffset.x * 0.025f, _shakeOffset.y * 0.025f));
 }
 
 void OpenGLShaderRenderer::flipBuffer() {}

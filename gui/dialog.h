@@ -54,13 +54,9 @@ protected:
 	Widget	*_mouseWidget;
 	Widget  *_focusedWidget;
 	Widget  *_dragWidget;
+	Widget  *_dragHookWidget;
 	Widget 	*_tickleWidget;
 	bool	_visible;
-	// _mouseUpdatedOnFocus instructs gui-manager whether
-	// its lastMousePosition (time and x,y coordinates)
-	// should be updated, when this Dialog acquires focus.
-	// Default value is true.
-	bool    _mouseUpdatedOnFocus;
 
 	ThemeEngine::DialogBackground _backgroundType;
 
@@ -76,17 +72,11 @@ public:
 
 	bool	isVisible() const override	{ return _visible; }
 
-	bool    isMouseUpdatedOnFocus() const { return _mouseUpdatedOnFocus; }
-
 	void	releaseFocus() override;
 	void	setFocusWidget(Widget *widget);
 	Widget *getFocusWidget() { return _focusedWidget; }
 
 	bool isDragging() const { return _dragWidget != nullptr; }
-
-	void setTickleWidget(Widget *widget) { _tickleWidget = widget; }
-	void unSetTickleWidget() { _tickleWidget = nullptr; }
-	Widget *getTickleWidget() { return _tickleWidget; }
 
 	void reflowLayout() override;
 	virtual void lostFocus();
@@ -101,9 +91,11 @@ protected:
 	/** Recursively mark all the widgets in this dialog as dirty so they are redrawn */
 	void markWidgetsAsDirty();
 
-	/** Draw the dialog in its entirety (background and widgets) */
-	virtual void drawDialog(DrawLayer layerToDraw);
+	/** Returns the maximum dirty rectangle of this dialog */
+	Common::Rect getMaxDirtyRect() const;
 
+	/** Draw the dialog in its entirety (background and widgets) */
+	virtual void drawDialog(DrawLayer layerToDraw, bool resetClipping = true);
 	/** Draw only the dialog's widgets */
 	void drawWidgets();
 
@@ -122,8 +114,10 @@ protected:
 	Widget *findWidget(const char *name);
 	void removeWidget(Widget *widget) override;
 
-	void setMouseUpdatedOnFocus(bool mouseUpdatedOnFocus) { _mouseUpdatedOnFocus = mouseUpdatedOnFocus; }
 	void setDefaultFocusedWidget();
+
+	void registerTickleWidget(Widget *widget) override;
+	void unregisterTickleWidget(Widget *widget) override;
 
 	void setResult(int result) { _result = result; }
 	int getResult() const { return _result; }

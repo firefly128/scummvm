@@ -58,6 +58,7 @@
 #include "tinsel/pid.h"
 #include "tinsel/polygons.h"
 #include "tinsel/psx_archive.h"
+#include "tinsel/psx_japan_font.h"
 #include "tinsel/savescn.h"
 #include "tinsel/scn.h"
 #include "tinsel/sound.h"
@@ -81,7 +82,6 @@ extern void InventoryProcess(CORO_PARAM, const void *);
 
 // In SCENE.CPP
 extern SCNHANDLE GetSceneHandle();
-extern bool WasDw1IntroSkipped();
 
 extern void ResetVarsDrives();
 extern void ResetVarsEvents();
@@ -993,6 +993,8 @@ TinselEngine::~TinselEngine() {
 	ResetVarsTinlib();	// tinlib.cpp
 	ResetVarsTinsel();	// tinsel.cpp
 
+	ClosePsxJapanFont();
+
 	CoroScheduler.destroy();
 }
 
@@ -1108,6 +1110,11 @@ Common::Error TinselEngine::run() {
 
 	// Actors, globals and inventory icons
 	LoadBasicChunks();
+
+	// External font
+	if (TinselV1PSXJapan) {
+		OpenPsxJapanFont();
+	}
 
 	// Continuous game processes
 	CreateConstProcesses();

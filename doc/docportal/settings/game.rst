@@ -50,7 +50,7 @@ The Game tab also shows settings unique to the game engine for the selected game
 To find out which engine powers your game, have a look at the ScummVM Supported Games `wiki page
 <https://wiki.scummvm.org/index.php?title=Category:Supported_Games>`_ or :ref:`group <group>` games by Engine in the Launcher.
 
-Engines: ADL_ | AGI_ | AGOS_ | Bladerunner_ | Buried_ | CGE_ | CGE2_ | Chewy_ | Cine_ | Drascula_ | Dreamweb_ | Freescape_ | Griffon_ | GrimE_ | HDB_ | Hopkins_ | Hypno_ | Kyra_ | Lure_ | MADE_ | MADS_ | mTropolis_ | Myst3_ | Nancy_ | Neverhood_ | SCI_ | SCUMM_ | Sherlock_ | Sky_ | Stark_ | Supernova_ | Sword2_ | Sword25_ | Toltecs_ | Trecision_ | Ultima_ | V-Cruise_ | Wintermute_ | Xeen_ | ZVision_
+Engines: ADL_ | AGI_ | AGOS_ | Bladerunner_ | Buried_ | CGE_ | CGE2_ | Chewy_ | Cine_ | Drascula_ | Dreamweb_ | Freescape_ | Griffon_ | GrimE_ | HDB_ | Hopkins_ | Hypno_ | Kyra_ | Lure_ | Macs2_ | MADE_ | MADS_ | mTropolis_ | Myst3_ | Nancy_ | Neverhood_ | SCI_ | SCUMM_ | Sherlock_ | Sky_ | Stark_ | Supernova_ | Sword2_ | Sword25_ | Toltecs_ | Trecision_ | Ultima_ | V-Cruise_ | Wintermute_ | Xeen_ | ZVision_
 
 
 
@@ -461,6 +461,170 @@ Disable falling
 
 ,,,,,,,,,
 
+.. _GLK:
+
+GLK
+***********
+
+Font
+	Changes the font style for text/grid.
+
+	*tfont_[0-10]*
+
+	*gfont_[0-10]*
+
+Color
+	Changes the color of text, grid, window, border, cursor, hypertext links and the 'more...' marker.
+
+	*tcolor_[0-10]*
+
+	*gcolor_[0-10]*
+
+	*windowcolor*
+
+	*bordercolor*
+
+	*caretcolor*
+
+	*linkcolor*
+
+	*morecolor*
+
+Border
+	Modifies the size of the window borders.
+
+	*wborderx*
+
+	*wbordery*
+
+Window margin
+	Modifies the window margin.
+
+	*wmarginx*
+
+	*wmarginy*
+
+Text margin
+	Modifies the text margin.
+
+	*tmarginx*
+
+	*tmarginy*
+
+Window padding
+	Modifies the window padding.
+
+	*wpaddingx*
+
+	*wpaddingy*
+
+More align
+	Changes the alignment of the 'More...' marker.
+
+	*morealign*
+
+More font
+	Changes the font style of the 'More...' marker.
+
+	*morefont*
+
+Link style
+	Style for URLs if they appear in game.
+
+	*linkstyle*
+
+Caret shape
+	Changes shape of the cursor.
+
+	*caretshape*
+
+More prompt
+	Implements custom marker in place of the 'More...' marker. For example, 'continue'.
+
+	*moreprompt*
+
+Leading
+	Changes the vertical distance between text rows.
+
+	*leading*
+
+Baseline
+	Changes the vertical distance between text rows.
+
+	*baseline*
+
+Monosize
+	Changes the font size scaling of the monospace text font.
+
+	*monosize*
+
+Propsize
+	Changes the font size scaling of the proportional text font.
+
+	*propsize*
+
+Caps
+	Forces uppercase input.
+
+	*caps*
+
+Typographic quotes
+	Changes typographic quotes.
+
+	*quotes*
+
+Dashes
+	Changes the type of dashes.
+
+	*dashes*
+
+Spaces
+	Changes the type of spaces.
+
+	*spaces*
+
+Style hints
+	Lets the game suggest text styling options.
+
+	*stylehint*
+
+Safe clicks
+	Enables the safe application of clicks while input is pending.
+
+	*safeclicks*
+
+Column count
+	Changes the number of columns.
+
+	*cols*
+
+Lock columns
+	Enables the manual changing of column count.
+
+	*lockcols*
+
+Row count
+	Changes the number of rows.
+
+	*rows*
+
+Lock rows
+	Enables the manual changing of row count.
+
+	*lockrows*
+
+Justify
+	Enables text justification.
+
+	*justify*
+
+Graphics
+	Toggles graphics
+
+	*graphics*
+
+,,,,,,,,,
+
 .. _Griffon:
 
 Griffon
@@ -682,6 +846,42 @@ TTS Narrator
 	Uses text-to-speech to read the descriptions, if text-to-speech is available.
 
 	*tts_narrator*
+
+,,,,,,,,,,
+
+.. _Macs2:
+
+Macs2
+******
+
+Use original save/load screens
+	Uses the original save/load screens instead of the ScummVM screens.
+	When enabled, the in-game Save/Load button and a right-click during a script wait open the original DOS menu.
+	The ScummVM options menu (F5) is always available.
+
+	*original_menus*
+
+Enable Text to Speech
+	Uses TTS to read the dialogue (if TTS is available).
+	Chooses a male or female voice from the speaking character, and skips TTS when a recorded voice file is already playing.
+
+	*tts_enabled*
+
+.. _macs2_av:
+
+Audio-visual improvements
+	Plays optional generated dialogue speech from ``SPEECH/*.wav`` files when they are present.
+	Missing files are ignored. If no voice plays, TTS can still read the line when Text to Speech is enabled.
+
+	*enhancements*
+
+.. _macs2_uiux:
+
+Modern UI/UX adjustments
+	Adds modern interface conveniences: a persistent verb/inventory bar, hover labels on the original menus, a highlight on dialogue choices, and a shared walk cursor for gameplay verbs (the sentence line shows the active verb).
+	Games that already have a native bottom HUD keep that HUD.
+
+	*enhancements*
 
 ,,,,,,,,,,
 

@@ -83,6 +83,10 @@ struct WidgetDrawData {
 	uint16 _backgroundOffset;
 	uint16 _shadowOffset;
 
+	/** Extra space occupied by the items drawn on top of this one */
+	uint16 _restoreOffset;    ///< To the left and to the top
+	uint16 _restoreEndOffset; ///< To the right and to the bottom
+
 	DrawLayer _layer;
 
 
@@ -113,8 +117,8 @@ static const DrawDataInfo kDrawDataDefaults[] = {
 	{kDDMainDialogBackground,         "mainmenu_bg",          kDrawLayerBackground,   kDDNone},
 	{kDDSpecialColorBackground,       "special_bg",           kDrawLayerBackground,   kDDNone},
 	{kDDPlainColorBackground,         "plain_bg",             kDrawLayerBackground,   kDDNone},
-	{kDDTooltipBackground,            "tooltip_bg",           kDrawLayerBackground,   kDDNone},
 	{kDDDefaultBackground,            "default_bg",           kDrawLayerBackground,   kDDNone},
+	{kDDTooltipBackground,            "tooltip_bg",           kDrawLayerForeground,   kDDNone},
 	{kDDTextSelectionBackground,      "text_selection",       kDrawLayerForeground,  kDDNone},
 	{kDDTextSelectionFocusBackground, "text_selection_focus", kDrawLayerForeground,  kDDNone},
 	{kDDThumbnailBackground,    	  "thumb_bg",   		  kDrawLayerForeground,   kDDNone},
@@ -227,12 +231,6 @@ ThemeEngine::ThemeEngine(Common::String id, GraphicsMode mode) :
 	_themeArchive = nullptr;
 	_initOk = false;
 
-	_cursorHotspotX = _cursorHotspotY = 0;
-	_cursorWidth = _cursorHeight = 0;
-	_cursorTransparent = 255;
-	_cursorFormat = Graphics::PixelFormat::createFormatCLUT8();
-	_cursorPalSize = 0;
-
 	// We prefer files in archive bundles over the common search paths.
 	_themeFiles.add("default", &SearchMan, 0, false);
 }
@@ -247,18 +245,10 @@ ThemeEngine::~ThemeEngine() {
 	unloadExtraFont();
 
 	// Release all graphics surfaces
-	for (auto &bitmap : _bitmaps) {
-		Graphics::ManagedSurface *surf = bitmap._value;
-		if (surf) {
-			surf->free();
-			delete surf;
-		}
-	}
 	_bitmaps.clear();
 
 	delete _parser;
 	delete _themeEval;
-	delete[] _cursor;
 }
 
 
@@ -383,15 +373,11 @@ void ThemeEngine::refresh() {
 
 	// Flush all bitmaps if the overlay pixel format changed.
 	if (_overlayFormat != _system->getOverlayFormat() || _needScaleRefresh) {
-		for (auto &bitmap : _bitmaps) {
-			Graphics::ManagedSurface *surf = bitmap._value;
-			if (surf) {
-				surf->free();
-				delete surf;
-			}
-		}
 		_bitmaps.clear();
-
+		for (int i = 0; i < kCursorMax; i++) {
+			_cursors[i].surface.reset();
+		}
+		_useCursor = false;
 		_needScaleRefresh = false;
 	}
 
@@ -401,9 +387,13 @@ void ThemeEngine::refresh() {
 		_system->showOverlay();
 
 		if (_useCursor) {
-			if (_cursorPalSize)
-				CursorMan.replaceCursorPalette(_cursorPal, 0, _cursorPalSize);
-			CursorMan.replaceCursor(_cursor, _cursorWidth, _cursorHeight, _cursorHotspotX, _cursorHotspotY, _cursorTransparent, true, &_cursorFormat);
+			CursorData &cur = _cursors[_activeCursorType];
+			if (cur.surface->hasPalette()) {
+				const Graphics::Palette *pal = cur.surface->grabPalette();
+				CursorMan.replaceCursorPalette(pal->data(), 0, pal->size());
+			}
+			CursorMan.replaceCursor(cur.surface->rawSurface(), cur.hotspotX, cur.hotspotY,
+			                        cur.surface->getTransparentColor(), nullptr, 0, 0);
 		}
 	}
 }
@@ -648,7 +638,7 @@ bool ThemeEngine::addTextColor(TextColor colorId, int r, int g, int b) {
 
 bool ThemeEngine::addBitmap(const Common::String &filename, const Common::String &scalablefile, int width, int height) {
 	// Nothing has to be done if the bitmap already has been loaded.
-	Graphics::ManagedSurface *surf = _bitmaps[filename];
+	Common::SharedPtr<Graphics::ManagedSurface> surf = _bitmaps[filename];
 	if (surf) {
 		return true;
 	}
@@ -659,7 +649,7 @@ bool ThemeEngine::addBitmap(const Common::String &filename, const Common::String
 		for (Common::ArchiveMemberList::const_iterator i = members.begin(), end = members.end(); i != end; ++i) {
 			Common::SeekableReadStream *stream = (*i)->createReadStream();
 			if (stream) {
-				_bitmaps[filename] = new Graphics::SVGBitmap(stream, width * _scaleFactor, height * _scaleFactor);
+				_bitmaps[filename].reset(new Graphics::SVGBitmap(stream, width * _scaleFactor, height * _scaleFactor));
 				delete stream;
 				return true;
 			}
@@ -690,7 +680,7 @@ bool ThemeEngine::addBitmap(const Common::String &filename, const Common::String
 		}
 
 		if (srcSurface && srcSurface->format.bytesPerPixel != 1) {
-			surf = new Graphics::ManagedSurface();
+			surf.reset(new Graphics::ManagedSurface());
 			surf->convertFrom(*srcSurface, _overlayFormat);
 		}
 #else
@@ -713,7 +703,7 @@ bool ThemeEngine::addBitmap(const Common::String &filename, const Common::String
 		}
 
 		if (srcSurface && srcSurface->format.bytesPerPixel != 1) {
-			surf = new Graphics::ManagedSurface();
+			surf.reset(new Graphics::ManagedSurface());
 			surf->convertFrom(*srcSurface, _overlayFormat);
 		}
 
@@ -722,16 +712,9 @@ bool ThemeEngine::addBitmap(const Common::String &filename, const Common::String
 	}
 
 	if (_scaleFactor != 1.0 && surf) {
-		Graphics::ManagedSurface *surf2 = surf->scale(surf->w * _scaleFactor, surf->h * _scaleFactor, false);
-
-		if (surf->hasTransparentColor())
-			surf2->setTransparentColor(surf->getTransparentColor());
-
-		surf->free();
-		delete surf;
-
-		surf = surf2;
+		surf.reset(surf->scale(surf->w * _scaleFactor, surf->h * _scaleFactor, false));
 	}
+
 	// Store the surface into our hashmap (attention, may store NULL entries!)
 	_bitmaps[filename] = surf;
 
@@ -780,7 +763,24 @@ void ThemeEngine::loadTheme(const Common::String &themeId) {
 			warning("Missing data asset: '%s' in theme '%s", kDrawDataDefaults[i].name, themeId.c_str());
 		} else {
 			_widgets[i]->calcBackgroundOffset();
+			_widgets[i]->_restoreOffset = _widgets[i]->_restoreEndOffset = 0;
 		}
+	}
+
+	// A draw data item only ever has to restore what the items drawn on top of
+	// it can have covered
+	for (int i = 0; i < kDrawDataMAX; ++i) {
+		DrawData parentType = kDrawDataDefaults[i].parent;
+
+		if (parentType == kDDNone || parentType == i || !_widgets[i] || !_widgets[parentType])
+			continue;
+
+		const WidgetDrawData *child = _widgets[i];
+		WidgetDrawData *parent = _widgets[parentType];
+
+		parent->_restoreOffset = MAX(parent->_restoreOffset, child->_backgroundOffset);
+		parent->_restoreEndOffset = MAX<uint16>(parent->_restoreEndOffset,
+		                                        child->_backgroundOffset + 1 + child->_shadowOffset);
 	}
 
 	debug(6, "Finished loading theme %s", themeId.c_str());
@@ -920,6 +920,43 @@ bool ThemeEngine::loadThemeXML(const Common::String &themeId) {
 /**********************************************************
  * Draw Date descriptors drawing functions
  *********************************************************/
+Common::Rect ThemeEngine::getDrawDataExtendedRect(DrawData type, const Common::Rect &r) const {
+	WidgetDrawData *drawData = _widgets[type];
+	if (!drawData)
+		return Common::Rect();
+
+	Common::Rect extendedRect = r;
+	extendedRect.clip(_screen.w, _screen.h);
+
+	// A frame drawn around the widget extends on all four sides
+	extendedRect.grow(drawData->_backgroundOffset);
+
+	// The drawing primitives paint the widget's own edge one pixel past its
+	// rectangle, and shadows are cast to the right and to the bottom only
+	extendedRect.right += 1 + drawData->_shadowOffset;
+	extendedRect.bottom += 1 + drawData->_shadowOffset;
+
+	return extendedRect;
+}
+
+Common::Rect ThemeEngine::getDrawDataRestoreRect(DrawData type, const Common::Rect &r) const {
+	WidgetDrawData *drawData = _widgets[type];
+	if (!drawData)
+		return Common::Rect();
+
+	Common::Rect restoreRect = r;
+	restoreRect.clip(_screen.w, _screen.h);
+
+	// The item's own edge and shadow reach further out, onto pixels that belong
+	// to the neighbouring widgets and must not be restored over what they drew
+	restoreRect.left -= drawData->_restoreOffset;
+	restoreRect.top -= drawData->_restoreOffset;
+	restoreRect.right += drawData->_restoreEndOffset;
+	restoreRect.bottom += drawData->_restoreEndOffset;
+
+	return restoreRect;
+}
+
 void ThemeEngine::drawDD(DrawData type, const Common::Rect &r, uint32 dynamic, bool forceRestore) {
 	WidgetDrawData *drawData = _widgets[type];
 
@@ -932,24 +969,29 @@ void ThemeEngine::drawDD(DrawData type, const Common::Rect &r, uint32 dynamic, b
 	Common::Rect area = r;
 	area.clip(_screen.w, _screen.h);
 
-	Common::Rect extendedRect = area;
-	extendedRect.grow(kDirtyRectangleThreshold + drawData->_backgroundOffset);
-	if (drawData->_shadowOffset > drawData->_backgroundOffset) {
-		extendedRect.right += drawData->_shadowOffset - drawData->_backgroundOffset;
-		extendedRect.bottom += drawData->_shadowOffset - drawData->_backgroundOffset;
-	}
+	// An empty clip means "fully outside active clip region" (e.g. a widget
+	// whose boss clip does not intersect the tooltip clip). Cull entirely —
+	// otherwise restoreBackground() below would overwrite screen pixels at
+	// the full widget rect with backbuffer content.
+	if (_clip.isEmpty())
+		return;
 
-	if (!_clip.isEmpty()) {
-		extendedRect.clip(_clip);
-	}
+	Common::Rect extendedRect = getDrawDataExtendedRect(type, r);
+	extendedRect.clip(_clip);
 
 	// Cull the elements not in the clip rect
 	if (extendedRect.isEmpty()) {
 		return;
 	}
 
-	if (forceRestore || drawData->_layer == kDrawLayerBackground)
-		restoreBackground(extendedRect);
+	if (forceRestore || drawData->_layer == kDrawLayerBackground) {
+		// Clearing the background wipes everything the widget draws into, a
+		// plain redraw only what the items drawn on top of it can have covered
+		Common::Rect restoreRect = forceRestore ? extendedRect : getDrawDataRestoreRect(type, r);
+		restoreRect.clip(_clip);
+
+		restoreBackground(restoreRect);
+	}
 
 	if (drawData->_layer == _layerToDraw) {
 		Common::List<Graphics::DrawStep>::const_iterator step;
@@ -971,16 +1013,20 @@ void ThemeEngine::drawDDText(TextData type, TextColor color, const Common::Rect 
 	Common::Rect area = r;
 	area.clip(_screen.w, _screen.h);
 
+	// First, clip to what the user provides
+	// If an empty rect is provided, use the standard area
 	Common::Rect dirty = drawableTextArea;
 	if (dirty.isEmpty()) dirty = area;
 	else dirty.clip(area);
 
-	if (!_clip.isEmpty()) {
-		dirty.clip(_clip);
-	}
+	// Then, clip to the clipping rect set by GUI
+	dirty.clip(_clip);
 
-	// HACK: One small pixel should be invisible enough
-	if (dirty.isEmpty()) dirty = Common::Rect(0, 0, 1, 1);
+	// An empty clip means "fully outside active clip region" — cull entirely
+	// rather than falling through, otherwise restoreBackground() below would
+	// wipe the widget's pixels on screen without re-drawing them.
+	if (dirty.isEmpty())
+		return;
 
 	if (restoreBg)
 		restoreBackground(dirty);
@@ -1181,37 +1227,49 @@ void ThemeEngine::drawScrollbar(const Common::Rect &r, int sliderY, int sliderHe
 	drawDD(scrollState == kScrollbarStateSlider ? kDDScrollbarHandleHover : kDDScrollbarHandleIdle, r2);
 }
 
+static DrawData drawDataFromBgType(ThemeEngine::DialogBackground bgtype) {
+	switch (bgtype) {
+	case ThemeEngine::kDialogBackgroundMain:
+		return kDDMainDialogBackground;
+	case ThemeEngine::kDialogBackgroundSpecial:
+		return kDDSpecialColorBackground;
+	case ThemeEngine::kDialogBackgroundPlain:
+		return kDDPlainColorBackground;
+	case ThemeEngine::kDialogBackgroundTooltip:
+		return kDDTooltipBackground;
+	case ThemeEngine::kDialogBackgroundDefault:
+		return kDDDefaultBackground;
+	default:
+		// fallthrough intended
+	case ThemeEngine::kDialogBackgroundNone:
+		// no op
+		return kDDNone;
+	}
+}
+
+Common::Rect ThemeEngine::getDialogDirtyRect(const Common::Rect &r, DialogBackground bgtype) {
+	if (!ready()) {
+		return Common::Rect();
+	}
+
+	DrawData type = drawDataFromBgType(bgtype);
+	if (type == kDDNone) {
+		return Common::Rect();
+	}
+
+	return getDrawDataExtendedRect(type, r);
+}
+
 void ThemeEngine::drawDialogBackground(const Common::Rect &r, DialogBackground bgtype) {
 	if (!ready())
 		return;
 
-	switch (bgtype) {
-	case kDialogBackgroundMain:
-		drawDD(kDDMainDialogBackground, r);
-		break;
-
-	case kDialogBackgroundSpecial:
-		drawDD(kDDSpecialColorBackground, r);
-		break;
-
-	case kDialogBackgroundPlain:
-		drawDD(kDDPlainColorBackground, r);
-		break;
-
-	case kDialogBackgroundTooltip:
-		drawDD(kDDTooltipBackground, r);
-		break;
-
-	case kDialogBackgroundDefault:
-		drawDD(kDDDefaultBackground, r);
-		break;
-
-	default:
-		// fallthrough intended
-	case kDialogBackgroundNone:
-		// no op
-		break;
+	DrawData type = drawDataFromBgType(bgtype);
+	if (type == kDDNone) {
+		return;
 	}
+
+	drawDD(type, r);
 }
 
 void ThemeEngine::drawCaret(const Common::Rect &r, bool erase) {
@@ -1505,6 +1563,7 @@ void ThemeEngine::drawFoldIndicator(const Common::Rect &r, bool expanded) {
 	else
 		orient = Graphics::VectorRenderer::kTriangleRight;
 
+	_vectorRenderer->setClippingRect(_clip);
 	_vectorRenderer->setFillMode(Graphics::VectorRenderer::kFillForeground);
 	_vectorRenderer->setFgColor(_textColors[kTextColorNormal]->r, _textColors[kTextColorNormal]->g, _textColors[kTextColorNormal]->b);
 	_vectorRenderer->drawTriangle(r.left + r.width() / 4, r.top + r.height() / 4, r.width() / 2, r.height() / 2, orient);
@@ -1583,35 +1642,22 @@ void ThemeEngine::applyScreenShading(ShadingStyle style) {
 	}
 }
 
-bool ThemeEngine::createCursor(const Common::String &filename, int hotspotX, int hotspotY) {
+bool ThemeEngine::createCursor(const Common::String &filename, int hotspotX, int hotspotY, CursorType type) {
 	// Try to locate the specified file among all loaded bitmaps
-	const Graphics::ManagedSurface *cursor = _bitmaps[filename];
+	Common::SharedPtr<Graphics::ManagedSurface> cursor = _bitmaps[filename];
 	if (!cursor)
+	    //warning("createCursor: Bitmap '%s' not found in _bitmaps! (type=%d)", filename.c_str(), type);
 		return false;
 
+	CursorData &cur = _cursors[type];
+
 	// Set up the cursor parameters
-	_cursorHotspotX = hotspotX;
-	_cursorHotspotY = hotspotY;
-
-	_cursorWidth = cursor->w;
-	_cursorHeight = cursor->h;
-
-	_cursorTransparent = 255;
-	_cursorFormat = Graphics::PixelFormat::createFormatCLUT8();
-	_cursorPalSize = 0;
+	cur.hotspotX = hotspotX;
+	cur.hotspotY = hotspotY;
 
 	if (_system->hasFeature(OSystem::kFeatureCursorAlpha)) {
-		_cursorFormat = cursor->format;
-		_cursorTransparent = _cursorFormat.RGBToColor(0xFF, 0, 0xFF);
-
-		// Allocate a new buffer for the cursor
-		delete[] _cursor;
-		_cursor = new byte[_cursorWidth * _cursorHeight * _cursorFormat.bytesPerPixel];
-		assert(_cursor);
-		Graphics::copyBlit(_cursor, (const byte *)cursor->getPixels(),
-		                   _cursorWidth * _cursorFormat.bytesPerPixel, cursor->pitch,
-		                   _cursorWidth, _cursorHeight, _cursorFormat.bytesPerPixel);
-
+		// Use the bitmap as-is
+		cur.surface.reset(cursor);
 		_useCursor = true;
 		return true;
 	}
@@ -1620,35 +1666,27 @@ bool ThemeEngine::createCursor(const Common::String &filename, int hotspotX, int
 		return true;
 
 	// Allocate a new buffer for the cursor
-	delete[] _cursor;
-	_cursor = new byte[_cursorWidth * _cursorHeight];
-	assert(_cursor);
-	memset(_cursor, 0xFF, sizeof(byte) * _cursorWidth * _cursorHeight);
+	Common::SharedPtr<Graphics::ManagedSurface> cursor8(new Graphics::ManagedSurface());
+	cursor8->create(cursor->w, cursor->h, Graphics::PixelFormat::createFormatCLUT8());
+	cursor8->setTransparentColor(0xFF);
+	cursor8->clear(0xFF);
 
 	// the transparent color is 0xFF00FF
-	const uint32 colTransparent = cursor->format.RGBToColor(0xFF, 0, 0xFF);
+	const bool hasTransparent = cursor->hasTransparentColor();
+	const uint32 colTransparent = cursor->getTransparentColor();
 	const uint32 alphaMask = cursor->format.ARGBToColor(0x80, 0, 0, 0);
 
 	// Now, scan the bitmap. We have to convert it from 16 bit color mode
 	// to 8 bit mode, and have to create a suitable palette on the fly.
 	uint colorsFound = 0;
 	Common::HashMap<int, int> colorToIndex;
-	const byte *src = (const byte *)cursor->getPixels();
-	for (uint y = 0; y < _cursorHeight; ++y) {
-		for (uint x = 0; x < _cursorWidth; ++x) {
-			uint32 color = colTransparent;
+	for (int y = 0; y < cursor->h; ++y) {
+		for (int x = 0; x < cursor->w; ++x) {
+			uint32 color = cursor->getPixel(x, y);
 			byte r, g, b;
 
-			if (cursor->format.bytesPerPixel == 2) {
-				color = READ_UINT16(src);
-			} else if (cursor->format.bytesPerPixel == 4) {
-				color = READ_UINT32(src);
-			}
-
-			src += cursor->format.bytesPerPixel;
-
 			// Skip transparency
-			if (color == colTransparent
+			if ((hasTransparent && color == colTransparent)
 			    // Replace with transparent is alpha is present and < 50%
 			    || (alphaMask != 0 && (color & alphaMask) == 0))
 				continue;
@@ -1666,25 +1704,43 @@ bool ThemeEngine::createCursor(const Common::String &filename, int hotspotX, int
 				const int index = colorsFound++;
 				colorToIndex[col] = index;
 
-				_cursorPal[index * 3 + 0] = r;
-				_cursorPal[index * 3 + 1] = g;
-				_cursorPal[index * 3 + 2] = b;
+				byte pal[3] = { r, g, b };
+				cursor8->setPalette(pal, index, 1);
 			}
 
 			// Copy pixel from the 16 bit source surface to the 8bit target surface
 			const int index = colorToIndex[col];
-			_cursor[y * _cursorWidth + x] = index;
+			cursor8->setPixel(x, y, index);
 		}
-
-		src += cursor->pitch - cursor->w * cursor->format.bytesPerPixel;
 	}
 
+	cur.surface.reset(cursor8);
 	_useCursor = true;
-	_cursorPalSize = colorsFound;
 
 	return true;
 }
 
+void ThemeEngine::setActiveCursor(CursorType type) {
+    if (type < 0 || type >= kCursorMax || !_cursors[type].surface) {
+        if (type == kCursorIndex && _cursors[kCursorNormal].surface) {
+        	type = kCursorNormal;  // Fallback to normal cursor
+        } else {
+            return;
+        }
+    }
+
+    _activeCursorType = type;
+    
+    if (_useCursor) {
+        CursorData &cur = _cursors[_activeCursorType];
+        if (cur.surface->hasPalette()) {
+            const Graphics::Palette *pal = cur.surface->grabPalette();
+            CursorMan.replaceCursorPalette(pal->data(), 0, pal->size());
+        }
+        CursorMan.replaceCursor(cur.surface->rawSurface(), cur.hotspotX, cur.hotspotY,
+                                cur.surface->getTransparentColor(), nullptr, 0, 0);
+    }
+}
 
 /**********************************************************
  * Legacy GUI::Theme support functions
@@ -2246,17 +2302,25 @@ Common::String ThemeEngine::getThemeId(const Common::Path &filename) {
 }
 
 void ThemeEngine::showCursor() {
-	if (_useCursor) {
-		if (_cursorPalSize)
-			CursorMan.pushCursorPalette(_cursorPal, 0, _cursorPalSize);
-		CursorMan.pushCursor(_cursor, _cursorWidth, _cursorHeight, _cursorHotspotX, _cursorHotspotY, _cursorTransparent, true, &_cursorFormat);
-		CursorMan.showMouse(true);
-	}
+    if (!_useCursor)
+        return;
+
+    CursorData &cur = _cursors[_activeCursorType];
+
+    if (cur.surface->hasPalette()) {
+        const Graphics::Palette *pal = cur.surface->grabPalette();
+        CursorMan.pushCursorPalette(pal->data(), 0, pal->size());
+    }
+
+    CursorMan.pushCursor(cur.surface->rawSurface(), cur.hotspotX, cur.hotspotY,
+                         cur.surface->getTransparentColor(), nullptr, 0, 0);
+    CursorMan.showMouse(true);
 }
 
 void ThemeEngine::hideCursor() {
 	if (_useCursor) {
-		if (_cursorPalSize)
+		CursorData &cur = _cursors[_activeCursorType];
+		if (cur.surface->hasPalette())
 			CursorMan.popCursorPalette();
 		CursorMan.popCursor();
 	}

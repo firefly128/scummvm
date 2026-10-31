@@ -45,10 +45,12 @@ Common::Array<WindowFlag> getWindowFlags() {
 		{ "Execution Context",	&_state->_w.executionContext },
 		{ "Functions",			&_state->_w.funcList		 },
 		{ "Log",				&_state->_w.logger			 },
+		{ "Profiler",			&_state->_w.profiler		 },
 		{ "Score",				&_state->_w.score			 },
 		{ "Settings",			&_state->_w.settings		 },
 		{ "Vars",				&_state->_w.vars			 },
 		{ "Watched Vars",		&_state->_w.watchedVars		 },
+		{ "Windows",			&_state->_w.windows			 },
 	};
 }
 
@@ -97,6 +99,12 @@ void saveCurrentState() {
 	json["IgnoreMouse"] = new Common::JSONValue(_state->_ignoreMouse);
 	json["EnableMultiViewport"] = new Common::JSONValue(_state->_enableMultiViewport);
 
+	// Rebindable shortcuts, keyed by their stable action ids
+	Common::JSONObject shortcuts;
+	for (int i = 0; i < kActCount; i++)
+		shortcuts[kShortcutDefs[i].id] = new Common::JSONValue((long long int)_state->_shortcuts[i]);
+	json["Shortcuts"] = new Common::JSONValue(shortcuts);
+
 	// Save the JSON
 	Common::JSONValue save(json);
 	debugC(7, kDebugImGui, "ImGui::Saved state: %s", save.stringify().c_str());
@@ -140,6 +148,16 @@ void loadSavedState() {
 	debugC(7, kDebugImGui, "ImGui::loaded state: %s", saved->stringify(true).c_str());
 
 	// Load open/closed window flags
+	if (!saved->asObject()["Windows"] || !saved->asObject()["Window Settings"] ||
+			!saved->asObject()["Log"] || !saved->asObject()["ScoreWindow"] ||
+			!saved->asObject()["ChannelsWindow"] || !saved->asObject()["CastWindow"] ||
+			!saved->asObject()["IgnoreMouse"] || !saved->asObject()["EnableMultiViewport"]) {
+		warning("ImGui::loadSavedState(): save file is missing required fields, ignoring");
+		free(data);
+		delete saved;
+		delete savedState;
+		return;
+	}
 	int64 openFlags = saved->asObject()["Windows"]->asIntegerNumber();
 	Common::Array<WindowFlag> windows = getWindowFlags();
 
@@ -148,7 +166,6 @@ void loadSavedState() {
 		*it.flag = (openFlags & 1 << index) ? true : false;
 		index += 1;
 	}
-	_state->_w.archive = (openFlags & 1) ? true : false;
 	if (debugChannelSet(7, kDebugImGui)) {
 		debugC(7, kDebugImGui, "Window flags: ");
 		for (auto it : windows) {
@@ -157,8 +174,8 @@ void loadSavedState() {
 	}
 
 	// Load window settings
-	const char *windowSettings = saved->asObject()["Window Settings"]->asString().c_str();
-	ImGui::LoadIniSettingsFromMemory(windowSettings);
+	Common::String windowSettingsStr = saved->asObject()["Window Settings"]->asString();
+	ImGui::LoadIniSettingsFromMemory(windowSettingsStr.c_str());
 
 	// Load the log
 	Common::JSONArray log = saved->asObject()["Log"]->asArray();
@@ -172,7 +189,8 @@ void loadSavedState() {
 
 	_state->_logger->clear();
 	for (auto iter : log) {
-		_state->_logger->addLog(iter->asString().c_str());
+		// log lines can contain '%'
+		_state->_logger->addLog("%s", iter->asString().c_str());
 	}
 
 	// Load other settings
@@ -187,6 +205,15 @@ void loadSavedState() {
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	} else {
 		io.ConfigFlags &= ~ImGuiConfigFlags_ViewportsEnable;
+	}
+
+	// Rebindable shortcuts (optional; older saves omit it, keep the defaults).
+	if (saved->asObject().contains("Shortcuts") && saved->asObject()["Shortcuts"]->isObject()) {
+		Common::JSONObject shortcuts = saved->asObject()["Shortcuts"]->asObject();
+		for (int i = 0; i < kActCount; i++) {
+			if (shortcuts.contains(kShortcutDefs[i].id) && shortcuts[kShortcutDefs[i].id]->isIntegerNumber())
+				_state->_shortcuts[i] = (ImGuiKeyChord)shortcuts[kShortcutDefs[i].id]->asIntegerNumber();
+		}
 	}
 
 	free(data);

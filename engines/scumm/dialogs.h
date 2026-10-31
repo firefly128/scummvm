@@ -137,7 +137,7 @@ public:
 	ValueDisplayDialog(const Common::U32String &label, int minVal, int maxVal, int val, uint16 incKey, uint16 decKey);
 
 	void open() override;
-	void drawDialog(GUI::DrawLayer layerToDraw) override;
+	void drawDialog(GUI::DrawLayer layerToDraw, bool resetClipping = true) override;
 	void handleTickle() override;
 	void handleMouseDown(int x, int y, int button, int clickCount) override {
 		close();
@@ -267,6 +267,9 @@ private:
 		kSmoothScrollCmd = 'SMSC'
 	};
 
+#ifdef USE_SID_AUDIO
+	GUI::CheckboxWidget *_c64SidTypeCheckbox = nullptr;
+#endif
 	GUI::CheckboxWidget *_smoothScrollCheckbox = nullptr;
 	GUI::CheckboxWidget *_semiSmoothScrollCheckbox = nullptr;
 

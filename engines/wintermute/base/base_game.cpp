@@ -292,7 +292,7 @@ BaseGame::BaseGame(const Common::String &targetName) : BaseObject(this), _target
 	_accessTTSKeypress = true;
 	_accessKeyboardEnabled = true;//false;
 	_accessKeyboardCursorSkip = true;
-	_accessKeyboardPause = false;
+	_accessKeyboardPause = true;//false;
 
 	_accessGlobalPaused = false;
 	_accessShieldWin = nullptr;
@@ -1421,6 +1421,13 @@ bool BaseGame::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 
 		uint32 time = stack->pop()->getInt();
 
+		if (BaseEngine::instance().getGameId() == "sotv2") {
+			// script shifting sound position by -2998
+			// which cause issue with our sound stream.
+			// W/A shift forward by 2998
+			time += 2998;
+		}
+
 		if (DID_FAIL(setMusicStartTime(channel, time))) {
 			stack->pushBool(false);
 		} else {
@@ -1445,7 +1452,16 @@ bool BaseGame::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 		if (channel < 0 || channel >= NUM_MUSIC_CHANNELS || !_music[channel]) {
 			stack->pushInt(0);
 		} else {
-			stack->pushInt(_music[channel]->getPositionTime());
+			uint32 pos = _music[channel]->getPositionTime();
+			if (BaseEngine::instance().getGameId() == "sotv2") {
+				// when sound stream end, it's returning position as 0
+				// this confuse game script due position slider is slower
+				// get length of sound instead
+				if (pos == 0) {
+					pos = _music[channel]->getLength();
+				}
+			}
+			stack->pushInt(pos);
 		}
 		return STATUS_OK;
 	}
@@ -1544,6 +1560,16 @@ bool BaseGame::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 		_musicCrossfadeVolume2 = 100;
 
 		stack->pushBool(true);
+		return STATUS_OK;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// IsMusicCrossfading
+	//////////////////////////////////////////////////////////////////////////
+	else if (strcmp(name, "IsMusicCrossfading") == 0) {
+		stack->correctParams(0);
+
+		stack->pushBool(_musicCrossfadeRunning);
 		return STATUS_OK;
 	}
 
@@ -2360,6 +2386,18 @@ bool BaseGame::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 	}
 
 	//////////////////////////////////////////////////////////////////////////
+	// PrepareScreenshot
+	//////////////////////////////////////////////////////////////////////////
+	else if (strcmp(name, "PrepareScreenshot") == 0) {
+		stack->correctParams(0);
+
+		// ignore method, it's used in 'J.U.L.I.A - Among the Stars'
+
+		stack->pushNULL();
+		return STATUS_OK;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
 	// Screenshot
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "Screenshot") == 0) {
@@ -2669,7 +2707,13 @@ bool BaseGame::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 		stack->correctParams(0);
 		SAFE_DELETE(_cachedThumbnail);
 		_cachedThumbnail = new SaveThumbHelper(this);
-		if (DID_FAIL(_cachedThumbnail->storeThumbnail())) {
+		bool doFlip = false;
+
+		if (BaseEngine::instance().getGameId() == "barrowhilldp") {
+			doFlip = true;
+		}
+
+		if (DID_FAIL(_cachedThumbnail->storeThumbnail(doFlip))) {
 			SAFE_DELETE(_cachedThumbnail);
 			stack->pushBool(false);
 		} else {
@@ -2828,6 +2872,39 @@ bool BaseGame::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 		stack->pushNULL();
 
 		return STATUS_OK;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	// SetGamma
+	// This is for game 'Oknytt'
+	//////////////////////////////////////////////////////////////////////////
+	else if (strcmp(name, "SetGamma") == 0) {
+		stack->correctParams(1);
+
+		int32 gamma = stack->pop()->getInt(0);
+
+#ifdef ENABLE_WME3D
+		if (_renderer3D)
+			_renderer3D->setBrightnessOknytt(gamma);
+#endif
+		stack->pushNULL();
+
+		return STATUS_OK;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	// GetGamma
+	// This is for game 'Oknytt'
+	//////////////////////////////////////////////////////////////////////////
+	else if (strcmp(name, "GetGamma") == 0) {
+		stack->correctParams(0);
+
+		int32 gamma = 0;
+#ifdef ENABLE_WME3D
+		if (_renderer3D)
+			gamma = _renderer3D->getBrightnessOknytt();
+#endif
+		stack->pushInt(gamma);
+
+		return STATUS_OK;
 	} else {
 		return BaseObject::scCallMethod(script, stack, thisStack, name);
 	}
@@ -2929,6 +3006,15 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "ScreenHeight") == 0) {
 		_scValue->setInt(_renderer->getHeight());
+		return _scValue;
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// ScreenshotPrepared (RO)
+	//////////////////////////////////////////////////////////////////////////
+	else if (strcmp(name, "ScreenshotPrepared") == 0) {
+		// always true, it's used in 'J.U.L.I.A - Among the Stars'
+		_scValue->setBool(true);
 		return _scValue;
 	}
 
@@ -3155,7 +3241,7 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	// AccTTSEnabled
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "AccTTSEnabled") == 0) {
-		_scValue->setBool(_accessTTSEnabled);
+		//_scValue->setBool(_accessTTSEnabled);
 		return _scValue;
 	}
 
@@ -3163,7 +3249,7 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	// AccTTSTalk
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "AccTTSTalk") == 0) {
-		_scValue->setBool(_accessTTSTalk);
+		//_scValue->setBool(_accessTTSTalk);
 		return _scValue;
 	}
 
@@ -3171,7 +3257,7 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	// AccTTSCaptions
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "AccTTSCaptions") == 0) {
-		_scValue->setBool(_accessTTSCaptions);
+		//_scValue->setBool(_accessTTSCaptions);
 		return _scValue;
 	}
 
@@ -3179,7 +3265,7 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	// AccTTSKeypress
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "AccTTSKeypress") == 0) {
-		_scValue->setBool(_accessTTSKeypress);
+		//_scValue->setBool(_accessTTSKeypress);
 		return _scValue;
 	}
 
@@ -3187,7 +3273,7 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	// AccKeyboardEnabled
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "AccKeyboardEnabled") == 0) {
-		_scValue->setBool(_accessKeyboardEnabled);
+		//_scValue->setBool(_accessKeyboardEnabled);
 		return _scValue;
 	}
 
@@ -3195,7 +3281,7 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	// AccKeyboardCursorSkip
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "AccKeyboardCursorSkip") == 0) {
-		_scValue->setBool(_accessKeyboardCursorSkip);
+		//_scValue->setBool(_accessKeyboardCursorSkip);
 		return _scValue;
 	}
 
@@ -3203,7 +3289,7 @@ ScValue *BaseGame::scGetProperty(const char *name) {
 	// AccKeyboardPause
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "AccKeyboardPause") == 0) {
-		_scValue->setBool(_accessKeyboardPause);
+		//_scValue->setBool(_accessKeyboardPause);
 		return _scValue;
 	}
 
@@ -3676,7 +3762,11 @@ bool BaseGame::scSetProperty(const char *name, ScValue *value) {
 	// CursorHidden
 	//////////////////////////////////////////////////////////////////////////
 	else if (strcmp(name, "CursorHidden") == 0) {
-		_cursorHidden = value->getBool();
+		// 'Night in the Fog' scripts hide cursor and suppose to unhide,
+		// unhide does not happen, so skip hidding
+		if (BaseEngine::instance().getGameId() != "nightinthefog") {
+			_cursorHidden = value->getBool();
+		}
 		return STATUS_OK;
 	} else {
 		return BaseObject::scSetProperty(name, value);
@@ -4773,13 +4863,13 @@ bool BaseGame::persist(BasePersistenceManager *persistMgr) {
 	// initialise to defaults
 	if (!persistMgr->getIsSaving()) {
 		_quitting = false;
-		_accessTTSEnabled = false;
+		_accessTTSEnabled = ConfMan.getBool("tts_enabled");;
 		_accessTTSTalk = true;
 		_accessTTSCaptions = true;
 		_accessTTSKeypress = true;
-		_accessKeyboardEnabled = false;
+		_accessKeyboardEnabled = true;//false;
 		_accessKeyboardCursorSkip = true;
-		_accessKeyboardPause = false;
+		_accessKeyboardPause = true;//false;
 		_accessGlobalPaused = false;
 	}
 
@@ -4856,12 +4946,12 @@ bool BaseGame::handleKeypress(Common::Event *event, bool printable) {
 		return true;
 	}
 
-	if (handleAccessKey(event, printable)) {
+	_keyboardState->readKey(event);
+	_keyboardState->handleKeyPress(event);
+
+	if (handleAccessKey(event, _keyboardState->isCurrentPrintable())) {
 		return true;
 	}
-
-	_keyboardState->handleKeyPress(event);
-	_keyboardState->readKey(event);
 
 	if (_focusedWindow) {
 		if (!_game->_focusedWindow->handleKeypress(event, _keyboardState->isCurrentPrintable())) {
@@ -4905,7 +4995,7 @@ bool BaseGame::handleAccessKey(Common::Event *event, bool printable) {
 		}
 	}
 	if (printable && _accessKeyboardPause) {
-		if (event->kbd.keycode == Common::KEYCODE_SPACE &&
+		if (event->kbd.keycode == Common::KEYCODE_p &&
 		   (event->kbd.flags & Common::KBD_CTRL)) {
 			_accessGlobalPaused = !_accessGlobalPaused;
 			if (_accessGlobalPaused) {
@@ -4938,7 +5028,7 @@ bool BaseGame::accessPause() {
 	UIText *sta = new UIText(_game);
 	sta->_parent = _accessShieldWin;
 	_accessShieldWin->_widgets.add(sta);
-	sta->setText(_stringTable->expandStatic("/SYSENG0040/Game paused. Press Ctrl+Space to resume."));
+	sta->setText(_stringTable->expandStatic("/SYSENG0040/Game paused. Press Ctrl+p to resume."));
 	sta->_sharedFonts = true;
 	sta->_font = _systemFont;
 	sta->sizeToFit();

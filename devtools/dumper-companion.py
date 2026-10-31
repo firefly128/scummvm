@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import logging
 import os
 import re
@@ -34,7 +35,8 @@ from enum import Enum
 from io import BytesIO, IOBase, StringIO
 from pathlib import Path
 from struct import pack, unpack
-from typing import Any
+from typing import Any, Optional
+from pathlib import Path
 
 import machfs  # type: ignore
 import pycdlib  # type: ignore
@@ -92,7 +94,11 @@ decode_map = {
 SPECIAL_SYMBOLS = '/":*|\\?%<>\x7f'
 APPLE_PM_SIGNATURE = b"PM"
 SECTOR_SIZE = 512
-
+CCD_SECTOR_SIZE = 2352
+CCD_DATA_SIZE = 2048
+CCD_MODE_OFFSET = 15
+CCD_MODE1_DATA_OFFSET = 16
+CCD_MODE2_DATA_OFFSET = 24
 
 class FileSystem(Enum):
     hybrid = "hybrid"
@@ -395,6 +401,86 @@ def check_extension(args: argparse.Namespace) -> Extension:
     return Extension.none
 
 
+MACVENTURE_STEAM_EXES = {
+    #  md5                               name       HFS offset  size  IIGS offset  size
+    "2b5e47b77d28d7201d3e7f8681ca9a9f": ("Deja Vu",    1413600, 819200, 594328, 819271),
+    "c606908f6906adcd1cfb8c575d6b8cf7": ("Deja Vu II", 1418112, 819200, 598840, 819272),
+    "129ad491400722b76eb3259440e9ad95": ("Shadowgate", 1474800, 839680, 655520, 819274),
+    "cae6c5101ffd7fa20e249fa7a972f958": ("Uninvited",  1449384, 819200, 630104, 819273),
+}
+
+
+def read_macventure_steam_exe(path: Path) -> Optional[tuple[bytes, bytes]]:
+    if path.suffix.lower() != ".exe":
+        return None
+    data = path.read_bytes()
+    entry = MACVENTURE_STEAM_EXES.get(hashlib.md5(data).hexdigest())
+    if entry is None:
+        return None
+    name, offset, size, gs_offset, gs_size = entry
+    print(f"{path.name} from {name} is detected, extracting embedded HFS and IIGS images")
+    return data[offset : offset + size], data[gs_offset : gs_offset + gs_size]
+
+
+def extract_prodos_image(image: bytes, destination_dir: Path) -> None:
+    # Extract a ProDOS volume from a 2IMG (.2mg) Apple IIGS disk image.
+    # Data forks only, which is all the MacVenture IIGS games use.
+    data_offset, data_len = unpack("<II", image[0x18:0x20])
+    disk = image[data_offset : data_offset + data_len]
+
+    def read_block(num: int) -> bytes:
+        return disk[num * 512 : (num + 1) * 512]
+
+    def read_index(block: int, count: int) -> list[int]:
+        # An index block holds up to 256 pointers: low bytes first, high bytes at +256
+        blk = read_block(block)
+        return [blk[i] | (blk[256 + i] << 8) for i in range(count)]
+
+    def read_file(entry: bytes) -> Optional[bytes]:
+        storage_type = entry[0] >> 4
+        key_block = unpack("<H", entry[0x11:0x13])[0]
+        eof = entry[0x15] | (entry[0x16] << 8) | (entry[0x17] << 16)
+        num_blocks = (eof + 511) // 512
+        if storage_type == 1:  # seedling: key block is the data
+            blocks = [key_block]
+        elif storage_type == 2:  # sapling: key block is an index block
+            blocks = read_index(key_block, num_blocks)
+        elif storage_type == 3:  # tree: key block is a master index block
+            blocks = []
+            for master in read_index(key_block, (num_blocks + 255) // 256):
+                count = min(256, num_blocks - len(blocks))
+                blocks += read_index(master, count) if master else [0] * count
+        else:
+            return None
+        data = b"".join(read_block(b) if b else b"\x00" * 512 for b in blocks)
+        return data[:eof]
+
+    def walk(block: int, path: Path) -> None:
+        path.mkdir(parents=True, exist_ok=True)
+        while block:
+            blk = read_block(block)
+            next_block = unpack("<H", blk[2:4])[0]
+            for i in range(13):
+                entry = blk[4 + i * 0x27 :][:0x27]
+                storage_type = entry[0] >> 4
+                name_len = entry[0] & 0xF
+                if storage_type == 0 or name_len == 0:
+                    continue
+                name = entry[1 : 1 + name_len].decode("ascii", "replace")
+                if storage_type in (0xF, 0xE):  # volume/subdirectory header
+                    continue
+                if storage_type == 0xD:  # subdirectory
+                    walk(unpack("<H", entry[0x11:0x13])[0], path / name)
+                else:
+                    data = read_file(entry)
+                    if data is not None:
+                        (path / name).write_bytes(data)
+                        print(f"Extracted {path / name}")
+            block = next_block
+
+    walk(2, destination_dir)  # block 2 = volume directory key block
+
+
 def check_fs(iso: str) -> FileSystem:
     disk_formats = []
     f = open(iso, "rb")
@@ -438,32 +524,106 @@ def check_fs(iso: str) -> FileSystem:
         return FileSystem.hybrid
     return disk_formats[0]
 
+def convert_ccd_to_iso(img_path: Path, iso_path: Path) -> None:
+    """
+    Convert a CloneCD IMG image into an ISO image.
 
+    The converter strips CloneCD sector headers and writes
+    the 2048-byte sector payload expected by ISO9660 tools.
+    """
+    with open(img_path, "rb") as src, open(iso_path, "wb") as dst:
+        while chunk := src.read(CCD_SECTOR_SIZE):
+            if len(chunk) != CCD_SECTOR_SIZE:
+                raise ValueError("Incomplete CCD sector")
+            mode = chunk[CCD_MODE_OFFSET]
+
+            if mode == 1:
+                dst.write(
+                    chunk[
+                        CCD_MODE1_DATA_OFFSET:
+                        CCD_MODE1_DATA_OFFSET + CCD_DATA_SIZE
+                    ]
+                )
+            elif mode == 2:
+                dst.write(
+                    chunk[
+                        CCD_MODE2_DATA_OFFSET:
+                        CCD_MODE2_DATA_OFFSET + CCD_DATA_SIZE
+                    ]
+                )
+            elif mode == 0xE2:
+                raise ValueError(
+                    "Session marker found; only first session is supported"
+                )
+            else:
+                raise ValueError(
+                    f"Unsupported sector mode {mode}"
+                )
+            
 def extract_iso(args: argparse.Namespace) -> None:
-    loglevel: str = args.log
+    temp_iso = None
+    try:
+        # CloneCD metadata is stored in .ccd while sector data
+        # resides in the matching .img file.
+        if args.src.suffix.lower() == ".ccd":
+            img_path = args.src.with_suffix(".img")
 
-    numeric_level = getattr(logging, loglevel.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError("Invalid log level: %s" % loglevel)
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=numeric_level)
+            if not img_path.exists():
+                raise FileNotFoundError(
+                    f"Associated IMG file not found: {img_path}"
+                )
+            temp_iso = args.dir / f"{args.src.stem}.iso"
 
-    if not args.fs:
-        args.fs = check_fs(args.src)
-        print("Detected filesystem:", args.fs.value)
-    else:
-        args.fs = FileSystem(args.fs)
-    if args.fs in [FileSystem.hybrid, FileSystem.iso9660] and not args.extension:
-        args.extension = check_extension(args)
-        print("Detected extension:", args.extension.value)
-    elif args.extension:
-        args.extension = Extension(args.extension)
+            convert_ccd_to_iso(
+                img_path,
+                temp_iso
+            )
 
-    if args.fs == FileSystem.iso9660:
-        extract_volume_iso(args)
-    elif args.fs == FileSystem.hfs:
-        extract_volume_hfs(args)
-    else:
-        extract_volume_hybrid(args)
+            args.src = temp_iso
+  
+        loglevel: str = args.log
+
+        numeric_level = getattr(logging, loglevel.upper(), None)
+        if not isinstance(numeric_level, int):
+            raise ValueError("Invalid log level: %s" % loglevel)
+        logging.basicConfig(format="%(levelname)s: %(message)s", level=numeric_level)
+
+        exe_images = read_macventure_steam_exe(args.src)
+        if exe_images is not None:
+            hfs_image, gs_image = exe_images
+            main_dir = args.dir
+            vol = machfs.Volume()
+            vol.read(hfs_image)
+            args.dir = main_dir / "mac"
+            extract_partition(args, vol)
+            extract_prodos_image(gs_image, main_dir / "iigs")
+            return
+
+        if not args.fs:
+            args.fs = check_fs(args.src)
+            print("Detected filesystem:", args.fs.value)
+        else:
+            args.fs = FileSystem(args.fs)
+        if args.fs in [FileSystem.hybrid, FileSystem.iso9660] and not args.extension:
+            args.extension = check_extension(args)
+            print("Detected extension:", args.extension.value)
+        elif args.extension:
+            args.extension = Extension(args.extension)
+
+        if args.fs == FileSystem.iso9660:
+            extract_volume_iso(args)
+        elif args.fs == FileSystem.hfs:
+            extract_volume_hfs(args)
+        else:
+            extract_volume_hybrid(args)
+            
+    finally:
+        if (
+            temp_iso is not None
+            and not args.keep_files
+            and temp_iso.exists()
+        ):
+            temp_iso.unlink()
 
 
 def extract_volume_hfs(args: argparse.Namespace) -> None:
@@ -1120,6 +1280,11 @@ def generate_parser() -> argparse.ArgumentParser:
         choices=["iso9660", "hfs", "hybrid"],
         metavar="FILE_SYSTEM",
         help="Specify the file system of the ISO",
+    )
+    parser_iso.add_argument(
+        "--keep-files",
+        action="store_true",
+        help="Keep temporary files created during CCD to ISO convesrion",
     )
     parser_iso.add_argument(
         "dir", metavar="OUTPUT", type=Path, help="Destination folder"

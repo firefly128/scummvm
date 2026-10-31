@@ -731,6 +731,7 @@ protected:
 	void o7_findNextFile();
 	void o7_getFileInfo();
 	void o7_getSystemProperty();
+	void o7_getVmdCurrentFrameRect();
 	void o7_loadImage();
 	void o7_copyDataToClipboard();
 	void o7_setVolume();
@@ -780,6 +781,7 @@ protected:
 	void o7_vmdGetSoundBuffer();
 	void o7_vmdReleaseSoundBuffer();
 
+	void o7_keyFunc(OpFuncParams &params);
 	void o7_loadCursor(OpFuncParams &params);
 	void o7_printText(OpFuncParams &params);
 	void o7_fillRect(OpFuncParams &params);
@@ -814,6 +816,7 @@ protected:
 	void o7_setDBStringEncoding(OpGobParams &params);
 	void o7_gob0x201(OpGobParams &params);
 	void o7_getFreeDiskSpace(OpGobParams &params);
+	void o7_calculator(OpGobParams &params);
 	void o7_dummy(OpGobParams &params);
 
 private:

@@ -46,6 +46,10 @@ enum {
 	kMaxMenuTitleLength = 30
 };
 
+enum {
+	kFrameDelay = 20
+};
+
 MacVentureEngine::MacVentureEngine(OSystem *syst, const ADGameDescription *gameDesc) : Engine(syst) {
 	_gameDescription = gameDesc;
 	_rnd = new Common::RandomSource("macventure");
@@ -65,6 +69,8 @@ MacVentureEngine::MacVentureEngine(OSystem *syst, const ADGameDescription *gameD
 	_soundManager = nullptr;
 
 	_dataBundle = nullptr;
+
+	_nextFrameTime = 0;
 
 	debug("MacVenture::MacVentureEngine()");
 }
@@ -171,6 +177,10 @@ Common::Error MacVentureEngine::run() {
 			if (_prepared) {
 				_prepared = false;
 
+				bool busy = _cmdReady || _halted;
+				if (busy)
+					_gui->setWaitCursor(true);
+
 				if (!_halted)
 					updateState(false);
 
@@ -190,6 +200,11 @@ Common::Error MacVentureEngine::run() {
 				if (_gameState == kGameStateLosing) {
 					endGame();
 				}
+
+				if (busy)
+					_gui->setWaitCursor(false);
+
+				_gui->markRedraw();
 			}
 		}
 		refreshScreen();
@@ -201,7 +216,11 @@ Common::Error MacVentureEngine::run() {
 void MacVentureEngine::refreshScreen() {
 	_gui->draw();
 	g_system->updateScreen();
-	g_system->delayMillis(50);
+
+	uint32 now = g_system->getMillis();
+	if (now < _nextFrameTime)
+		g_system->delayMillis(_nextFrameTime - now);
+	_nextFrameTime = g_system->getMillis() + kFrameDelay;
 }
 
 void MacVentureEngine::newGame() {
@@ -222,6 +241,7 @@ void MacVentureEngine::setInitialFlags(GameState gameState) {
 	_destObject = 0;
 	_prepared = true;
 	_enginePaused = false;
+	_consoleRowsSincePause = 0;
 }
 
 void MacVentureEngine::setNewGameState() {
@@ -248,6 +268,7 @@ void MacVentureEngine::resetGui() {
 	_gui->reloadInternals();
 	updateControls();
 	updateExits();
+	_gui->markRedraw();
 	refreshScreen();
 }
 
@@ -264,11 +285,22 @@ void MacVentureEngine::requestUnpause() {
 void MacVentureEngine::selectControl(ControlAction id) {
 	debugC(2, kMVDebugMain, "Select control %x", id);
 	if (id == kClickToContinue) {
+		if (_consoleRowsSincePause > _gui->getConsoleVisibleRows()) {
+			_consoleRowsSincePause -= _gui->getConsoleVisibleRows();
+			clickToContinue();
+			return;
+		}
+
+		_consoleRowsSincePause = 0;
 		_clickToContinue = false;
 		_enginePaused = false;
 		_paused = true;
+		_prepared = true;
 		return;
 	}
+
+	if (!_clickToContinue)
+		_consoleRowsSincePause = 0;
 
 	_selectedControl = id;
 	refreshReady();
@@ -312,6 +344,9 @@ void MacVentureEngine::loseGame() {
 }
 
 void MacVentureEngine::clickToContinue() {
+	uint rowCount = _gui->getConsoleRowCount();
+
+	_gui->scrollConsoleToRow(rowCount > _consoleRowsSincePause ? rowCount - _consoleRowsSincePause : 0);
 	_clickToContinue = true;
 	_enginePaused = true;
 }
@@ -366,7 +401,18 @@ void MacVentureEngine::handleObjectSelect(ObjID objID, WindowReference win, bool
 	const WindowData &windata = _gui->getWindowData(win);
 
 	if (shiftPressed) {
-		// TODO: Implement shift functionality.
+		if (objID == 0) {
+			objID = windata.objRef;
+		}
+		if (objID > 0) {
+			if (findObjectInArray(objID, _currentSelection) != -1) {
+				unselectObject(objID);
+			} else {
+				selectObject(objID);
+			}
+			refreshReady();
+			preparedToRun();
+		}
 	} else {
 		if (_selectedControl && _currentSelection.size() > 0 && getInvolvedObjects() > 1) {
 			if (objID == 0) {
@@ -611,7 +657,11 @@ void MacVentureEngine::runObjQueue() {
 }
 
 void MacVentureEngine::printTexts() {
-	for (uint i = 0; i < _textQueue.size(); i++) {
+	while (!_textQueue.empty()) {
+		if (_consoleRowsSincePause >= _gui->getConsoleVisibleRows()) {
+			clickToContinue();
+			return;
+		}
 		QueuedText text = _textQueue.front();
 		_textQueue.remove_at(0);
 		switch (text.id) {
@@ -619,11 +669,14 @@ void MacVentureEngine::printTexts() {
 			_currentConsoleText += Common::String::format("%d", text.asset);
 			gameChanged();
 			break;
-		case kTextNewLine:
+		case kTextNewLine: {
+			uint rows = _gui->getConsoleRowCount();
 			_gui->printText(_currentConsoleText);
+			_consoleRowsSincePause += _gui->getConsoleRowCount() - rows;
 			_currentConsoleText.clear();
 			gameChanged();
 			break;
+		}
 		case kTextPlain:
 			_currentConsoleText += _world->getText(text.asset, text.source, text.destination);
 			gameChanged();
@@ -632,6 +685,9 @@ void MacVentureEngine::printTexts() {
 			break;
 		}
 	}
+
+	if (_consoleRowsSincePause > _gui->getConsoleVisibleRows())
+		clickToContinue();
 }
 
 void MacVentureEngine::playSounds(bool pause) {
@@ -694,7 +750,8 @@ Item MacVentureEngine::removeOutlier(Layout &layout, bool flag, Common::Rect rec
 
 void MacVentureEngine::cleanUp(WindowReference reference) {
 	const WindowData &data = _gui->getWindowData(reference);
-	Common::Rect windowBounds = _gui->findWindow(reference)->getInnerDimensions();
+	Common::Rect innerDims = _gui->findWindow(reference)->getInnerDimensions();
+	Common::Rect windowBounds(0, 0, innerDims.width(), innerDims.height());
 	Common::Array<Item> items;
 
 	Layout onScreen, offScreen;
@@ -872,14 +929,20 @@ void MacVentureEngine::selectObject(ObjID objID) {
 	}
 	if (findObjectInArray(objID, _currentSelection) == -1) {
 		_currentSelection.push_back(objID);
+	}
+	if (findObjectInArray(objID, _selectedObjs) == -1) {
+		_selectedObjs.push_back(objID);
 		highlightExit(objID);
 	}
 }
 
 void MacVentureEngine::unselectObject(ObjID objID) {
-	int idxCur = findObjectInArray(objID, _currentSelection);
-	if (idxCur != -1) {
-		_currentSelection.remove_at(idxCur);
+	int idx = findObjectInArray(objID, _currentSelection);
+	if (idx != -1) {
+		_currentSelection.remove_at(idx);
+	}
+	if ((idx = findObjectInArray(objID, _selectedObjs)) != -1) {
+		_selectedObjs.remove_at(idx);
 		highlightExit(objID);
 	}
 }
@@ -948,12 +1011,15 @@ void MacVentureEngine::selectPrimaryObject(ObjID objID) {
 	int idx;
 	debugC(4, kMVDebugMain, "Select primary object (%d)", objID);
 	if (_destObject > 0 &&
-		(idx = findObjectInArray(_destObject, _currentSelection)) != -1) {
-		unselectAll();
+		(idx = findObjectInArray(_destObject, _selectedObjs)) != -1 &&
+		findObjectInArray(_destObject, _currentSelection) == -1) {
+		_selectedObjs.remove_at(idx);
+		highlightExit(_destObject);
 	}
 	_destObject = objID;
-	if (findObjectInArray(_destObject, _currentSelection) == -1) {
-		selectObject(_destObject);
+	if (findObjectInArray(_destObject, _selectedObjs) == -1) {
+		_selectedObjs.push_back(_destObject);
+		highlightExit(_destObject);
 	}
 
 	_cmdReady = true;
@@ -1086,10 +1152,9 @@ void MacVentureEngine::reflectSwap(ObjID fromID, ObjID toID) {
 }
 
 void MacVentureEngine::toggleExits() {
-	Common::Array<ObjID> exits = _currentSelection;
-	while (!exits.empty()) {
-		ObjID obj = exits.front();
-		exits.remove_at(0);
+	while (!_selectedObjs.empty()) {
+		ObjID obj = _selectedObjs.back();
+		_selectedObjs.pop_back();
 		highlightExit(obj);
 		updateWindow(findParentWindow(obj));
 	}
@@ -1102,7 +1167,7 @@ void MacVentureEngine::zoomObject(ObjID objID) {
 bool MacVentureEngine::isObjEnqueued(ObjID objID) {
 	Common::Array<QueuedObject>::const_iterator it;
 	for (it = _objQueue.begin(); it != _objQueue.end(); it++) {
-		if ((*it).object == objID) {
+		if (it->id == kUpdateObject && it->object == objID) {
 			return true;
 		}
 	}
@@ -1191,7 +1256,7 @@ bool MacVentureEngine::isObjDraggable(ObjID objID) {
 }
 
 bool MacVentureEngine::isObjSelected(ObjID objID) {
-	int idx = findObjectInArray(objID, _currentSelection);
+	int idx = findObjectInArray(objID, _selectedObjs);
 	return idx != -1;
 }
 
@@ -1302,6 +1367,14 @@ bool MacVentureEngine::loadTextHuffman() {
 			// For some reason there are one lass mask than entries
 			masks[i] = res->readUint16BE();
 		}
+		// make sure array is fully initialized
+		masks[numEntries - 1] = 0x10000;
+		// by setting the 'last' enttry to 0x10000 (max 16 bit integer + 1) we make sure that the 
+		// iteration in TextAsset::decodeHuffmann never fails. This iteration will search for a
+		// 16 bit value < mask[i]. If array is not properly set up, we either get a random value for 
+		// mask[numEntries - 1] (0 on optimized code). Depending on value, NO entry is found in 
+		// huffman table resulting in an out of bounds index. That will ultimately result in assert 
+		// failure when accessing an element in _textHuffman.
 
 		uint32 *lengths = new uint32[numEntries];
 		for (uint i = 0; i < numEntries; i++) {

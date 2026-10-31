@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="engine">
-			<UniqueIdentifier>B74792B8-A387-4E89-85DD-2CBB0E9F0FA2</UniqueIdentifier>
+			<UniqueIdentifier>FAB962E3-1D9D-489E-8EF7-5BD66C147E0A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="graphics">
-			<UniqueIdentifier>C0F210B6-3C23-44CF-B859-88F5D9E0A607</UniqueIdentifier>
+			<UniqueIdentifier>FCF3A586-EB01-4712-A25F-261447BEEC52</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gui">
-			<UniqueIdentifier>B2424695-C2F6-4B3E-9AEE-B4D50A685E3F</UniqueIdentifier>
+			<UniqueIdentifier>3C1DCC75-8B5F-4665-8711-3115F8F78291</UniqueIdentifier>
 		</Filter>
 		<Filter Include="resource">
-			<UniqueIdentifier>9D447B25-F2D8-45E0-B4A2-681D4AEF135F</UniqueIdentifier>
+			<UniqueIdentifier>76805856-402D-4A23-B3B3-BE436A2D139C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="script">
-			<UniqueIdentifier>8E722CCE-AB9D-41BC-BE9F-D462C2444E68</UniqueIdentifier>
+			<UniqueIdentifier>DE64F7AA-3556-4ED4-93BA-E281C3D9C32A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sequence">
-			<UniqueIdentifier>6D989171-AFB0-4505-B12E-1751BE67CD0D</UniqueIdentifier>
+			<UniqueIdentifier>8284A6EE-7C32-4730-9A3C-724BFAF827EB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound">
-			<UniqueIdentifier>28544AB3-6C84-43DE-9CFB-A5FAE3A590DA</UniqueIdentifier>
+			<UniqueIdentifier>237973FA-8ABA-4275-9056-BEC4EEC772CF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound\drivers">
-			<UniqueIdentifier>50C463DE-B374-4553-9AA3-DA326092525D</UniqueIdentifier>
+			<UniqueIdentifier>A5664A10-E4FE-4977-80EA-3150D59B910B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="text">
-			<UniqueIdentifier>09CA182C-7E79-4427-9053-0AF8C7880EA5</UniqueIdentifier>
+			<UniqueIdentifier>268E9DD4-768D-4B1B-9256-C228C0C51C4E</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -198,6 +198,9 @@
 		<ClCompile Include="..\..\engines\kyra\graphics\wsamovie.cpp">
 			<Filter>graphics</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\kyra\gui\automap_eob.cpp">
+			<Filter>gui</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\kyra\gui\debugger.cpp">
 			<Filter>gui</Filter>
 		</ClCompile>
@@ -337,9 +340,6 @@
 			<Filter>sound\drivers</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\capcom98.cpp">
-			<Filter>sound\drivers</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\kyra\sound\drivers\halestorm.cpp">
 			<Filter>sound\drivers</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\mlalf98.cpp">
@@ -498,6 +498,9 @@
 		<ClInclude Include="..\..\engines\kyra\graphics\wsamovie.h">
 			<Filter>graphics</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\kyra\gui\automap_eob.h">
+			<Filter>gui</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\kyra\gui\debugger.h">
 			<Filter>gui</Filter>
 		</ClInclude>
@@ -559,9 +562,6 @@
 			<Filter>sound\drivers</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\kyra\sound\drivers\capcom98.h">
-			<Filter>sound\drivers</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\kyra\sound\drivers\halestorm.h">
 			<Filter>sound\drivers</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\kyra\sound\drivers\mlalf98.h">

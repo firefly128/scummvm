@@ -35,8 +35,35 @@ public:
 
 	SceneChangeDescription _sceneChange;
 
+	Common::String getRecordExtraInfo() const override { return Common::String::format("Scene %d", _sceneChange.sceneID); }
+
 protected:
 	Common::String getRecordTypeName() const override { return "SceneChange"; }
+};
+
+// Changes the scene when clicked
+class HotSingleFrameSceneChange : public SceneChange {
+public:
+	HotSingleFrameSceneChange() {
+		_hasHotspot = false;
+		_hoverCursor = CursorManager::kNormal;
+	}
+	virtual ~HotSingleFrameSceneChange() {}
+
+	void readData(Common::SeekableReadStream &stream) override;
+	void execute() override;
+
+	CursorManager::CursorType getHoverCursor() const override { return _hoverCursor; }
+	bool cursorSetFromScript() const override { return false; }
+
+	HotspotDescription _sceneHotspot;
+
+	bool canHaveHotspot() const override { return true; }
+
+protected:
+	CursorManager::CursorType _hoverCursor;
+
+	Common::String getRecordTypeName() const override { return "HotSingleFrameSceneChange"; }
 };
 
 // Changes the scene when clicked. Hotspot can move along with scene background frame.
@@ -44,19 +71,26 @@ protected:
 // hovering; all of them are handled in this class as well.
 class HotMultiframeSceneChange : public SceneChange {
 public:
-	HotMultiframeSceneChange(CursorManager::CursorType hoverCursor) : _hoverCursor(hoverCursor) {}
+	HotMultiframeSceneChange(CursorManager::CursorType hoverCursor, bool isTerse = false) :
+		_hoverCursor(hoverCursor), _isTerse(isTerse) {}
 	virtual ~HotMultiframeSceneChange() {}
 
 	void readData(Common::SeekableReadStream &stream) override;
 	void execute() override;
 
 	CursorManager::CursorType getHoverCursor() const override { return _hoverCursor; }
+	bool cursorSetFromScript() const override { return _isTerse; }
 
 	Common::Array<HotspotDescription> _hotspots;
+	bool _isTerse = false;
+
+	bool canHaveHotspot() const override { return true; }
 
 protected:
-	bool canHaveHotspot() const override { return true; }
 	Common::String getRecordTypeName() const override {
+		if (_isTerse)
+			return "HotMultiframeSceneChangeTerse";
+
 		switch (_hoverCursor) {
 		case CursorManager::kMoveForward:
 			return "HotMultiframeForwardSceneChange";
@@ -77,23 +111,26 @@ protected:
 // hovering; all of them are handled in this class as well.
 class Hot1FrSceneChange : public SceneChange {
 public:
-	Hot1FrSceneChange(CursorManager::CursorType hoverCursor) : _hoverCursor(hoverCursor) {}
+	Hot1FrSceneChange(CursorManager::CursorType hoverCursor, bool dynamicCursor = false, bool isTerse = false) :
+		_hoverCursor(hoverCursor), _dynamicCursor(dynamicCursor), _isTerse(isTerse) {}
 	virtual ~Hot1FrSceneChange() {}
 
 	void readData(Common::SeekableReadStream &stream) override;
 	void execute() override;
 
 	CursorManager::CursorType getHoverCursor() const override { return _hoverCursor; }
+	bool cursorSetFromScript() const override { return _dynamicCursor; }
 
 	HotspotDescription _hotspotDesc;
 	bool _isTerse = false;
+	bool _dynamicCursor = false;
+
+	bool canHaveHotspot() const override { return true; }
 
 protected:
-	bool canHaveHotspot() const override { return true; }
 	Common::String getRecordTypeName() const override {
-		if (_isTerse) {
+		if (_isTerse)
 			return "HotSceneChangeTerse";
-		}
 
 		switch (_hoverCursor) {
 		case CursorManager::kExit:
@@ -121,7 +158,7 @@ protected:
 // Changes the scene when clicked. Hotspot can move along with scene background frame.
 // However, the scene it changes to can be one of two options, picked based on
 // a provided condition.
-class HotMultiframeMultisceneChange : public ActionRecord {
+class HotMultiframeMultiSceneChange : public ActionRecord {
 public:
 	void readData(Common::SeekableReadStream &stream) override;
 	void execute() override;
@@ -133,15 +170,16 @@ public:
 	byte _conditionPayload;
 	Common::Array<HotspotDescription> _hotspots;
 
-protected:
 	bool canHaveHotspot() const override { return true; }
+
+protected:
 	Common::String getRecordTypeName() const override { return "HotMultiframeMultisceneChange"; }
 };
 
 // Changes the scene when clicked. Hotspot can move along with scene background frame.
 // However, the scene it changes to can be one of several options, picked based on
 // the item the player is currently holding.
-class HotMultiframeMultisceneCursorTypeSceneChange : public ActionRecord {
+class HotMultiframeMultiSceneCursorTypeSceneChange : public ActionRecord {
 public:
 	void readData(Common::SeekableReadStream &stream) override;
 	void execute() override;
@@ -152,8 +190,47 @@ public:
 	SceneChangeDescription _defaultScene;
 	Common::Array<HotspotDescription> _hotspots;
 
+	Common::String getRecordExtraInfo() const override { return Common::String::format("Default scene %d", _defaultScene.sceneID); }
+
 protected:
 	Common::String getRecordTypeName() const override { return "HotMultiframeMultisceneCursorTypeSceneChange"; }
+};
+
+// Nancy13 replacement for the record above (AR 27 in both). Also picks what happens
+// from the item the player is holding, but every accepted item now comes with its own
+// sound and event flags, and says whether it is returned to the inventory or used up.
+// The scene only changes once the sound has finished playing.
+class HotMultiframeInvTypeSceneChange : public ActionRecord {
+public:
+	// One branch of the record. The same block, minus the item fields, describes
+	// what happens when the held item matches nothing.
+	struct ItemUse {
+		void readData(Common::SeekableReadStream &stream);
+
+		int16 itemID = -1;
+		bool loseItem = false;
+		SoundDescription sound;
+		Common::String ccText;
+		uint16 sceneID = kNoScene;
+		Common::Array<FlagDescription> flags;
+	};
+
+	void readData(Common::SeekableReadStream &stream) override;
+	void execute() override;
+
+	Common::Array<ItemUse> _itemUses;
+	ItemUse _defaultItemUse;
+	Common::Array<HotspotDescription> _hotspots;
+
+	bool canHaveHotspot() const override { return true; }
+
+	Common::String getRecordExtraInfo() const override { return Common::String::format("Default scene %d", _defaultItemUse.sceneID); }
+
+protected:
+	Common::String getRecordTypeName() const override { return "HotMultiframeInvTypeSceneChange"; }
+
+	// The branch the record is currently waiting on; also marks that it has triggered
+	const ItemUse *_activeUse = nullptr;
 };
 
 // Simply switches to the Map state. TVD/nancy1 only.
@@ -176,8 +253,9 @@ public:
 
 	HotspotDescription _hotspotDesc;
 
-protected:
 	bool canHaveHotspot() const override { return true; }
+
+protected:
 	Common::String getRecordTypeName() const override { return "MapCallHot1Fr"; }
 };
 
@@ -189,8 +267,9 @@ public:
 
 	Common::Array<HotspotDescription> _hotspots;
 
-protected:
 	bool canHaveHotspot() const override { return true; }
+
+protected:
 	Common::String getRecordTypeName() const override { return "MapCallHotMultiframe"; }
 };
 

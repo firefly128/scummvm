@@ -22,7 +22,7 @@
 #ifndef NANCY_ACTION_SOUNDMATCHPUZZLE_H
 #define NANCY_ACTION_SOUNDMATCHPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 #include "engines/nancy/commontypes.h"
 
 namespace Nancy {
@@ -32,9 +32,9 @@ namespace Action {
 // The player hears a whale call by clicking one of 5 numbered buttons, then
 // clicks the matching whale image. Correct pairs stay lit. Player wins when
 // all the required pairs have been matched.
-class SoundMatchPuzzle : public RenderActionRecord {
+class SoundMatchPuzzle : public PuzzleRecord {
 public:
-	SoundMatchPuzzle() : RenderActionRecord(7) {}
+	SoundMatchPuzzle() : PuzzleRecord(7) {}
 	virtual ~SoundMatchPuzzle() {}
 
 	void init() override;
@@ -43,9 +43,10 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
+	bool isViewportRelative() const override { return true; }
+
 protected:
 	Common::String getRecordTypeName() const override { return "SoundMatchPuzzle"; }
-	bool isViewportRelative() const override { return true; }
 
 	// File data
 
@@ -55,13 +56,10 @@ protected:
 
 	SoundDescription _feedbackSoundWrong;  // played on incorrect whale click
 	SoundDescription _feedbackSoundRight;  // played on correct whale click
-	SceneChangeWithFlag _winScene;
-	SoundDescription _winSound;            // played when all pairs are matched
-	SceneChangeWithFlag _exitScene;
-
-	Common::Rect _exitHotspot;
 
 	uint16 _requiredPairs = kNumButtons;   // how many matches needed to win
+
+	bool _resetOnWrong = false;
 
 	struct SoundButtonEntry {
 		SoundDescription sound;   // whale call sound
@@ -89,6 +87,8 @@ protected:
 	int  _selectedSoundButton  = -1;    // currently selected numbered button, -1 = none
 	int  _matchedPairs    = 0;
 	bool _isExiting       = false;
+
+	bool _whaleClickEnabled = false;
 
 	enum SolveSubState {
 		kIdle         = 0,

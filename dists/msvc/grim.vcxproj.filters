@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="costume">
-			<UniqueIdentifier>9F211F24-28EA-43ED-828D-197FF46B2C0D</UniqueIdentifier>
+			<UniqueIdentifier>5DAD89DB-4094-4EB1-9D82-9C301750367E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="emi">
-			<UniqueIdentifier>3F4A3FE9-FEBA-422D-A767-E203229E884A</UniqueIdentifier>
+			<UniqueIdentifier>9D9CB7FC-275E-4F60-86E1-0D70BBD33FFC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="emi\costume">
-			<UniqueIdentifier>EAA6B220-577C-4A9E-9CDA-3A4081F49AC1</UniqueIdentifier>
+			<UniqueIdentifier>CB80A470-E245-4BB9-8D18-BAF1DC08C04A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="emi\sound">
-			<UniqueIdentifier>C2179FDD-8A19-4355-993F-3F7025E0DF8B</UniqueIdentifier>
+			<UniqueIdentifier>73E1A6CC-2595-4C53-A0AA-F8165FF0A48C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="emi\sound\codecs">
-			<UniqueIdentifier>AAE2CB42-6D1E-46B6-B1D7-2D81C9EBB2C4</UniqueIdentifier>
+			<UniqueIdentifier>586CAF15-58BA-4904-ABC9-B35EFE49960F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="imuse">
-			<UniqueIdentifier>227518F3-3E1B-4C44-A6E0-B69D38FB6605</UniqueIdentifier>
+			<UniqueIdentifier>6FB5B76F-B968-4A7A-89EE-E6B66456D3CC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="lua">
-			<UniqueIdentifier>77698442-F69B-4705-9317-A91C3C5DDBDF</UniqueIdentifier>
+			<UniqueIdentifier>DAEC661A-0945-44F8-A463-89E4B82A12C7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="movie">
-			<UniqueIdentifier>E9B0658C-BA79-4ABE-ABBC-06A16CF50CC4</UniqueIdentifier>
+			<UniqueIdentifier>F9D4B330-344B-401B-BED4-3F51D040F528</UniqueIdentifier>
 		</Filter>
 		<Filter Include="movie\codecs">
-			<UniqueIdentifier>122523A1-0140-4CC6-963C-64231CE3BA55</UniqueIdentifier>
+			<UniqueIdentifier>9F424A31-BF9F-4743-8558-3CF9255C0295</UniqueIdentifier>
 		</Filter>
 		<Filter Include="remastered">
-			<UniqueIdentifier>3B411F96-2934-4881-B6AA-3AEB5BC74E10</UniqueIdentifier>
+			<UniqueIdentifier>D47C2A50-89EC-4A55-AF8B-D7F5F5ED8E08</UniqueIdentifier>
 		</Filter>
 		<Filter Include="update">
-			<UniqueIdentifier>217E329F-2687-492A-ADAE-46386C1F04B6</UniqueIdentifier>
+			<UniqueIdentifier>D36DC404-8EA6-4D58-9A82-ED1AE96CEA4F</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

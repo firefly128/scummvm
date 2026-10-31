@@ -22,16 +22,16 @@
 #ifndef NANCY_ACTION_SETPLAYERCLOCK_H
 #define NANCY_ACTION_SETPLAYERCLOCK_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 
 namespace Nancy {
 namespace Action {
 
 // Action record implementing an alarm clock. First used in nancy3
-class SetPlayerClock : public RenderActionRecord {
+class SetPlayerClock : public PuzzleRecord {
 public:
 	enum AlarmState { kTimeMode, kAlarmMode, kWait };
-	SetPlayerClock() : RenderActionRecord(7) {}
+	SetPlayerClock() : PuzzleRecord(7) {}
 	virtual ~SetPlayerClock();
 
 	void init() override;
@@ -40,13 +40,12 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
-protected:
-	Common::String getRecordTypeName() const override { return "SetPlayerClock"; }
 	bool isViewportRelative() const override { return true; }
 
-	void drawTime(uint16 hours, uint16 minutes);
+protected:
+	Common::String getRecordTypeName() const override { return "SetPlayerClock"; }
 
-	Common::Path _imageName;
+	void drawTime(uint16 hours, uint16 minutes);
 
 	Common::Rect _minutesDest;
 	Common::Rect _hoursDest;
@@ -73,12 +72,6 @@ protected:
 	Common::Rect _alarmLightSrc;
 
 	SoundDescription _buttonSound;
-	SceneChangeWithFlag _alarmSetScene;
-	uint16 _alarmSoundDelay = 0;
-	SoundDescription _alarmSetSound; // NO SOUND in MHM
-	SceneChangeWithFlag _exitScene;
-
-	Graphics::ManagedSurface _image;
 
 	int8 _lastDrawnHours = -1;
 	int8 _lastDrawnMinutes = -1;

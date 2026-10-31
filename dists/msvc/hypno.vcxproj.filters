@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="boyz">
-			<UniqueIdentifier>B9A53D8A-1547-4147-ADB2-17852A9CDBDC</UniqueIdentifier>
+			<UniqueIdentifier>EB0DAD25-98C6-48F5-999A-10DF4C555179</UniqueIdentifier>
 		</Filter>
 		<Filter Include="spider">
-			<UniqueIdentifier>32364601-6E87-44F8-8795-80099548BAE8</UniqueIdentifier>
+			<UniqueIdentifier>AE237299-78E9-4E54-ACE3-4073DE2ECD8D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="wet">
-			<UniqueIdentifier>A61466C4-F61E-43E7-AB93-FA9C0F22F9B3</UniqueIdentifier>
+			<UniqueIdentifier>5C3DD0DF-01A2-4006-8298-F1360E9AB6CE</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

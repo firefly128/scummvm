@@ -90,23 +90,27 @@ struct retro_core_option_v2_category option_cats_it[] = {
 		"Mappatura RetroPad",
 		"Configura la mappatura del RetroPad"
 	},
+	{
+		"system",
+		"Sistema",
+		"Configura le impostazioni di sistema"
+	},
 	{ NULL, NULL, NULL },
 };
 
 struct retro_core_option_v2_definition option_defs_it[] = {
 	{
-		"scummvm_gamepad_cursor_only",
-		"Cursore > Controllo esclusivo del cursore con RetroPad",
-		"Controllo esclusivo del cursore con RetroPad",
-		"Consente di usare solo RetroPad per il controllo del cursore del mouse, escludento gli altri input (es. mouse fisico, touch screen).",
+		"scummvm_pointer_device",
+		"Cursore > Dispositivo di Puntamento",
+		"Dispositivo di Puntamento",
+		"Selezione del dispositivo che controlla il cursore.",
 		NULL,
-		"cursor",
+		NULL,
 		{
-			{"disabled", NULL},
-			{"enabled", NULL},
+			{"retropad", "solo RetroPad"},
 			{NULL, NULL},
 		},
-		"disabled"
+		NULL
 	},
 	{
 		"scummvm_gamepad_cursor_speed",
@@ -535,6 +539,20 @@ struct retro_core_option_v2_definition option_defs_it[] = {
 		NULL,
 	},
 #endif
+	{
+		"scummvm_browsing_mode",
+		"Sistema > Modalità di navigazione",
+		"Modalità di navigazione",
+		"Seleziona come il file browser di ScummVM elenca le posizioni. 'Archiviazione autorizzata' mostra le cartelle autorizzate tramite il frontend (es. tree SAF di Android). 'File system locale' naviga i percorsi locali standard.",
+		NULL,
+		NULL,
+		{
+			{"local", "File system locale"},
+			{"authorized", "Archiviazione autorizzata"},
+			{NULL, NULL},
+		},
+		NULL
+	},
 	{ NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_it = {

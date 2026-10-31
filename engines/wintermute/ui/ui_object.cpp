@@ -97,6 +97,14 @@ UIObject::~UIObject() {
 
 //////////////////////////////////////////////////////////////////////////
 void UIObject::setText(const char *text) {
+	if (text == nullptr) {
+		// W/A for null text from diary text in 5MA game.
+		// Font drawing width is not the same as in original engine,
+		// this makes last page of diary empty and make text null from scripts.
+		if (_text)
+			_text[0] = '\0';
+		return;
+	}
 	if (_text) {
 		delete[] _text;
 	}
@@ -181,7 +189,7 @@ bool UIObject::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 		stack->correctParams(1);
 		ScValue *val = stack->pop();
 
-		/* const char *filename = */ val->getString();
+		const char *filename = val->getString();
 
 		SAFE_DELETE(_image);
 		if (val->isNULL()) {
@@ -190,7 +198,7 @@ bool UIObject::scCallMethod(ScScript *script, ScStack *stack, ScStack *thisStack
 		}
 
 		_image = new BaseSprite(_game);
-		if (!_image || DID_FAIL(_image->loadFile(val->getString()))) {
+		if (!_image || DID_FAIL(_image->loadFile(filename))) {
 			SAFE_DELETE(_image);
 			stack->pushBool(false);
 		} else {

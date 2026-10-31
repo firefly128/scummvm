@@ -34,7 +34,7 @@ static uint32 getLineFromPC() {
 	ScriptData *scriptData = &_state->_functions._windowScriptData.getOrCreateVal(g_director->getCurrentWindow());
 
 	const uint pc = g_lingo->_state->pc;
-	if (scriptData->_scripts.empty())
+	if (scriptData->_scripts.empty() || scriptData->_current >= scriptData->_scripts.size())
 		return 0;
 	const Common::Array<uint> &offsets = scriptData->_scripts[scriptData->_current].startOffsets;
 	for (uint i = 0; i < offsets.size(); i++) {
@@ -119,6 +119,43 @@ static void dbgStepOut() {
 	_state->_dbg._isScriptDirty = true;
 }
 
+// Global debugger step keys. Lives here to reach the static step helpers;
+// called each frame so it works regardless of the focused window.
+void handleDebuggerShortcuts() {
+	Movie *movie = g_director->getCurrentMovie();
+	if (!movie)
+		return;
+	Score *score = movie->getScore();
+
+	const bool running = (g_lingo->_exec._state == kRunning);
+
+	if (actionTriggered(kActContinue)) {
+		if (running) {
+			score->_playState = kPlayPaused;
+			dgbStop();
+			g_system->displayMessageOnOSD(Common::U32String("Paused"));
+		} else {
+			score->_playState = (score->_playState == kPlayPausedAfterLoading) ? kPlayLoaded : kPlayStarted;
+			g_lingo->_exec._state = kRunning;
+			g_lingo->_exec._shouldPause = nullptr;
+		}
+		return;
+	}
+
+	// Match the step buttons: pause when running, step when paused.
+	// Step Out is tested before Step Into so a shared chord resolves to Out.
+	if (actionTriggered(kActStepOut)) {
+		score->_playState = kPlayStarted;
+		running ? dgbStop() : dbgStepOut();
+	} else if (actionTriggered(kActStepInto)) {
+		score->_playState = kPlayStarted;
+		running ? dgbStop() : dbgStepInto();
+	} else if (actionTriggered(kActStepOver)) {
+		score->_playState = kPlayStarted;
+		running ? dgbStop() : dbgStepOver();
+	}
+}
+
 void showControlPanel() {
 	if (!_state->_w.controlPanel)
 		return;
@@ -128,7 +165,12 @@ void showControlPanel() {
 	ImGui::SetNextWindowSize(ImVec2(200, 103), ImGuiCond_FirstUseEver);
 
 	if (ImGui::Begin("Control Panel", &_state->_w.controlPanel, ImGuiWindowFlags_NoDocking)) {
+		// null guard
 		Movie *movie = g_director->getCurrentMovie();
+		if (!movie) {
+			ImGui::End();
+			return;
+		}
 		Score *score = movie->getScore();
 		ImDrawList *dl = ImGui::GetWindowDrawList();
 
@@ -141,7 +183,8 @@ void showControlPanel() {
 		float bgX1 = -4.0f, bgX2 = 21.0f;
 
 		int frameNum = score->getCurrentFrameNum();
-		int maxFrame = score->getFramesNum() - 1;
+		// frame numbers are 1-based
+		int maxFrame = score->getFramesNum();
 
 		if (_state->_prevFrame != -1 && _state->_prevFrame != frameNum) {
 			score->_playState = kPlayPaused;
@@ -212,7 +255,7 @@ void showControlPanel() {
 			ImU32 stopColor = (score->_playState == kPlayPaused || score->_playState == kPlayPausedAfterLoading) ? active_color : color;
 			dl->AddRectFilled(ImVec2(p.x, p.y), ImVec2(p.x + 16, p.y + 16), stopColor);
 
-			ImGui::SetItemTooltip("Stop");
+			ImGui::SetItemTooltip("Pause (F5)");
 			ImGui::SameLine();
 		}
 
@@ -263,7 +306,7 @@ void showControlPanel() {
 
 			dl->AddTriangleFilled(ImVec2(p.x, p.y), ImVec2(p.x, p.y + 16), ImVec2(p.x + 14, p.y + 8), color);
 
-			ImGui::SetItemTooltip("Play");
+			ImGui::SetItemTooltip("Play / Continue (F5)");
 			ImGui::SameLine();
 		}
 
@@ -290,8 +333,8 @@ void showControlPanel() {
 
 		{
 			ImGui::Separator();
-			ImGui::TextColored(_state->theme->cp_path_color, movie->getArchive()->getPathName().toString().c_str());
-			ImGui::SetItemTooltip(movie->getArchive()->getPathName().toString().c_str());
+			ImGui::TextColored(_state->theme->cp_path_color, "%s", movie->getArchive()->getPathName().toString().c_str());
+			ImGui::SetItemTooltip("%s", movie->getArchive()->getPathName().toString().c_str());
 		}
 
 		ImGui::Separator();
@@ -320,7 +363,7 @@ void showControlPanel() {
 			dl->AddLine(ImVec2(p.x + 14, p.y + 10), ImVec2(p.x + 18, p.y + 10), color_red, 2);
 			dl->AddCircleFilled(ImVec2(p.x + 9, p.y + 15), 2.0f, color);
 
-			ImGui::SetItemTooltip("Step Over");
+			ImGui::SetItemTooltip("Step Over (F10)");
 			ImGui::SameLine();
 		}
 
@@ -345,7 +388,7 @@ void showControlPanel() {
 			dl->AddLine(ImVec2(p.x + 12, p.y + 6), ImVec2(p.x + 8.5f, p.y + 9), color_red, 2);
 			dl->AddCircleFilled(ImVec2(p.x + 9, p.y + 15), 2.0f, color);
 
-			ImGui::SetItemTooltip("Step Into");
+			ImGui::SetItemTooltip("Step Into (F11)");
 			ImGui::SameLine();
 		}
 
@@ -370,7 +413,7 @@ void showControlPanel() {
 			dl->AddLine(ImVec2(p.x + 12, p.y + 5), ImVec2(p.x + 8.5f, p.y + 1), color_red, 2);
 			dl->AddCircleFilled(ImVec2(p.x + 9, p.y + 15), 2.0f, color);
 
-			ImGui::SetItemTooltip("Step Out");
+			ImGui::SetItemTooltip("Step Out (Shift+F11)");
 		}
 	}
 	ImGui::End();

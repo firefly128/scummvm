@@ -1,113 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="adv_db_r">
-			<UniqueIdentifier>EF2E12C9-9A4B-418F-92AA-B73D6CA8FB0E</UniqueIdentifier>
+			<UniqueIdentifier>DA1E2A6C-8724-440A-B731-0AE89AE32373</UniqueIdentifier>
 		</Filter>
 		<Filter Include="adv_r">
-			<UniqueIdentifier>C99C02FE-3BD7-4E93-BD8E-1F1101D7115C</UniqueIdentifier>
+			<UniqueIdentifier>FA5B8AAE-F8D9-4085-BEFE-1971BC4AB06D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger">
-			<UniqueIdentifier>637209D7-1F0F-4B5D-A011-B36AA4DDC780</UniqueIdentifier>
+			<UniqueIdentifier>A7831494-36A0-4D2D-8AB4-A6E4BA9AC96A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\core">
-			<UniqueIdentifier>574FBDC1-7455-46CA-8093-A877DC2D28B6</UniqueIdentifier>
+			<UniqueIdentifier>49019928-5628-4980-A9D0-B552112F77C5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\gui">
-			<UniqueIdentifier>E80E6FB7-4F5F-488B-BDDD-5BAE4585BBE8</UniqueIdentifier>
+			<UniqueIdentifier>0AA7CD6A-F8C6-4B07-8F4F-CC4710617A8B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms">
-			<UniqueIdentifier>4774C1B6-351A-40BC-A7D6-985EF6EAAB3E</UniqueIdentifier>
+			<UniqueIdentifier>38B46F9E-7F17-4A97-AEF9-F01EBA382991</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section1">
-			<UniqueIdentifier>5DA1408E-756F-43B8-99BE-7AA6D766A325</UniqueIdentifier>
+			<UniqueIdentifier>6CB367FB-24EB-4BA9-B9AD-A00F668F1295</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section2">
-			<UniqueIdentifier>BCA4F503-EEEF-4854-8186-E4A99B42C903</UniqueIdentifier>
+			<UniqueIdentifier>637D31D0-C2ED-4838-820E-3C47C318BF22</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section3">
-			<UniqueIdentifier>9D3780B5-4EBC-499E-A8B0-E88D77FEDA0A</UniqueIdentifier>
+			<UniqueIdentifier>96793C71-F9BE-4273-AB01-C69BACBF47C9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section4">
-			<UniqueIdentifier>B68FA4DC-E073-4CE2-A02E-15F4EC1EA13D</UniqueIdentifier>
+			<UniqueIdentifier>921D91CC-9257-42FA-A833-10B7677589FA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section5">
-			<UniqueIdentifier>954166FE-5E19-4B6E-83A9-002EEE290E57</UniqueIdentifier>
+			<UniqueIdentifier>6D46895D-5F9B-49A8-B505-487F6BAFB941</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section6">
-			<UniqueIdentifier>41E618DF-D076-49AB-9373-262BF16E41E5</UniqueIdentifier>
+			<UniqueIdentifier>F8F2BE26-75AE-435D-B1C2-EE626DCD8475</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section7">
-			<UniqueIdentifier>4987E29B-5B44-45B8-B4E1-8F4A40F260FD</UniqueIdentifier>
+			<UniqueIdentifier>52D2CB68-B363-4622-86EB-9B3B96DFC1AF</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section8">
-			<UniqueIdentifier>DC5E5098-EED4-4536-836A-B013761E3B62</UniqueIdentifier>
+			<UniqueIdentifier>DA809AD0-E57C-40B3-9273-89F03869D594</UniqueIdentifier>
 		</Filter>
 		<Filter Include="burger\rooms\section9">
-			<UniqueIdentifier>B6894C00-78E7-425F-8EFB-555FDEE3C924</UniqueIdentifier>
+			<UniqueIdentifier>91A94F4E-4FB0-43E1-9B4E-1087C6B37827</UniqueIdentifier>
 		</Filter>
 		<Filter Include="core">
-			<UniqueIdentifier>30B214A5-4CFB-46D2-94E7-1F362426F288</UniqueIdentifier>
+			<UniqueIdentifier>34A0722C-9FED-4429-AFBB-F0BA81318370</UniqueIdentifier>
 		</Filter>
 		<Filter Include="dbg">
-			<UniqueIdentifier>F6A06404-9204-4C7D-84FD-FE8946B9436B</UniqueIdentifier>
+			<UniqueIdentifier>DE5FE2C1-B397-4184-A0C3-BBA052AF4163</UniqueIdentifier>
 		</Filter>
 		<Filter Include="fileio">
-			<UniqueIdentifier>DEE4E4D7-9387-460D-8DF0-55BB8F9BA1D5</UniqueIdentifier>
+			<UniqueIdentifier>8F862F52-887B-457E-8789-C193FD0B42B0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="graphics">
-			<UniqueIdentifier>8685C234-0ECF-4F30-9066-18D43015FB86</UniqueIdentifier>
+			<UniqueIdentifier>DC7767F8-E0A8-45BD-8E92-55433FAEC498</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gui">
-			<UniqueIdentifier>21BEFDDE-10EF-44F2-B3B6-360F18FD486B</UniqueIdentifier>
+			<UniqueIdentifier>3062A0B3-15DB-46EA-9FE3-CC20362C81DE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mem">
-			<UniqueIdentifier>9BC45A1C-38F7-4546-B575-2D37C3FAE549</UniqueIdentifier>
+			<UniqueIdentifier>E2C542A0-5688-476F-8172-BD0DC6189C28</UniqueIdentifier>
 		</Filter>
 		<Filter Include="platform">
-			<UniqueIdentifier>6060D2D8-CCD7-4334-B1D0-6BC7FA3FB774</UniqueIdentifier>
+			<UniqueIdentifier>1EC15752-02CF-4CDD-A57F-02E4A6501BD9</UniqueIdentifier>
 		</Filter>
 		<Filter Include="platform\sound">
-			<UniqueIdentifier>B0879F16-0E4D-468B-A3BB-C1B9FE27FDE2</UniqueIdentifier>
+			<UniqueIdentifier>A4CA93D0-1CA8-49AC-A68C-8917B449D07D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="platform\tile">
-			<UniqueIdentifier>5EFAABEC-3DAD-4B91-90A3-86F159055285</UniqueIdentifier>
+			<UniqueIdentifier>453EB4DA-CA46-4028-9A17-0A322EA8FCA0</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle">
-			<UniqueIdentifier>45853D2E-EE41-4464-A2E8-551AE0FCE2B5</UniqueIdentifier>
+			<UniqueIdentifier>F6388892-41F5-4D8E-85DE-56F0044E34B7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\gui">
-			<UniqueIdentifier>3F18B04A-485D-4148-8DBF-0F682786BA48</UniqueIdentifier>
+			<UniqueIdentifier>F21667D3-1D34-4366-8514-1592423DA678</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms">
-			<UniqueIdentifier>50BDFD41-A07D-43CC-923F-71241CEE7240</UniqueIdentifier>
+			<UniqueIdentifier>00522CA9-779A-4594-B442-A64639FA0610</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section2">
-			<UniqueIdentifier>0ABB380B-C438-4316-A896-EB9AF009EF58</UniqueIdentifier>
+			<UniqueIdentifier>D5D1147D-1086-49F8-8A0D-F4132664500C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section3">
-			<UniqueIdentifier>347EF4CE-8AA7-4103-B35D-641C17A82F2A</UniqueIdentifier>
+			<UniqueIdentifier>01313576-6E71-45E4-96D7-B282AA0A7A77</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section4">
-			<UniqueIdentifier>5D382D1F-0C3D-4BE1-B0DF-FAB22CAB47DE</UniqueIdentifier>
+			<UniqueIdentifier>E8A38317-C05F-4920-8D4D-7E08063F0FD8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section5">
-			<UniqueIdentifier>C8089DE9-C24E-4A5D-9A75-D86E7E842F82</UniqueIdentifier>
+			<UniqueIdentifier>9133D9F1-6D77-4881-B780-71A756CB3061</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section6">
-			<UniqueIdentifier>11471088-AACE-456A-A8FE-22B36C391A66</UniqueIdentifier>
+			<UniqueIdentifier>E90FEEEB-B670-44A5-A90A-D2C17DF99FA7</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section7">
-			<UniqueIdentifier>0BF4255B-C945-416B-AC93-2CE4178B4AF6</UniqueIdentifier>
+			<UniqueIdentifier>55D9DE53-CD43-437E-BB83-7B6E0606FA94</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section8">
-			<UniqueIdentifier>EB2894E7-80DF-4A6C-9260-55F4806D8146</UniqueIdentifier>
+			<UniqueIdentifier>C6E607B3-3FD9-4E88-A11F-DCB0F5800C87</UniqueIdentifier>
 		</Filter>
 		<Filter Include="riddle\rooms\section9">
-			<UniqueIdentifier>9B04892E-F40A-44C2-9A66-287345CAC199</UniqueIdentifier>
+			<UniqueIdentifier>FE6EDE1E-B958-4BC5-B048-93CF5C9C88E6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="wscript">
-			<UniqueIdentifier>674F1E8D-CD7C-4284-AE20-5FDE4A35C216</UniqueIdentifier>
+			<UniqueIdentifier>2B640E22-BECE-425C-8F28-4AEE64019882</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

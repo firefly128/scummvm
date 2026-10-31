@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="audio">
-			<UniqueIdentifier>4DFAD8CD-4FA6-4713-8E9D-3ED9DC64F825</UniqueIdentifier>
+			<UniqueIdentifier>4F92EC60-AA38-4314-B150-75D4B22E67B5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="debugger">
-			<UniqueIdentifier>71860618-DC72-4931-947C-FCC680415BE8</UniqueIdentifier>
+			<UniqueIdentifier>BC29A2F4-2681-4392-8E6F-827CB984EED5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="menu">
-			<UniqueIdentifier>CCF2E5F6-4FD7-4387-984B-8D8964170D03</UniqueIdentifier>
+			<UniqueIdentifier>5D4266E3-8FBC-4B91-B231-124DE75C6434</UniqueIdentifier>
 		</Filter>
 		<Filter Include="parser">
-			<UniqueIdentifier>1379FEA4-CCE3-453E-B44F-39290E513601</UniqueIdentifier>
+			<UniqueIdentifier>A170611B-0037-4151-9EBF-75A79B551233</UniqueIdentifier>
 		</Filter>
 		<Filter Include="renderer">
-			<UniqueIdentifier>5CF2D80C-272F-49D6-968D-E5D00784742A</UniqueIdentifier>
+			<UniqueIdentifier>53C0C00F-504A-439B-83D9-CA2173DF3F16</UniqueIdentifier>
 		</Filter>
 		<Filter Include="resources">
-			<UniqueIdentifier>529EABED-ECFD-4512-8C83-AC47C8AD40D7</UniqueIdentifier>
+			<UniqueIdentifier>676B7223-6FE1-4645-A92F-6045582BE4C6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="scene">
-			<UniqueIdentifier>706EC03F-DB9B-4FF3-AC5E-53CC34FA0DC1</UniqueIdentifier>
+			<UniqueIdentifier>9F5BCF03-D765-43CC-BCB8-B908B28BB444</UniqueIdentifier>
 		</Filter>
 		<Filter Include="script">
-			<UniqueIdentifier>73ABD407-4C9C-4D78-92C6-0BAF030645E8</UniqueIdentifier>
+			<UniqueIdentifier>1BAB48F6-05C9-46F7-ABCE-F931433E27C1</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

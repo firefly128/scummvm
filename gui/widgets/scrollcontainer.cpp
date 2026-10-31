@@ -38,19 +38,122 @@ ScrollContainerWidget::ScrollContainerWidget(GuiObject *boss, const Common::Stri
 }
 
 void ScrollContainerWidget::init() {
-	setFlags(WIDGET_ENABLED);
+	setFlags(WIDGET_ENABLED | WIDGET_TRACK_MOUSE | WIDGET_HOOK_DRAG);
 	_type = kScrollContainerWidget;
 	_backgroundType = ThemeEngine::kWidgetBackgroundPlain;
 	_verticalScroll = new ScrollBarWidget(this, _w, 0, 16, _h);
 	_verticalScroll->setTarget(this);
 	_scrolledX = 0;
 	_scrolledY = 0;
+	_scrollPos = 0.0f;
 	_limitH = 140;
+	_fluidScroller = new FluidScroller();
 	recalc();
 }
 
 void ScrollContainerWidget::handleMouseWheel(int x, int y, int direction) {
-	_verticalScroll->handleMouseWheel(x, y, direction);
+	if (!isEnabled() || !_verticalScroll->isVisible())
+		return;
+
+	_fluidScroller->handleMouseWheel(direction);
+	registerTickleWidget(this);
+}
+
+void ScrollContainerWidget::handleMouseDown(int x, int y, int button, int clickCount) {
+	_mouseDownY = _mouseDownStartY = y;
+	_isMouseDown = true;
+	_fluidScroller->stopAnimation();
+}
+
+void ScrollContainerWidget::handleMouseMoved(int x, int y, int button) {
+	if (!_isMouseDown || !_verticalScroll->isVisible())
+		return;
+
+	if (!_isDragging && ABS(y - _mouseDownStartY) > kDragThreshold)
+		_isDragging = true;
+
+	if (_isDragging) {
+		int deltaY = _mouseDownY - y;
+		_mouseDownY = y;
+
+		if (deltaY != 0) {
+			_fluidScroller->feedDrag(g_system->getMillis(), deltaY);
+			_scrollPos = _fluidScroller->getVisualPosition();
+			applyScrollPos();
+		}
+	}
+}
+
+void ScrollContainerWidget::handleTickle() {
+	if (_fluidScroller->update(g_system->getMillis(), _scrollPos)) {
+		applyScrollPos();
+	} else {
+		unregisterTickleWidget(this);
+	}
+}
+
+void ScrollContainerWidget::cancelTickle() {
+	_fluidScroller->stopAnimation();
+}
+
+void ScrollContainerWidget::applyScrollPos() {
+	_scrolledY = (int16)_scrollPos;
+	int h = _verticalScroll->_numEntries;
+	int maxScroll = MAX(0, h - _limitH);
+	_verticalScroll->_currentPos = CLIP<int16>(_scrolledY, 0, maxScroll);
+	_verticalScroll->setPos(_w, _scrolledY);
+	_verticalScroll->recalc();
+	markAsDirty();
+	g_gui.scheduleTopDialogRedraw();
+}
+
+void ScrollContainerWidget::handleMouseUp(int x, int y, int button, int clickCount) {
+	if (_isMouseDown && _isDragging) {
+		_fluidScroller->startFling();
+		registerTickleWidget(this);
+	}
+
+	_mouseDownY = _mouseDownStartY = 0;
+	_isMouseDown = false;
+	_isDragging = false;
+}
+
+void ScrollContainerWidget::cancelDrag() {
+	if (_isDragging) {
+		_fluidScroller->stopAnimation();
+	}
+	_mouseDownY = _mouseDownStartY = 0;
+	_isMouseDown = false;
+	_isDragging = false;
+}
+
+bool ScrollContainerWidget::handleDragHook(Widget *origTarget, int state, int x, int y, int button) {
+	if (state == kDragHookStateMouseDown) {
+		bool wasAnimating = _fluidScroller->isAnimating();
+		handleMouseDown(x, y, button, 0);
+		if (wasAnimating) {
+			// If we were animating, we stop it and take over the events
+			return true;
+		}
+		// Let the button down event pass through to the underlying widget
+	} else if (state == kDragHookStateMouseUp) {
+		// We didn't catch the events: this must be a click
+		// Reset our internal state and let the event pass through
+		_isDragging = false;
+		handleMouseUp(x, y, button, 0);
+	} else if (state == kDragHookStateCancel) {
+		cancelDrag();
+	} else if (state == kDragHookStateMouseMoved) {
+		handleMouseMoved(x, y, button);
+		if (_isDragging) {
+			// We are taking over now: notify the original widget
+			// that the drag is finished for it
+			origTarget->handleMouseLeft(button);
+			origTarget->cancelDrag();
+			return true;
+		}
+	}
+	return false;
 }
 
 void ScrollContainerWidget::recalc() {
@@ -72,18 +175,25 @@ void ScrollContainerWidget::recalc() {
 	int h = max - min;
 
 	if (h <= _limitH) _scrolledY = 0;
-	if (_scrolledY > h - _limitH) _scrolledY = 0;
+	else if (!_fluidScroller->isAnimating() && !_isMouseDown)
+		_scrolledY = CLIP<int16>(_scrolledY, 0, h - _limitH);
 
 	_verticalScroll->_numEntries = h;
-	_verticalScroll->_currentPos = _scrolledY;
+	int maxScroll = MAX(0, h - _limitH);
+	_verticalScroll->_currentPos = CLIP<int16>(_scrolledY, 0, maxScroll);
 	_verticalScroll->_entriesPerPage = _limitH;
 	_verticalScroll->_singleStep = kLineHeight;
 	_verticalScroll->setPos(_w, _scrolledY);
 	_verticalScroll->setSize(_scrollbarWidth, _limitH-1);
+	_verticalScroll->recalc();
+	_fluidScroller->setBounds((float)maxScroll, _limitH, (float)_verticalScroll->_singleStep);
 }
 
 
-ScrollContainerWidget::~ScrollContainerWidget() {}
+ScrollContainerWidget::~ScrollContainerWidget() {
+	unregisterTickleWidget(this);
+	delete _fluidScroller;
+}
 
 int16 ScrollContainerWidget::getChildX() const {
 	return getAbsX() - _scrolledX;
@@ -110,6 +220,7 @@ void ScrollContainerWidget::handleCommand(CommandSender *sender, uint32 cmd, uin
 	switch (cmd) {
 	case kSetPositionCmd:
 		_scrolledY = _verticalScroll->_currentPos;
+		_scrollPos = _fluidScroller->setPosition((float)_scrolledY, false);
 		reflowLayout();
 		g_gui.scheduleTopDialogRedraw();
 		break;

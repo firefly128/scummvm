@@ -29,7 +29,7 @@
 	#include "graphics/opengl/context.h"
 #endif
 
-#include "freescape/gfx.h"
+#include "freescape/freescape.h"
 #include "freescape/objects/object.h"
 
 namespace Freescape {
@@ -42,6 +42,7 @@ Renderer::Renderer(int screenW, int screenH, Common::RenderMode renderMode, bool
 	_screenW = screenW;
 	_screenH = screenH;
 	_keyColor = -1;
+	_fourColorBackground = -1;
 	_inkColor = -1;
 	_paperColor = -1;
 	_underFireBackgroundColor = -1;
@@ -59,6 +60,9 @@ Renderer::Renderer(int screenW, int screenH, Common::RenderMode renderMode, bool
 	_debugRenderWireframe = false;
 	_debugRenderNormals = false;
 	_authenticGraphics = authenticGraphics;
+	_stereoEye = kStereoEyeNone;
+	_stereoSeparation = 0.2f;
+	_stereoConvergence = 800.0f;
 
 	for (int i = 0; i < 16; i++) {
 		for (int j = 0; j < 128; j++) {
@@ -68,6 +72,54 @@ Renderer::Renderer(int screenW, int screenH, Common::RenderMode renderMode, bool
 	}
 
 	_scale = 1;
+}
+
+void Renderer::applyStereoTint(uint8 &r, uint8 &g, uint8 &b) const {
+	if (_stereoEye == kStereoEyeNone)
+		return;
+
+	uint8 lum = (uint8)((r * 77 + g * 150 + b * 29) >> 8);
+	if (_stereoEye == kStereoEyeLeft) {
+		r = lum;
+		g = 0;
+		b = 0;
+	} else if (_stereoEye == kStereoEyeRight) {
+		r = 0;
+		g = 0;
+		b = lum;
+	} else if (_stereoEye == kStereoEyeFlatAnaglyph) {
+		r = lum;
+		g = 0;
+		b = lum;
+	}
+}
+
+void Renderer::setStereoParameters(float separation, float convergence) {
+	_stereoSeparation = separation;
+	_stereoConvergence = convergence;
+}
+
+void Renderer::getStereoCamera(const Math::Vector3d &pos, const Math::Vector3d &interest, Math::Vector3d &eyePos, Math::Vector3d &eyeInterest) const {
+	eyePos = pos;
+	eyeInterest = interest;
+	if (_stereoEye != kStereoEyeLeft && _stereoEye != kStereoEyeRight)
+		return;
+
+	Math::Vector3d up(0, 1, 0);
+	Math::Vector3d front = (interest - pos).getNormalized();
+	Math::Vector3d right = Math::Vector3d::crossProduct(front, up).getNormalized();
+
+	Math::Vector3d eyeOffset = right * (-_stereoSeparation * _stereoEye);
+	eyePos = pos + eyeOffset;
+	eyeInterest = interest + eyeOffset;
+}
+
+float Renderer::getStereoFrustumOffset(float nearClipPlane, bool mirroredProjection) const {
+	if (_stereoEye != kStereoEyeLeft && _stereoEye != kStereoEyeRight)
+		return 0.0f;
+
+	float offset = (-_stereoSeparation * _stereoEye) * nearClipPlane / _stereoConvergence;
+	return mirroredProjection ? -offset : offset;
 }
 
 Renderer::~Renderer() {}
@@ -260,7 +312,9 @@ void Renderer::setColorMap(ColorMap *colorMap_) {
 		}
 	} else if (_renderMode == Common::kRenderCPC) {
 		fillColorPairArray();
-		for (int i = 4; i < 15; i++) {
+		// Castle CPC uses color-map entry 3 as a genuine checker pattern,
+		// so CPC stipples need to be generated for all 15 Freescape entries.
+		for (int i = 0; i < 15; i++) {
 			byte pair = _colorPair[i];
 			byte c1 = pair & 0xf;
 			byte c2 = (pair >> 4) & 0xf;
@@ -270,7 +324,10 @@ void Renderer::setColorMap(ColorMap *colorMap_) {
 		}
 	} else if (_renderMode == Common::kRenderCGA) {
 		fillColorPairArray();
-		for (int i = 4; i < 15; i++) {
+		// As with CPC above, Castle Master uses color-map entry 3 as a genuine
+		// checker, so all 15 entries need a stipple. Harmless for the other
+		// games, since getRGBAtCGA() drops it whenever both colors are equal
+		for (int i = 0; i < 15; i++) {
 			byte pair = _colorPair[i];
 			byte c1 = pair & 0xf;
 			byte c2 = (pair >> 4) & 0xf;
@@ -382,6 +439,8 @@ bool Renderer::getRGBAtC64(uint8 index, uint8 &r1, uint8 &g1, uint8 &b1, uint8 &
 			stipple = nullptr;
 			return true;
 		}
+		if (isEncodedCPCDirectColor(index))
+			index = decodeCPCDirectColor(index);
 		readFromPalette(index, r1, g1, b1);
 		r2 = r1;
 		g2 = g1;
@@ -459,9 +518,10 @@ bool Renderer::getRGBAtHercules(uint8 index, uint8 &r1, uint8 &g1, uint8 &b1, ui
 
 void Renderer::selectColorFromFourColorPalette(uint8 index, uint8 &r1, uint8 &g1, uint8 &b1) {
 	if (index == 0) {
-		r1 = 0;
-		g1 = 0;
-		b1 = 0;
+		if (_fourColorBackground >= 0)
+			readFromPalette(_fourColorBackground, r1, g1, b1);
+		else
+			r1 = g1 = b1 = 0;
 	} else if (index == 1) {
 		readFromPalette(_underFireBackgroundColor, r1, g1, b1);
 	} else if (index == 2) {
@@ -486,6 +546,8 @@ bool Renderer::getRGBAtCPC(uint8 index, uint8 &r1, uint8 &g1, uint8 &b1, uint8 &
 			stipple = nullptr;
 			return true;
 		}
+		if (isEncodedCPCDirectColor(index))
+			index = decodeCPCDirectColor(index);
 		readFromPalette(index, r1, g1, b1);
 		r2 = r1;
 		g2 = g1;
@@ -494,10 +556,33 @@ bool Renderer::getRGBAtCPC(uint8 index, uint8 &r1, uint8 &g1, uint8 &b1, uint8 &
 		return true;
 	}
 	assert(_renderMode == Common::kRenderCPC);
+
+	if (isEncodedCPCDirectColor(index)) {
+		index = decodeCPCDirectColor(index);
+		readFromPalette(index, r1, g1, b1);
+		r2 = r1;
+		g2 = g1;
+		b2 = b1;
+		stipple = nullptr;
+		return true;
+	}
+
+	if (index == 0 || index > 15) {
+		// Color indices outside the 1-15 stipple range are raw CPC ink
+		// values used for backgrounds. Read directly from the hardware
+		// palette instead of the stipple tables.
+		readFromPalette(index, r1, g1, b1);
+		r2 = r1;
+		g2 = g1;
+		b2 = b1;
+		stipple = nullptr;
+		return true;
+	}
+
 	stipple = (byte *)_stipples[index - 1];
-	byte *entry = (*_colorMap)[index - 1];
-	uint8 i1 = getCPCPixel(entry[0], 0, true);
-	uint8 i2 = getCPCPixel(entry[0], 1, true);
+	byte pair = _colorPair[index - 1];
+	uint8 i1 = pair & 0xf;
+	uint8 i2 = (pair >> 4) & 0xf;
 	selectColorFromFourColorPalette(i1, r1, g1, b1);
 	selectColorFromFourColorPalette(i2, r2, g2, b2);
 	if (r1 == r2 && g1 == g2 && b1 == b2) {
@@ -557,7 +642,13 @@ bool Renderer::getRGBAt(uint8 index, uint8 ecolor, uint8 &r1, uint8 &g1, uint8 &
 		return true;
 	}
 
-	if (_renderMode == Common::kRenderAmiga || _renderMode == Common::kRenderAtariST) {
+	if (_renderMode == Common::kRenderVGA) {
+		readFromPalette(index, r1, g1, b1);
+		r2 = r1;
+		g2 = g1;
+		b2 = b1;
+		return true;
+	} else if (_renderMode == Common::kRenderAmiga || _renderMode == Common::kRenderAtariST) {
 		// Hardware palette cycling: if the main color index matches the cycling
 		// palette entry and cycling is active, use the cycling color directly.
 		// This must happen BEFORE color pair resolution since on real hardware
@@ -1225,10 +1316,21 @@ void Renderer::drawBackground(uint8 color) {
 	uint8 r2, g2, b2;
 
 	if (_colorRemaps && _colorRemaps->contains(color)) {
-		color = (*_colorRemaps)[color];
-		readFromPalette(color, r1, g1, b1);
-		clear(r1, g1, b1);
-		return;
+		int mappedColor = (*_colorRemaps)[color];
+		if (_renderMode == Common::kRenderHercG) {
+			color = mappedColor;
+		} else {
+			if (_renderMode == Common::kRenderAmiga || _renderMode == Common::kRenderAtariST)
+				_texturePixelFormat.colorToRGB(mappedColor, r1, g1, b1);
+			else {
+				color = mappedColor;
+				if (_renderMode == Common::kRenderCPC && isEncodedCPCDirectColor(color))
+					color = decodeCPCDirectColor(color);
+				readFromPalette(color, r1, g1, b1);
+			}
+			clear(r1, g1, b1);
+			return;
+		}
 	}
 
 	if (color == 0) {
@@ -1240,6 +1342,9 @@ void Renderer::drawBackground(uint8 color) {
 
 	getRGBAt(color, 0, r1, g1, b1, r2, g2, b2, stipple);
 	clear(r1, g1, b1);
+	// Skies are often a dither of two colors, which clear() cannot express
+	if (stipple && (r1 != r2 || g1 != g2 || b1 != b2))
+		fillViewportStippled(r1, g1, b1, r2, g2, b2, stipple);
 }
 
 void Renderer::drawEclipse(byte color1, byte color2, float progress) {

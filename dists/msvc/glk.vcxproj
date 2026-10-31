@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{B275C5CB-ED38-4F98-930B-EAA7907FF7AF}</ProjectGuid>
+		<ProjectGuid>{7150C8ED-2F78-4EEE-8D42-DFA6C8BD21B7}</ProjectGuid>
 		<RootNamespace>glk</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -389,25 +392,6 @@
 		<ClCompile Include="..\..\engines\glk\quest\read_file.cpp" />
 		<ClCompile Include="..\..\engines\glk\quest\streams.cpp" />
 		<ClCompile Include="..\..\engines\glk\quest\string.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\action_packer.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\byte_boiler.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\caution.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\ccs.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\cruel.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\eca.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\exomizer.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\expert.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\master_compressor.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\megabyte.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\pu_crunch.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\scanners.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\section8.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\tbc_multicomp.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\tcs_crunch.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\scanners\xtc.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\6502_emu.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\exo_util.cpp" />
-		<ClCompile Include="..\..\engines\glk\scott\unp64\unp64.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\c64_checksums.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\command_parser.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\decompress_text.cpp" />
@@ -424,6 +408,7 @@
 		<ClCompile Include="..\..\engines\glk\scott\line_drawing.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\load_game.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\load_ti99_4a.cpp" />
+		<ClCompile Include="..\..\engines\glk\scott\load_zx_spectrum.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\resource.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\restore_state.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\ring_buffer.cpp" />
@@ -432,6 +417,7 @@
 		<ClCompile Include="..\..\engines\glk\scott\scott.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\seas_of_blood.cpp" />
 		<ClCompile Include="..\..\engines\glk\scott\ti99_4a_terp.cpp" />
+		<ClCompile Include="..\..\engines\glk\scott\zx_spectrum.cpp" />
 		<ClCompile Include="..\..\engines\glk\tads\tads2\built_in.cpp" />
 		<ClCompile Include="..\..\engines\glk\tads\tads2\character_map.cpp" />
 		<ClCompile Include="..\..\engines\glk\tads\tads2\command_line.cpp" />
@@ -501,6 +487,7 @@
 		<ClCompile Include="..\..\engines\glk\conf.cpp" />
 		<ClCompile Include="..\..\engines\glk\debugger.cpp" />
 		<ClCompile Include="..\..\engines\glk\detection.cpp" />
+		<ClCompile Include="..\..\engines\glk\dialogs.cpp" />
 		<ClCompile Include="..\..\engines\glk\events.cpp" />
 		<ClCompile Include="..\..\engines\glk\fonts.cpp" />
 		<ClCompile Include="..\..\engines\glk\glk.cpp" />
@@ -707,10 +694,6 @@
 		<ClInclude Include="..\..\engines\glk\quest\reserved_words.h" />
 		<ClInclude Include="..\..\engines\glk\quest\streams.h" />
 		<ClInclude Include="..\..\engines\glk\quest\string.h" />
-		<ClInclude Include="..\..\engines\glk\scott\unp64\6502_emu.h" />
-		<ClInclude Include="..\..\engines\glk\scott\unp64\exo_util.h" />
-		<ClInclude Include="..\..\engines\glk\scott\unp64\unp64.h" />
-		<ClInclude Include="..\..\engines\glk\scott\unp64\unp64_interface.h" />
 		<ClInclude Include="..\..\engines\glk\scott\c64_checksums.h" />
 		<ClInclude Include="..\..\engines\glk\scott\command_parser.h" />
 		<ClInclude Include="..\..\engines\glk\scott\decompress_text.h" />
@@ -729,6 +712,7 @@
 		<ClInclude Include="..\..\engines\glk\scott\line_drawing.h" />
 		<ClInclude Include="..\..\engines\glk\scott\load_game.h" />
 		<ClInclude Include="..\..\engines\glk\scott\load_ti99_4a.h" />
+		<ClInclude Include="..\..\engines\glk\scott\load_zx_spectrum.h" />
 		<ClInclude Include="..\..\engines\glk\scott\resource.h" />
 		<ClInclude Include="..\..\engines\glk\scott\restore_state.h" />
 		<ClInclude Include="..\..\engines\glk\scott\ring_buffer.h" />
@@ -738,6 +722,7 @@
 		<ClInclude Include="..\..\engines\glk\scott\seas_of_blood.h" />
 		<ClInclude Include="..\..\engines\glk\scott\ti99_4a_terp.h" />
 		<ClInclude Include="..\..\engines\glk\scott\types.h" />
+		<ClInclude Include="..\..\engines\glk\scott\zx_spectrum.h" />
 		<ClInclude Include="..\..\engines\glk\tads\tads2\appctx.h" />
 		<ClInclude Include="..\..\engines\glk\tads\tads2\built_in.h" />
 		<ClInclude Include="..\..\engines\glk\tads\tads2\character_map.h" />
@@ -799,6 +784,7 @@
 		<ClInclude Include="..\..\engines\glk\conf.h" />
 		<ClInclude Include="..\..\engines\glk\debugger.h" />
 		<ClInclude Include="..\..\engines\glk\detection.h" />
+		<ClInclude Include="..\..\engines\glk\dialogs.h" />
 		<ClInclude Include="..\..\engines\glk\events.h" />
 		<ClInclude Include="..\..\engines\glk\fonts.h" />
 		<ClInclude Include="..\..\engines\glk\game_description.h" />

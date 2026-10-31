@@ -19,6 +19,9 @@
  *
  */
 
+#ifndef VIDEO_4XM_DECODER_H
+#define VIDEO_4XM_DECODER_H
+
 #include "common/ptr.h"
 #include "video/video_decoder.h"
 
@@ -45,9 +48,12 @@ private:
 
 	class FourXMVideoTrack;
 	class FourXMAudioTrack;
+	class FourXMRawVideoTrack;
+	class FourXMRawAudioTrack;
 
 	void readList(uint32 size);
 	void decodeNextFrameImpl();
+	bool loadRawStream();
 
 	uint32 _dataRate = 0;
 	Common::Rational _frameRate;
@@ -56,6 +62,10 @@ private:
 	uint _curFrame = 0;
 	FourXMVideoTrack *_video = nullptr;
 	FourXMAudioTrack *_audio = nullptr;
+	FourXMRawVideoTrack *_rawVideo = nullptr;
+	FourXMRawAudioTrack *_rawAudio = nullptr;
 };
 
 } // namespace Video
+
+#endif // VIDEO_4XM_DECODER_H

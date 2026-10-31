@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="bbdou">
-			<UniqueIdentifier>3A962B31-BF08-4BB7-AB2F-C26DAA11BF0D</UniqueIdentifier>
+			<UniqueIdentifier>A1EFBC34-EB6B-4251-B441-FB8F3C1F0C4A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="duckman">
-			<UniqueIdentifier>E8E251B1-BBFD-4276-89D2-2FAC51C19C20</UniqueIdentifier>
+			<UniqueIdentifier>430BB0E0-AA57-4D19-AB37-3B80CB53E9FB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="resources">
-			<UniqueIdentifier>48044E61-F2BE-4183-AF8D-8FB8E8586DAA</UniqueIdentifier>
+			<UniqueIdentifier>ABA52DF3-EF1A-454C-AFD0-B93ECCD760CD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="threads">
-			<UniqueIdentifier>AFF83515-186A-4A0D-872B-0A92E9D0FEF6</UniqueIdentifier>
+			<UniqueIdentifier>1513F553-210A-4B6A-994F-450CCD2A01F6</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

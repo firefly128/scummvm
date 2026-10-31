@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="script">
-			<UniqueIdentifier>9AEF799A-449F-4227-8DD0-B3E4307CDE57</UniqueIdentifier>
+			<UniqueIdentifier>FC4224F9-AF27-4264-AD97-86953E5C6B2B</UniqueIdentifier>
 		</Filter>
 		<Filter Include="script\ai">
-			<UniqueIdentifier>157CC22D-581E-4627-91E2-9C7200F1125B</UniqueIdentifier>
+			<UniqueIdentifier>4C102DC9-BE0E-46E6-AD3E-EC6AD0FB8FC6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="script\scene">
-			<UniqueIdentifier>065EA6D1-C8AA-4926-8DC1-22102AEEAD3D</UniqueIdentifier>
+			<UniqueIdentifier>19C5E783-DE2C-4CE0-80DA-1F98983B947C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ui">
-			<UniqueIdentifier>C480B156-C6C0-4D46-877D-9766C4E6B4E3</UniqueIdentifier>
+			<UniqueIdentifier>5CDB7918-2434-453F-9A0B-6AE007487571</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

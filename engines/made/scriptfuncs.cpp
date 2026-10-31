@@ -25,11 +25,13 @@
 #include "made/music.h"
 #include "made/database.h"
 #include "made/pmvplayer.h"
+#include "made/script.h"
 
-#include "audio/softsynth/pcspk.h"
+#include "audio/sine.h"
 
 #include "backends/audiocd/audiocd.h"
 
+#include "common/file.h"
 #include "common/config-manager.h"
 
 #include "graphics/wincursor.h"
@@ -39,11 +41,6 @@
 namespace Made {
 
 ScriptFunctions::ScriptFunctions(MadeEngine *vm) : _vm(vm), _soundStarted(false), _gameAudioVolume(Audio::Mixer::kMaxChannelVolume) {
-	// Initialize the two tone generators
-	_pcSpeaker1 = new Audio::PCSpeaker();
-	_pcSpeaker2 = new Audio::PCSpeaker();
-	_pcSpeaker1->init();
-	_pcSpeaker2->init();
 	_soundResource = nullptr;
 	_soundWasPlaying = false;
 }
@@ -51,9 +48,37 @@ ScriptFunctions::ScriptFunctions(MadeEngine *vm) : _vm(vm), _soundStarted(false)
 ScriptFunctions::~ScriptFunctions() {
 	for (uint i = 0; i < _externalFuncs.size(); ++i)
 		delete _externalFuncs[i];
+}
 
-	delete _pcSpeaker1;
-	delete _pcSpeaker2;
+// An inner function for playing a sound resource, either from a resource file
+//  or loaded externally
+void ScriptFunctions::playSound(SoundResource *soundRes, bool externalFile) {
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_audioStreamHandle,
+		soundRes->getAudioStream(_vm->_soundRate, false), -1, _gameAudioVolume);
+	_vm->_soundEnergyArray = soundRes->getSoundEnergyArray();
+	_vm->_soundEnergyIndex = 0;
+	_soundStarted = true;
+	_soundWasPlaying = true;
+	_soundResource = soundRes;
+	_soundExternalFile = externalFile;
+
+	// The sound length in milliseconds for purpose of checking if the
+	// sound is still playing. This is 100 ms shorter than the actual
+	// length (see sfSoundPlaying).
+	uint32 soundLength = (_soundResource->getSoundSize() * 1000 / _vm->_soundRate);
+	_soundCheckLength = soundLength > 100 ? soundLength - 100 : 0;
+}
+
+void ScriptFunctions::stopSound() {
+	_vm->_mixer->stopHandle(_audioStreamHandle);
+	if (_soundStarted) {
+		if (_soundExternalFile)
+			delete _soundResource;
+		else
+			_vm->_res->freeResource(_soundResource);
+		_soundStarted = false;
+	}
+	_vm->_autoStopSound = false;
 }
 
 typedef Common::Functor2Mem<int16, int16*, int16, ScriptFunctions> ExternalScriptFunc;
@@ -113,7 +138,7 @@ void ScriptFunctions::setupExternalsTable() {
 	if (_vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_LGOP2 || _vm->getGameID() == GID_RODNEY) {
 		External(sfAddScreenMask);
 		External(sfSetSpriteMask);
-	} else if (_vm->getGameID() == GID_RTZ) {
+	} else if (_vm->getGameID() == GID_RTZ || _vm->getGameID() == GID_RSBESTNDE || _vm->getGameID() == GID_RSBUSYNDE) {
 		External(sfSetClipArea);
 		External(sfSetSpriteClip);
 	}
@@ -122,7 +147,8 @@ void ScriptFunctions::setupExternalsTable() {
 	External(sfStopSound);
 	External(sfPlayVoice);
 
-	if (_vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_RTZ || _vm->getGameID() == GID_RODNEY) {
+	if (_vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_RTZ ||
+		_vm->getGameID() == GID_RODNEY || _vm->getGameID() == GID_RSBESTNDE || _vm->getGameID() == GID_RSBUSYNDE) {
 		External(sfPlayCd);
 		External(sfStopCd);
 		External(sfGetCdStatus);
@@ -130,7 +156,7 @@ void ScriptFunctions::setupExternalsTable() {
 		External(sfPlayCdSegment);
 	}
 
-	if (_vm->getGameID() == GID_RTZ) {
+	if (_vm->getGameID() == GID_RTZ || _vm->getGameID() == GID_RSBESTNDE || _vm->getGameID() == GID_RSBUSYNDE) {
 		External(sfPrintf);
 		External(sfClearMono);
 		External(sfGetSoundEnergy);
@@ -176,6 +202,11 @@ void ScriptFunctions::setupExternalsTable() {
 		External(sfIsSlowSystem);
 	}
 
+	if (_vm->getGameID() == GID_RSBESTNDE || _vm->getGameID() == GID_RSBUSYNDE) {
+		External(sfMovieCall);
+		External(sfCursorXY);
+		External(sfSoundFile);
+	}
 }
 #undef External
 
@@ -205,10 +236,8 @@ int16 ScriptFunctions::sfClearScreen(int16 argc, int16 *argv) {
 
 	if (_vm->_screen->isScreenLocked())
 		return 0;
-	if (_vm->_autoStopSound) {
+	if (_vm->_autoStopSound)
 		stopSound();
-		_vm->_autoStopSound = false;
-	}
 	_vm->_screen->clearScreen();
 	return 0;
 }
@@ -250,27 +279,15 @@ int16 ScriptFunctions::sfSetVisualEffect(int16 argc, int16 *argv) {
 
 int16 ScriptFunctions::sfPlaySound(int16 argc, int16 *argv) {
 	int16 soundNum = argv[0];
-	_vm->_autoStopSound = false;
 	stopSound();
 	if (argc > 1) {
 		soundNum = argv[1];
 		_vm->_autoStopSound = (argv[0] == 1);
 	}
-	_soundWasPlaying = true;
-	if (soundNum > 0) {
-		SoundResource *soundRes = _vm->_res->getSound(soundNum);
-		_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_audioStreamHandle,
-			soundRes->getAudioStream(_vm->_soundRate, false), -1, _gameAudioVolume);
-		_vm->_soundEnergyArray = soundRes->getSoundEnergyArray();
-		_vm->_soundEnergyIndex = 0;
-		_soundStarted = true;
-		_soundResource = soundRes;
-		// The sound length in milliseconds for purpose of checking if the
-		// sound is still playing. This is 100 ms shorter than the actual
-		// length (see sfSoundPlaying).
-		uint32 soundLength = (_soundResource->getSoundSize() * 1000 / _vm->_soundRate);
-		_soundCheckLength = soundLength > 100 ? soundLength - 100 : 0;
-	}
+
+	if (soundNum > 0)
+		playSound(_vm->_res->getSound(soundNum), false);
+
 	return 0;
 }
 
@@ -338,10 +355,14 @@ int16 ScriptFunctions::sfPlayNote(int16 argc, int16 *argv) {
 
 	debug(4, "sfPlayNote: Note = %d, Volume(?) = %d", argv[0] - 1, argv[1]);
 
-	_pcSpeaker1->play(Audio::PCSpeaker::kWaveFormSine, freqTable[argv[0] - 1], -1);
+	_vm->_mixer->stopHandle(_sine1);
+
+	Audio::AudioStream *sine = new Audio::SineStream(freqTable[argv[0] - 1], _vm->_mixer->getOutputRate());
+
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_sine1, sine);
 
 	// TODO: Figure out what to do with the second parameter
-	//_pcSpeaker1->setVolume(argv[1]);
+	//_pcSpeaker1->setChannelVolume(_sine1, argv[1]);
 
 	return 0;
 }
@@ -349,7 +370,7 @@ int16 ScriptFunctions::sfPlayNote(int16 argc, int16 *argv) {
 int16 ScriptFunctions::sfStopNote(int16 argc, int16 *argv) {
 	// Used in the same place as sfPlayNote, with the same parameters
 	// We just stop the wave generator here
-	_pcSpeaker1->stop();
+	_vm->_mixer->stopHandle(_sine1);
 	return 0;
 }
 
@@ -375,26 +396,33 @@ int16 ScriptFunctions::sfPlayTele(int16 argc, int16 *argv) {
 
 	debug(4, "sfPlayTele: Button = %d", argv[0]);
 
-	_pcSpeaker1->play(Audio::PCSpeaker::kWaveFormSine, freqTable1[argv[0]], -1);
-	_pcSpeaker2->play(Audio::PCSpeaker::kWaveFormSine, freqTable2[argv[0]], -1);
+	_vm->_mixer->stopHandle(_sine1);
+	_vm->_mixer->stopHandle(_sine2);
+
+	Audio::AudioStream *sine1 = new Audio::SineStream(freqTable1[argv[0]], _vm->_mixer->getOutputRate());
+	Audio::AudioStream *sine2 = new Audio::SineStream(freqTable2[argv[0]], _vm->_mixer->getOutputRate());
+
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_sine1, sine1);
+	_vm->_mixer->playStream(Audio::Mixer::kSFXSoundType, &_sine2, sine2);
+
 	return 0;
 }
 
 int16 ScriptFunctions::sfStopTele(int16 argc, int16 *argv) {
 	// Used in the same place as sfPlayTele, with the same parameters
 	// We just stop both wave generators here
-	_pcSpeaker1->stop();
-	_pcSpeaker2->stop();
+	_vm->_mixer->stopHandle(_sine1);
+	_vm->_mixer->stopHandle(_sine2);
 	return 0;
 }
 
 int16 ScriptFunctions::sfHideMouseCursor(int16 argc, int16 *argv) {
-	_vm->_system->showMouse(false);
+	CursorMan.showMouse(false);
 	return 0;
 }
 
 int16 ScriptFunctions::sfShowMouseCursor(int16 argc, int16 *argv) {
-	_vm->_system->showMouse(true);
+	CursorMan.showMouse(true);
 	return 0;
 }
 
@@ -418,12 +446,10 @@ int16 ScriptFunctions::sfSetScreenLock(int16 argc, int16 *argv) {
 }
 
 int16 ScriptFunctions::sfAddSprite(int16 argc, int16 *argv) {
-	if (_vm->getGameID() == GID_RTZ) {
-		// Unused in RTZ
-		return 0;
-	} if (_vm->getGameID() == GID_LGOP2 || _vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_RODNEY) {
+	if (_vm->getGameID() == GID_LGOP2 || _vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_RODNEY) {
 		return _vm->_screen->addToSpriteList(argv[2], argv[1], argv[0]);
 	} else {
+		// Unused in RTZ, RSBESTNDE, RSBUSYNDE
 		return 0;
 	}
 }
@@ -439,7 +465,7 @@ int16 ScriptFunctions::sfFreeAnim(int16 argc, int16 *argv) {
 int16 ScriptFunctions::sfDrawSprite(int16 argc, int16 *argv) {
 	if (_vm->getGameID() == GID_RTZ) {
 		return _vm->_screen->drawSprite(argv[2], argv[1], argv[0]);
-	} if (_vm->getGameID() == GID_LGOP2 || _vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_RODNEY) {
+	} else if (_vm->getGameID() == GID_LGOP2 || _vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_RODNEY) {
 		SpriteListItem item = _vm->_screen->getFromSpriteList(argv[2]);
 		int16 channelIndex = _vm->_screen->drawSprite(item.index, argv[1] - item.xofs, argv[0] - item.yofs);
 		_vm->_screen->setChannelUseMask(channelIndex);
@@ -456,6 +482,7 @@ int16 ScriptFunctions::sfDrawSprite(int16 argc, int16 *argv) {
 
 		return 0;
 	} else {
+		// Unused in RSBESTNDE, RSBUSYNDE
 		return 0;
 	}
 }
@@ -512,6 +539,7 @@ int16 ScriptFunctions::sfDrawText(int16 argc, int16 *argv) {
 	} else if (_vm->getGameID() == GID_LGOP2 || _vm->getGameID() == GID_MANHOLE || _vm->getGameID() == GID_RODNEY) {
 		text = _vm->_dat->getString(argv[argc - 1]);
 	}
+	// Unused in RSBESTNDE, RSBUSYNDE
 
 	if (text) {
 		Common::String finalText;
@@ -711,19 +739,9 @@ int16 ScriptFunctions::sfSoundPlaying(int16 argc, int16 *argv) {
 
 }
 
-void ScriptFunctions::stopSound() {
-	_vm->_mixer->stopHandle(_audioStreamHandle);
-	if (_soundStarted) {
-		_vm->_res->freeResource(_soundResource);
-		_soundStarted = false;
-	}
-
-}
-
-
 int16 ScriptFunctions::sfStopSound(int16 argc, int16 *argv) {
 	stopSound();
-	_vm->_autoStopSound = false;
+
 	return 0;
 }
 
@@ -834,9 +852,9 @@ int16 ScriptFunctions::sfGetTextWidth(int16 argc, int16 *argv) {
 
 int16 ScriptFunctions::sfPlayMovie(int16 argc, int16 *argv) {
 	const char *movieName = _vm->_dat->getObjectString(argv[1]);
-	_vm->_system->showMouse(false);
+	CursorMan.showMouse(false);
 	bool completed = _vm->_pmvPlayer->play(movieName);
-	_vm->_system->showMouse(true);
+	CursorMan.showMouse(true);
 	// Return true/false according to if the movie was canceled or not
 	return completed ? -1 : 0;
 }
@@ -1125,16 +1143,7 @@ int16 ScriptFunctions::sfSetSoundVolume(int16 argc, int16 *argv) {
 }
 
 int16 ScriptFunctions::sfGetSynthType(int16 argc, int16 *argv) {
-	// 0 = Default
-	// 1 = PCSPKR
-	// 2 = SBFM/ADLIB
-	// 3 = ADLIBG
-	// 4 = MT32MPU
-
-	// There doesn't seem to be any difference in the music no matter what this returns
-
-	//warning("Unimplemented opcode: sfGetSynthType");
-	return 0;
+	return _vm->_music ? _vm->_music->getSynthType() : kSynthTypeDefault;
 }
 
 int16 ScriptFunctions::sfIsSlowSystem(int16 argc, int16 *argv) {
@@ -1146,6 +1155,85 @@ int16 ScriptFunctions::sfIsSlowSystem(int16 argc, int16 *argv) {
 	// An example is FINTRO00.PMV (with sound) and FINTRO01.PMV (without sound)
 	// One could maybe think about returning 1 here on actually slower systems.
 	return _vm->_introMusicDigital ? 0 : 1;
+}
+
+int16 ScriptFunctions::sfMovieCall(int16 argc, int16* argv) {
+	// Plays a movie, but also calls a script function on every frame.
+	// The script function returns a uint16 which indicates
+	//  whether to keep playing the movie, or abort early.
+	const char *filename = _vm->_dat->getObjectString(argv[1]);
+
+	if (_vm->_pmvPlayer->load(filename)) {
+		// set up a script interpreter for calling the sub
+		ScriptInterpreter si(_vm);
+		int16 playing = true;
+
+		int32 pmvStartTime = _vm->getTotalPlayTime();
+
+		while (!_vm->shouldQuit() && !_vm->_pmvPlayer->_fd->eos() && _vm->_pmvPlayer->frameNumber < _vm->_pmvPlayer->frameCount && playing) {
+
+			// call subroutine each frame
+			//  pass the frame number as sole arg
+			int16 frameNumber = _vm->_pmvPlayer->frameNumber;
+			playing = si.runScript(argv[0], 1, &frameNumber);
+			debug(3, "Call script return code: %04X (%d)", playing, playing);
+
+			if (playing) {
+				// Decode and stage the next audio / video frame
+				if (!_vm->_pmvPlayer->decode_frame())
+					break;
+
+				// delay until time has passed, then flip screen
+				if (_vm->_pmvPlayer->frameNumber > 0) {
+					int32 delayTime = _vm->_pmvPlayer->frameNumber * _vm->_pmvPlayer->frameDelay - (_vm->getTotalPlayTime() - pmvStartTime);
+					if (delayTime < 0)
+						warning("Video A/V sync broken - running behind %d ms (%d frames)!", -delayTime, (-delayTime / _vm->_pmvPlayer->frameDelay) + 1);
+					else
+						g_system->delayMillis(delayTime);
+				}
+
+				// _vm->_system->updateScreen(); // this is already triggered by the script callback
+				_vm->_pmvPlayer->frameNumber++;
+			}
+		}
+
+		_vm->_pmvPlayer->close();
+		return true;
+	}
+
+	return false;
+}
+
+int16 ScriptFunctions::sfCursorXY(int16 argc, int16 *argv) {
+	g_system->warpMouse(argv[1], argv[0]);
+	return 0;
+}
+
+int16 ScriptFunctions::sfSoundFile(int16 argc, int16 *argv) {
+	// Loads an external sound file (i.e. not from PRJ) and plays it
+	stopSound();
+	const char *soundName = _vm->_dat->getObjectString(argv[0]);
+
+	debug(1, "Playing external sound '%s'", soundName);
+
+	Common::File _fd;
+	if (!_fd.open(Common::Path(soundName, '\\'))) {
+		warning("Failed to open sound file '%s", soundName);
+		return 0;
+	}
+	byte *srcBuf = new byte[_fd.size()];
+	_fd.read(srcBuf, _fd.size());
+
+	// wrap this in a SoundResource
+	SoundResource *soundRes = new SoundResource();
+	soundRes->load(srcBuf, _fd.size());
+
+	// safe to free source now
+	delete[] srcBuf;
+
+	playSound(soundRes, true);
+
+	return 0;
 }
 
 } // End of namespace Made

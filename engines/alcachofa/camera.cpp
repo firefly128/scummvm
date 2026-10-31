@@ -34,6 +34,17 @@ namespace Alcachofa {
 //
 // Base camera
 //
+Camera *Camera::create() {
+	if (g_engine->isV1())
+		return new CameraV1();
+	else if (g_engine->isV2())
+		return new CameraV2();
+	else if (g_engine->isV3())
+		return new CameraV3();
+	else
+		error("Camera is not implemented for this engine version");
+}
+
 Camera::~Camera() {}
 
 static Matrix4 scale2DMatrix(float scale) {
@@ -168,7 +179,7 @@ void CameraV1::preUpdate() {
 
 void CameraV1::update() {
 	auto deltaTime = (g_engine->getMillis() - _lastUpdateTime) / 1000.0f;
-	auto newCenter = _appliedCenter;
+	auto newCenter = _usedCenter;
 
 	if (_followTarget != nullptr) {
 		// this threshold is responsible for the jitter while following
@@ -187,19 +198,47 @@ void CameraV1::update() {
 			_isLerping = true;
 		}
 	} else if (_isLerping) {
-		auto distance = newCenter.getDistanceTo(_target);
-		auto move = deltaTime * _lerpSpeed;
-		_lastUpdateTime = g_engine->getMillis();
-
-		if (move < distance)
-			newCenter += (_target - newCenter) / distance * move;
-		else {
-			newCenter = _target;
-			_isLerping = false;
-		}
+		updateLerping(newCenter, deltaTime, _lerpSpeed);
 	}
 
-	setAppliedCenter(newCenter);
+	setAppliedCenter(_usedCenter = newCenter);
+}
+
+void CameraV1::updateLerping(Vector3d &newCenter, float deltaTime, float speed) {
+	auto distance = newCenter.getDistanceTo(_target);
+	auto move = deltaTime * speed;
+	_lastUpdateTime = g_engine->getMillis();
+
+	if (move < distance)
+		newCenter += (_target - newCenter) / distance * move;
+	else {
+		newCenter = _target;
+		_isLerping = false;
+	}
+}
+
+void CameraV2::update() {
+	auto deltaTime = (g_engine->getMillis() - _lastUpdateTime) / 1000.0f;
+	auto newCenter = _usedCenter;
+
+	if (_followTarget != nullptr) {
+		_target = as3D(_followTarget->position());
+		auto delta = _target - _usedCenter;
+		_isLerping |= MAX(fabsf(delta.x()), fabsf(delta.y())) > 35.0f;
+
+		if (_isLerping) {
+			// The original code contains this formula to attenuate camera speed
+			// However timing experiments show that this is somehow negated or overwritten
+			//float scaleFactor = _followTarget->graphic()->depthScale();
+			//if (scaleFactor < 19660 / 65535.0f)
+			//	scaleFactor = (13107 / 65535.0f) + scaleFactor / 3;
+			updateLerping(newCenter, deltaTime, _lerpSpeed);
+		} else
+			_lastUpdateTime = g_engine->getMillis();
+	} else if (_isLerping)
+		updateLerping(newCenter, deltaTime, _lerpSpeed);
+
+	setAppliedCenter(_usedCenter = newCenter);
 }
 
 void CameraV1::setRoomBounds(Graphic &background) {
@@ -210,12 +249,29 @@ void CameraV1::setRoomBounds(Graphic &background) {
 	_roomScale = 0;
 }
 
+void CameraV2::setRoomBounds(Graphic &background) {
+	Point bgSize = background.animation().imageSize(0);
+	if (bgSize == Point(0, 0)) // this fixes a bug in secta/escarabajo with subtitles off when talking to YAFAR
+		bgSize = Point(800, 600);
+
+	float scaleFactor = background.scale() / (float)kBaseScale;
+	Point screenSize(g_system->getWidth(), g_system->getHeight());
+	_roomMin = as2D(background.topLeft()) * scaleFactor + as2D(screenSize / 2);
+	_roomMax = _roomMin + as2D(bgSize - screenSize) * scaleFactor;
+	_roomScale = 0;
+}
+
 void CameraV1::setFollow(WalkingCharacter *target) {
 	_lastUpdateTime = g_engine->getMillis();
 	_followTarget = target;
 	_isLerping = false;
 	if (target != nullptr)
-		setAppliedCenter(as3D(target->position()));
+		setAppliedCenter(_usedCenter = as3D(target->position()));
+}
+
+void CameraV2::setFollow(WalkingCharacter *target) {
+	CameraV1::setFollow(target);
+	_lerpSpeed = 230.0f;
 }
 
 void CameraV1::onChangedRoom(bool resetCamera) {
@@ -249,7 +305,7 @@ void CameraV1::onCloseMenu() {
 }
 
 void CameraV1::syncGame(Serializer &s) {
-	syncVector(s, _appliedCenter);
+	syncVector(s, _usedCenter);
 	syncMatrix(s, _mat3Dto2D);
 	syncMatrix(s, _mat2Dto3D);
 	syncFollowTarget(s, _followTarget);
@@ -257,6 +313,7 @@ void CameraV1::syncGame(Serializer &s) {
 	s.syncAsByte(_isLerping);
 	s.syncAsFloatLE(_lerpSpeed);
 	s.syncAsUint32LE(_lastUpdateTime);
+	_appliedCenter = _usedCenter;
 } 
 
 void CameraV1::lerpOrSet(Point target, int32 mode) {
@@ -268,15 +325,15 @@ void CameraV1::lerpOrSet(Point target, int32 mode) {
 	if (mode == 1) {
 		// snap to target
 		_isLerping = false;
-		_appliedCenter = _target;
+		_usedCenter = _target;
 	} else if (mode <= 0) {
 		// fixed speed, overshoot target
-		_target.x() += copysignf(100, _appliedCenter.x() - _target.x());
-		_target.y() += copysignf(100, _appliedCenter.y() - _target.y());
+		_target.x() += copysignf(100, _usedCenter.x() - _target.x());
+		_target.y() += copysignf(100, _usedCenter.y() - _target.y());
 		_lerpSpeed = 350.0f;
 	} else {
 		// dynamic speed
-		_lerpSpeed = MAX(1.0f, _target.getDistanceTo(_appliedCenter) / mode);
+		_lerpSpeed = MAX(1.0f, _target.getDistanceTo(_usedCenter) / mode);
 	}
 }
 
@@ -297,7 +354,7 @@ struct CamV1DisguiseTask final : public Task {
 
 	TaskReturn run() override {
 		if (_startTime == 0) {
-			_startPosition = _camera._appliedCenter;
+			_startPosition = _camera._usedCenter;
 			_startTime = g_engine->getMillis();
 		}
 		if (_durationMs <= 0 || g_engine->getMillis() - _startTime >= (uint32)_durationMs)
@@ -311,7 +368,7 @@ struct CamV1DisguiseTask final : public Task {
 			newPosition.y() += 100 - t;
 		else if (t >= 200)
 			newPosition.y() += t - 200;
-		_camera._appliedCenter = newPosition;
+		_camera._usedCenter = newPosition;
 		_camera.setFollow(nullptr);
 
 		return TaskReturn::yield();
@@ -361,9 +418,9 @@ void CameraV3::preUpdate() {
 void CameraV3::setRoomBounds(Graphic &background) {
 	auto bgSize = background.animation().imageSize(0);
 	/* The fallback fixes a bug where if the background image is invalid the original engine
-		* would not update the background size. This would be around 1024,768 due to
-		* previous rooms in the bug instances I found.
-		*/
+	 * would not update the background size. This would be around 1024,768 due to
+	 * previous rooms in the bug instances I found.
+	 */
 	if (bgSize == Point(0, 0))
 		bgSize = Point(1024, 768);
 

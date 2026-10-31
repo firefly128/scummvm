@@ -45,6 +45,7 @@
 #include "gob/dataio.h"
 #include "gob/inter.h"
 #include "gob/game.h"
+#include "gob/hotspots.h"
 #include "gob/script.h"
 #include "gob/expression.h"
 #include "gob/videoplayer.h"
@@ -86,6 +87,7 @@ void Inter_v7::setupOpcodesDraw() {
 	OPCODEDRAW(0x8A, o7_findFile);
 	OPCODEDRAW(0x8B, o7_findNextFile);
 	OPCODEDRAW(0x8C, o7_getSystemProperty);
+	OPCODEDRAW(0x8D, o7_getVmdCurrentFrameRect);
 	OPCODEDRAW(0x8E, o7_getFileInfo);
 	OPCODEDRAW(0x90, o7_loadImage);
 	OPCODEDRAW(0x91, o7_copyDataToClipboard);
@@ -140,6 +142,7 @@ void Inter_v7::setupOpcodesDraw() {
 void Inter_v7::setupOpcodesFunc() {
 	Inter_Playtoons::setupOpcodesFunc();
 	OPCODEFUNC(0x03, o7_loadCursor);
+	OPCODEFUNC(0x14, o7_keyFunc);
 	OPCODEFUNC(0x11, o7_printText);
 	OPCODEFUNC(0x33, o7_fillRect);
 	OPCODEFUNC(0x34, o7_drawLine);
@@ -164,6 +167,7 @@ void Inter_v7::setupOpcodesGob() {
 	OPCODEGOB(410, o7_resolvePath);
 	OPCODEGOB(420, o7_ansiToOEM);
 	OPCODEGOB(421, o7_oemToANSI);
+	OPCODEGOB(457, o7_calculator);
 	OPCODEGOB(512, o7_setDBStringEncoding);
 	OPCODEGOB(513, o7_gob0x201);
 	OPCODEGOB(600, o7_getFreeDiskSpace);
@@ -173,6 +177,65 @@ void Inter_v7::setupOpcodesGob() {
 
 void Inter_v7::o7_draw0x0C() {
 	WRITE_VAR(11, 0);
+}
+
+void Inter_v7::o7_keyFunc(OpFuncParams &params) {
+	int16 cmd = _vm->_game->_script->readInt16();
+
+	if (cmd >= 0)
+		_vm->_draw->blitInvalidated();
+
+	handleBusyWait();
+
+	int16 key = 0;
+
+	switch (cmd) {
+	case 0:
+		_vm->_draw->blitCursor();
+		key = _vm->_game->_hotspots->check(0, 0);
+		storeKey(key);
+		break;
+
+	case -1:
+	case 1:
+		// FIXME This is a hack to fix an issue with "text" tool in Adibou2 paint game.
+		// keyFunc() is called twice in a loop before testing its return value.
+		// If the first keyFunc call catches the key event, the second call will reset
+		// the key buffer, and the loop continues.
+		// Strangely in the original game it seems that the event is always caught by the
+		// second keyFunc.
+		if (_vm->getGameType() == kGameTypeAdibou2 &&
+				(_vm->_game->_script->pos() == 18750 || _vm->_game->_script->pos() == 18955) &&
+				_vm->isCurrentTot("palette.tot"))
+			break;
+
+		key = _vm->_game->checkKeys(&_vm->_global->_inter_mouseX,
+				&_vm->_global->_inter_mouseY, &_vm->_game->_mouseButtons, 0);
+		storeKey(key);
+		break;
+
+	case -2:
+	case 2:
+		// Read keyboard state as a bitmask.
+		// cmd == -2 also calls storeKey; cmd == 2 does not.
+		_vm->_util->processInput(true);
+		key = _vm->_util->getKeyState();
+		WRITE_VAR(0, key);
+		_vm->_util->clearKeyBuf();
+		if (cmd == -2)
+			storeKey(key);
+		break;
+
+	default:
+		// For long delays, call updateVideos every 100ms
+		while (cmd > 100) {
+			_vm->_vidPlayer->updateVideos();
+			_vm->_util->longDelay(100);
+			cmd -= 100;
+		}
+		_vm->_util->longDelay(cmd);
+		break;
+	}
 }
 
 void Inter_v7::o7_loadCursor(OpFuncParams &params) {
@@ -559,7 +622,7 @@ void Inter_v7::o7_initScreen() {
 
 		// Comment the next line and uncomment the following ones to use the original pixel format (RGB555) for debugging purposes
 		_vm->setTrueColor(trueColor, false, nullptr);
-		// Graphics::PixelFormat format = Graphics::createPixelFormat<555>();
+		// Graphics::PixelFormat format(2, 5, 5, 5, 0, 10, 5, 0, 0);
 		// _vm->setTrueColor(trueColor, false, &format);
 	}
 
@@ -769,8 +832,6 @@ void Inter_v7::o7_playVmdOrMusic() {
 			// if (video not in cache)
 			//   return;
 
-			props.noWaitSound = true;
-
 			props.lastFrame += 100;
 		}
 
@@ -810,9 +871,13 @@ void Inter_v7::o7_playVmdOrMusic() {
 		props.noBlock = true;
 	}
 
-	if (_vm->_vidPlayer->getSoundFlags() & 0x100) {
-		props.noWaitSound = true;
-	}
+	// if (_vm->_vidPlayer->getSoundFlags() & 0x100) {
+	// 	props.noWaitSound = true;
+	// }
+	// Actually, the noWaitSound flag seems to be always set (at least in Adibou/Adi4),
+	// independently of the "no wait" sound flag 0x100 in the VMD file header.
+
+	props.noWaitSound = true;
 
 	if (props.startFrame == -2 || props.startFrame == -3) {
 		props.startFrame = 0;
@@ -838,7 +903,7 @@ void Inter_v7::o7_setActiveCD() {
 	SearchMan.listMatchingMembers(files, Common::Path(str0, '\\'));
 	Common::Path savedCDpath = _currentCDPath;
 
-	for (Common::ArchiveMemberDetails file : files) {
+	for (const auto &file : files) {
 		if (setCurrentCDPath(file.arcName)) {
 			debugC(5, kDebugFileIO, "o7_setActiveCD: %s -> %s", savedCDpath.toString().c_str(),  _currentCDPath.toString().c_str());
 			storeValue(1);
@@ -928,6 +993,24 @@ void Inter_v7::o7_findNextFile() {
 
 	storeString(varIndex, type, file.getLastComponent().toString().c_str());
 	storeValue(file.empty() ? 0 : 1);
+}
+
+void Inter_v7::o7_getVmdCurrentFrameRect() {
+	int16 slot = _vm->_game->_script->readValExpr();
+
+	int16 x, y, width, height;
+	if (slot >= 0 && slot < 7 && _vm->_vidPlayer->slotIsOpen(slot) &&
+			_vm->_vidPlayer->getFrameCoords(slot, _vm->_vidPlayer->getCurrentFrame(slot), x, y, width, height)) {
+		storeValue((uint32)x);                    // left
+		storeValue((uint32)(x + width - 1));      // right
+		storeValue((uint32)y);                    // top
+		storeValue((uint32)(y + height - 1));     // bottom
+	} else {
+		storeValue((uint32)-1);
+		storeValue((uint32)-1);
+		storeValue((uint32)-1);
+		storeValue((uint32)-1);
+	}
 }
 
 void Inter_v7::o7_getSystemProperty() {
@@ -1047,6 +1130,9 @@ void Inter_v7::o7_loadImage() {
 		warning("o7_loadImage(): Failed to load image \"%s\"", file.c_str());
 		return;
 	}
+
+	if (spriteIndex == Draw::kBackSurface)
+		_vm->_draw->dirtiedRect(spriteIndex, x, y, x + width - 1, y + height - 1);
 }
 
 void Inter_v7::o7_copyDataToClipboard() {
@@ -1815,6 +1901,7 @@ void Inter_v7::o7_checkData(OpFuncParams &params) {
 						break;
 					}
 				}
+				delete stream;
 			}
 		} else if (indexAppli >= 0 && (size_t) indexAppli <= installedApplications.size()) {
 			// Already installed appli, find its directory and set it as "current CD" path
@@ -2330,6 +2417,153 @@ void Inter_v7::o7_gob0x201(OpGobParams &params) {
 	uint16 varIndex = _vm->_game->_script->readUint16();
 
 	WRITE_VAR(varIndex, 1);
+}
+
+enum CalcOp {
+	kCalcAdd       = 1,
+	kCalcSubtract  = 2,
+	kCalcDivide    = 3,
+	kCalcMultiply  = 4,
+	kCalcInverse   = 5,
+	kCalcSquare    = 6,
+	kCalcSqrt      = 7,
+	kCalcPower     = 8,
+	kCalcExp       = 9,
+	kCalcSin       = 10,
+	kCalcTan       = 11,
+	kCalcAcos      = 12,
+	kCalcAsin      = 13,
+	kCalcLn        = 14
+};
+
+enum CalcError {
+	kCalcErrNone       = 0,
+	kCalcErrInf        = 2,
+	kCalcErrNaN        = 3,
+	kCalcErrDomain     = 4,
+	kCalcErrDivByZero  = 5,
+	kCalcErrFPU        = 6
+};
+
+void Inter_v7::o7_calculator(OpGobParams &params) {
+	// Calculator opcode, used by the Adi4 calculator tool.
+
+	uint16 operandAAndResultVarIndex = _vm->_game->_script->readUint16();
+	uint16 operandBVarIndex = _vm->_game->_script->readUint16();
+	uint16 operationVarIndex = _vm->_game->_script->readUint16();
+	int operation = VAR(operationVarIndex);
+
+	const char *strA = _vm->_inter->_variables->getAddressVarString(operandAAndResultVarIndex);
+	const char *strB = _vm->_inter->_variables->getAddressVarString(operandBVarIndex);
+	double a = atof(strA);
+	double b = atof(strB);
+	double result = 0.0;
+	int errorCode = kCalcErrNone;
+
+	switch (operation) {
+	case kCalcAdd:
+		result = a + b;
+		break;
+
+	case kCalcSubtract:
+		result = a - b;
+		break;
+
+	case kCalcDivide:
+		if (b == 0.0)
+			errorCode = kCalcErrDivByZero;
+		else
+			result = a / b;
+		break;
+
+	case kCalcMultiply:
+		result = a * b;
+		break;
+
+	case kCalcInverse:
+		if (b == 0.0)
+			errorCode = kCalcErrDivByZero;
+		else
+			result = 1.0 / b;
+		break;
+
+	case kCalcSquare:
+		result = pow(b, 2.0);
+		break;
+
+	case kCalcSqrt:
+		if (b < 0.0)
+			errorCode = kCalcErrDomain;
+		else
+			result = sqrt(b);
+		break;
+
+	case kCalcPower:
+		if (a == 0.0 && b == 0.0)
+			result = 1.0;
+		else
+			result = pow(a, b);
+		break;
+
+	case kCalcExp:
+		result = exp(b);
+		break;
+
+	case kCalcSin:
+		result = sin(b);
+		break;
+
+	case kCalcTan:
+		if (sin(b) == 0.0)
+			errorCode = kCalcErrDomain;
+		else
+			result = tan(b);
+		break;
+
+	case kCalcAcos:
+		if (b < 0.0 || b > 1.0)
+			errorCode = kCalcErrDomain;
+		else
+			result = acos(b);
+		break;
+
+	case kCalcAsin:
+		if (b < 0.0 || b > 1.0)
+			errorCode = kCalcErrDomain;
+		else
+			result = asin(b);
+		break;
+
+	case kCalcLn:
+		result = log(b);
+		break;
+
+	default:
+		warning("o7_calculator: unknown operation %d", operation);
+		break;
+	}
+
+	if (errorCode == kCalcErrNone) {
+		// Check for overflow/special values in the formatted result
+		Common::String resultFormatted = Common::String::format("%-12g", result);
+		if (resultFormatted.contains("nan") || resultFormatted.contains("NAN")) {
+			errorCode = kCalcErrNaN;
+			result = 0.0;
+		} else if (resultFormatted.contains("inf") || resultFormatted.contains("INF")) {
+			errorCode = kCalcErrInf;
+			result = 0.0;
+		}
+	}
+
+	uint8 *resultData = _vm->_inter->_variables->getAddressVar8(operandAAndResultVarIndex);
+	if (errorCode != kCalcErrNone) {
+		// Error: write empty string + error code in second byte
+		resultData[0] = '\0';
+		resultData[1] = (uint8)errorCode;
+	} else {
+		Common::String formatted = Common::String::format("%-12g", result);
+		WRITE_VAR_STR(operandAAndResultVarIndex, formatted.c_str());
+	}
 }
 
 void Inter_v7::o7_getFreeDiskSpace(OpGobParams &params) {

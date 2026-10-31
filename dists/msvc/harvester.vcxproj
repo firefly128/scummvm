@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup Label="ProjectConfigurations">
+		<ProjectConfiguration Include="Debug|Win32">
+			<Configuration>Debug</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="ASan|Win32">
+			<Configuration>ASan</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="LLVM|Win32">
+			<Configuration>LLVM</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Release|Win32">
+			<Configuration>Release</Configuration>
+			<Platform>Win32</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Debug|x64">
+			<Configuration>Debug</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="ASan|x64">
+			<Configuration>ASan</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="LLVM|x64">
+			<Configuration>LLVM</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Release|x64">
+			<Configuration>Release</Configuration>
+			<Platform>x64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Debug|arm64">
+			<Configuration>Debug</Configuration>
+			<Platform>arm64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="ASan|arm64">
+			<Configuration>ASan</Configuration>
+			<Platform>arm64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="LLVM|arm64">
+			<Configuration>LLVM</Configuration>
+			<Platform>arm64</Platform>
+		</ProjectConfiguration>
+		<ProjectConfiguration Include="Release|arm64">
+			<Configuration>Release</Configuration>
+			<Platform>arm64</Platform>
+		</ProjectConfiguration>
+	</ItemGroup>
+	<PropertyGroup Label="Globals">
+		<ProjectGuid>{3E71B212-1DB0-46DE-9E51-9297BFCF618E}</ProjectGuid>
+		<RootNamespace>harvester</RootNamespace>
+		<Keyword>Win32Proj</Keyword>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>llvm</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>llvm</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>llvm</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
+		<ConfigurationType>StaticLibrary</ConfigurationType>
+		<PlatformToolset>v145</PlatformToolset>
+		<CharacterSet>Unicode</CharacterSet>
+	</PropertyGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+	<ImportGroup Label="ExtensionSettings">
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_Releasex86.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_ASanx86.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_LLVMx86.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_Debugx86.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_Releasex64.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_ASanx64.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_LLVMx64.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_Debugx64.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_Releasearm64.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_ASanarm64.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_LLVMarm64.props" />
+	</ImportGroup>
+	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="PropertySheets">
+		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+		<Import Project="ScummVM_Debugarm64.props" />
+	</ImportGroup>
+	<PropertyGroup Label="UserMacros" />
+	<ItemGroup>
+		<ClCompile Include="..\..\engines\harvester\npc\authority_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\beggar_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\boyle_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\buster_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\butcher_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\chessmaster_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\cloak_atnd_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\curator_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\dad_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\dark_woman_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\dwayne_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\edna_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\fireman1_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\fireman2_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\gladiator_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\hank_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\herrill_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\inquisitor_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\jimmy_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\johnson_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\karin_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\librarian_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\lodge_chef_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\loomis_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\madam_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\maint_man_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\mcknight_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\memb_dir_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\mom_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\mother_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\moynahan_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\mr_potts_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\mrs_potts_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\nude_man_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\parsons_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\pastorelli_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\phelps_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\priest_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\pta_mom_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\ryder_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\sergeant_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\sparky_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\stephanie_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\stub_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\swell_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\valet_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\vet_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\wasp_woman_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\npc\whaley_dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\art.cpp" />
+		<ClCompile Include="..\..\engines\harvester\cft_font.cpp" />
+		<ClCompile Include="..\..\engines\harvester\cheats.cpp" />
+		<ClCompile Include="..\..\engines\harvester\console.cpp" />
+		<ClCompile Include="..\..\engines\harvester\dialogue.cpp" />
+		<ClCompile Include="..\..\engines\harvester\flow.cpp" />
+		<ClCompile Include="..\..\engines\harvester\fst_player.cpp" />
+		<ClCompile Include="..\..\engines\harvester\harvester.cpp" />
+		<ClCompile Include="..\..\engines\harvester\inventory.cpp" />
+		<ClCompile Include="..\..\engines\harvester\media_manager.cpp" />
+		<ClCompile Include="..\..\engines\harvester\menu.cpp" />
+		<ClCompile Include="..\..\engines\harvester\metaengine.cpp" />
+		<ClCompile Include="..\..\engines\harvester\monster.cpp" />
+		<ClCompile Include="..\..\engines\harvester\player.cpp" />
+		<ClCompile Include="..\..\engines\harvester\resources.cpp" />
+		<ClCompile Include="..\..\engines\harvester\room.cpp" />
+		<ClCompile Include="..\..\engines\harvester\room_combat.cpp" />
+		<ClCompile Include="..\..\engines\harvester\room_interaction.cpp" />
+		<ClCompile Include="..\..\engines\harvester\runtime_entity.cpp" />
+		<ClCompile Include="..\..\engines\harvester\saveload.cpp" />
+		<ClCompile Include="..\..\engines\harvester\script.cpp" />
+		<ClCompile Include="..\..\engines\harvester\text.cpp" />
+		<ClCompile Include="..\..\engines\harvester\xfile_archive.cpp" />
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\engines\harvester\npc\authority_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\beggar_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\boyle_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\buster_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\butcher_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\chessmaster_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\cloak_atnd_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\curator_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\dad_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\dark_woman_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\dialogue_flags.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\dialogue_handler.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\dialogue_runtime.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\dwayne_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\edna_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\fireman1_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\fireman2_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\gladiator_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\hank_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\herrill_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\inquisitor_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\jimmy_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\johnson_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\karin_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\librarian_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\lodge_chef_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\loomis_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\madam_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\maint_man_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\mcknight_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\memb_dir_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\mom_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\mother_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\moynahan_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\mr_potts_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\mrs_potts_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\nude_man_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\parsons_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\pastorelli_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\phelps_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\priest_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\pta_mom_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\ryder_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\sergeant_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\sparky_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\stephanie_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\stub_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\swell_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\valet_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\vet_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\wasp_woman_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\npc\whaley_dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\art.h" />
+		<ClInclude Include="..\..\engines\harvester\cft_font.h" />
+		<ClInclude Include="..\..\engines\harvester\cheats.h" />
+		<ClInclude Include="..\..\engines\harvester\console.h" />
+		<ClInclude Include="..\..\engines\harvester\detection.h" />
+		<ClInclude Include="..\..\engines\harvester\detection_tables.h" />
+		<ClInclude Include="..\..\engines\harvester\dialogue.h" />
+		<ClInclude Include="..\..\engines\harvester\flow.h" />
+		<ClInclude Include="..\..\engines\harvester\fst_player.h" />
+		<ClInclude Include="..\..\engines\harvester\harvester.h" />
+		<ClInclude Include="..\..\engines\harvester\inventory.h" />
+		<ClInclude Include="..\..\engines\harvester\media_manager.h" />
+		<ClInclude Include="..\..\engines\harvester\menu.h" />
+		<ClInclude Include="..\..\engines\harvester\metaengine.h" />
+		<ClInclude Include="..\..\engines\harvester\monster.h" />
+		<ClInclude Include="..\..\engines\harvester\palette_utils.h" />
+		<ClInclude Include="..\..\engines\harvester\parse_utils.h" />
+		<ClInclude Include="..\..\engines\harvester\player.h" />
+		<ClInclude Include="..\..\engines\harvester\resources.h" />
+		<ClInclude Include="..\..\engines\harvester\room.h" />
+		<ClInclude Include="..\..\engines\harvester\room_combat.h" />
+		<ClInclude Include="..\..\engines\harvester\room_interaction.h" />
+		<ClInclude Include="..\..\engines\harvester\room_support.h" />
+		<ClInclude Include="..\..\engines\harvester\runtime_entity.h" />
+		<ClInclude Include="..\..\engines\harvester\saveload.h" />
+		<ClInclude Include="..\..\engines\harvester\script.h" />
+		<ClInclude Include="..\..\engines\harvester\text.h" />
+		<ClInclude Include="..\..\engines\harvester\xfile_archive.h" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\engines\harvester\module.mk" />
+	</ItemGroup>
+	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+	<ImportGroup Label="ExtensionTargets">
+	</ImportGroup>
+</Project>

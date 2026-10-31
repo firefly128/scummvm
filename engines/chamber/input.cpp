@@ -189,7 +189,7 @@ int16 askQuitGame(void) {
 			}
 		}
 	}
-	cga_CopyScreenBlock(backbuffer, char_draw_max_width + 2, char_draw_coords_y - draw_y + 8, frontbuffer, CalcXY_p(draw_x, draw_y));
+	g_vm->_renderer->copyScreenBlock(backbuffer, char_draw_max_width + 2, char_draw_coords_y - draw_y + 8, frontbuffer, g_vm->_renderer->calcXY_p(draw_x, draw_y));
 
 	keymapper->getKeymap("quit-dialog")->setEnabled(false);
 	keymapper->getKeymap("chamber-default")->setEnabled(true);
@@ -200,6 +200,19 @@ int16 askQuitGame(void) {
 
 void pollInputButtonsOnly() {
 	pollInput();
+}
+
+/* In Hercules mode the picture is drawn double-width at a (40, 74) offset on a
+   720x348 surface, so raw event coordinates must be shifted and halved back
+   into the game's native 320x200 space. */
+static void setCursorFromMouse(const Common::Point &mouse) {
+	if (g_vm->_renderMode == Common::kRenderHercG || g_vm->_renderMode == Common::kRenderHercA) {
+		cursor_x = CLIP<int16>((mouse.x - 40) / 2, 0, 319);
+		cursor_y = CLIP<int16>(mouse.y - 74, 0, 199);
+	} else {
+		cursor_x = mouse.x;
+		cursor_y = mouse.y;
+	}
 }
 
 void pollInput(void) {
@@ -228,11 +241,11 @@ void pollInput(void) {
 			break;
 
 		case Common::EVENT_MOUSEMOVE:
-			cursor_x = event.mouse.x;
-			cursor_y = event.mouse.y;
+			setCursorFromMouse(event.mouse);
 			break;
 
 		case Common::EVENT_LBUTTONDOWN:
+			setCursorFromMouse(event.mouse);
 			mouseButtons |= 1;
 			break;
 
@@ -241,6 +254,7 @@ void pollInput(void) {
 			break;
 
 		case Common::EVENT_RBUTTONDOWN:
+			setCursorFromMouse(event.mouse);
 			mouseButtons |= 2;
 			break;
 
@@ -254,6 +268,11 @@ void pollInput(void) {
 	}
 
 	setInputButtons(mouseButtons);
+}
+
+void clearButtons(void) {
+	mouseButtons = 0;
+	setInputButtons(0);
 }
 
 void processInput(void) {

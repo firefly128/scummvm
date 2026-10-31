@@ -45,12 +45,17 @@ void RotatingLockPuzzle::init() {
 }
 
 void RotatingLockPuzzle::readData(Common::SeekableReadStream &stream) {
+	const bool isNancy10 = g_nancy->getGameType() >= kGameTypeNancy10;
+
 	readFilename(stream, _imageName);
 
 	uint numDials = stream.readUint16LE();
 
-	_srcRects.reserve(10);
-	for (uint i = 0; i < 10; ++i) {
+	_iconsPerDial = isNancy10 ? stream.readUint16LE() : 10;
+
+	const uint numSrcRects = isNancy10 ? 12 : 10;
+	_srcRects.reserve(numSrcRects);
+	for (uint i = 0; i < numSrcRects; ++i) {
 		_srcRects.push_back(Common::Rect());
 		readRect(stream, _srcRects.back());
 	}
@@ -85,23 +90,76 @@ void RotatingLockPuzzle::readData(Common::SeekableReadStream &stream) {
 
 	stream.skip((8 - numDials) * 16);
 
+	if (g_nancy->getGameType() >= kGameTypeNancy14) {
+		// Nancy 14 added per-dial starting positions, stored in a fixed
+		// 8-byte slot before the solution
+		_startSequence.reserve(numDials);
+		for (uint i = 0; i < numDials; ++i) {
+			_startSequence.push_back(stream.readByte());
+		}
+
+		stream.skip(8 - numDials);
+	}
+
 	_correctSequence.reserve(numDials);
 	for (uint i = 0; i < numDials; ++i) {
 		_correctSequence.push_back(stream.readByte());
 	}
 
+	// The correct sequence occupies a fixed 8-byte slot regardless of dial count.
 	stream.skip(8 - numDials);
 
-	_clickSound.readNormal(stream);
-	_solveExitScene.readData(stream);
-	_solveSoundDelay = stream.readUint16LE();
-	_solveSound.readNormal(stream);
+	if (isNancy10) {
+		// Nancy 10 added per-puzzle cursor types for the up/down hotspots,
+		// stored right after the sequence slot. A value of 0 means "use the
+		// default movement cursor"; Nancy 13+ defaults to the blue puzzle
+		// up/down cursors instead.
+		if (g_nancy->getGameType() >= kGameTypeNancy13) {
+			_upCursorType = CursorManager::kNancy13PuzzleMoveUp;
+			_downCursorType = CursorManager::kNancy13PuzzleMoveDown;
+		}
 
-	_exitScene.readData(stream);
-	readRect(stream, _exitHotspot);
+		int16 upType = stream.readSint16LE();
+		int16 downType = stream.readSint16LE();
+		if (upType != 0)
+			_upCursorType = (CursorManager::CursorType)upType;
+		if (downType != 0)
+			_downCursorType = (CursorManager::CursorType)downType;
+	}
+
+	_clickSound.readNormal(stream);
+
+	if (isNancy10) {
+		// Nancy 10 splits the old SceneChangeWithFlag (25 bytes with embedded
+		// flag) into a 20-byte SceneChangeDescription + 2-byte pause tail,
+		// with the event flag stored as a separate (label, value) pair.
+		_solveScene._sceneChange.readData(stream);
+		stream.skip(2);
+		_solveScene._flag.label = stream.readSint16LE();
+		_solveScene._flag.flag  = stream.readByte();
+
+		_solveSoundDelay = stream.readUint16LE();
+		_solveSound.readNormal(stream);
+
+		_exitScene._sceneChange.readData(stream);
+		stream.skip(2);
+		_exitScene._flag.label = stream.readSint16LE();
+		_exitScene._flag.flag  = stream.readByte();
+
+		readRect(stream, _exitHotspot);
+	} else {
+		_solveScene.readData(stream);
+		_solveSoundDelay = stream.readUint16LE();
+		_solveSound.readNormal(stream);
+
+		_exitScene.readData(stream);
+		readRect(stream, _exitHotspot);
+	}
 }
 
 void RotatingLockPuzzle::execute() {
+	const bool isNancy10 = g_nancy->getGameType() >= kGameTypeNancy10;
+
 	switch (_state) {
 	case kBegin:
 		init();
@@ -110,7 +168,18 @@ void RotatingLockPuzzle::execute() {
 		NancySceneState.setNoHeldItem();
 
 		for (uint i = 0; i < _correctSequence.size(); ++i) {
-			_currentSequence.push_back(g_nancy->_randomSource->getRandomNumber(9));
+			if (!_startSequence.empty() && _startSequence[i] != kRandomStart) {
+				_currentSequence.push_back(_startSequence[i]);
+				drawDial(i);
+				continue;
+			}
+
+			byte v = g_nancy->_randomSource->getRandomNumber(_iconsPerDial - 1);
+			// Nancy 10 rerolls until the starting value differs from the
+			// solution so the puzzle never appears already-solved.
+			while (isNancy10 && v == _correctSequence[i])
+				v = g_nancy->_randomSource->getRandomNumber(_iconsPerDial - 1);
+			_currentSequence.push_back(v);
 			drawDial(i);
 		}
 
@@ -127,7 +196,6 @@ void RotatingLockPuzzle::execute() {
 				}
 			}
 
-			NancySceneState.setEventFlag(_solveExitScene._flag);
 			_solveSoundPlayTime = g_nancy->getTotalPlayTime() + _solveSoundDelay * 1000;
 			_solveState = kPlaySound;
 			// fall through
@@ -140,7 +208,7 @@ void RotatingLockPuzzle::execute() {
 			_solveState = kWaitForSound;
 			break;
 		case kWaitForSound:
-			if (!g_nancy->_sound->isSoundPlaying(_solveSound)) {
+			if (!isSolveSoundPlaying()) {
 				_state = kActionTrigger;
 			}
 
@@ -151,11 +219,13 @@ void RotatingLockPuzzle::execute() {
 		g_nancy->_sound->stopSound(_clickSound);
 		g_nancy->_sound->stopSound(_solveSound);
 
-		if (_solveState == kNotSolved) {
+		// The solve event flag is set here, together with the scene change, and
+		// not when the solution is first detected: a record whose own dependency
+		// tests that flag would stop being evaluated before it could trigger.
+		if (_solveState == kNotSolved)
 			_exitScene.execute();
-		} else {
-			NancySceneState.changeScene(_solveExitScene._sceneChange);
-		}
+		else
+			_solveScene.execute();
 
 		finishExecution();
 	}
@@ -166,9 +236,7 @@ void RotatingLockPuzzle::handleInput(NancyInput &input) {
 		return;
 	}
 
-	if (NancySceneState.getViewport().convertViewportToScreen(_exitHotspot).contains(input.mousePos)) {
-		g_nancy->_cursor->setCursorType(g_nancy->_cursor->_puzzleExitCursor);
-
+	if (hoverExitHotspot(input)) {
 		if (input.input & NancyInput::kLeftMouseButtonUp) {
 			_state = kActionTrigger;
 		}
@@ -178,12 +246,19 @@ void RotatingLockPuzzle::handleInput(NancyInput &input) {
 
 	for (uint i = 0; i < _upHotspots.size(); ++i) {
 		if (NancySceneState.getViewport().convertViewportToScreen(_upHotspots[i]).contains(input.mousePos)) {
-			g_nancy->_cursor->setCursorType(CursorManager::kHotspot);
+			// The dial cursors use the idle (non-highlighted) sprite variant
+			g_nancy->_cursor->setCursorType(_upCursorType, true, false);
 
-			if (!g_nancy->_sound->isSoundPlaying(_clickSound) && input.input & NancyInput::kLeftMouseButtonUp) {
+			// The dials accept clicks as fast as they come in; the click sound
+			// restarts with every one
+			if (input.input & NancyInput::kLeftMouseButtonUp) {
+				g_nancy->_sound->loadSound(_clickSound, nullptr, true);
 				g_nancy->_sound->playSound(_clickSound);
 
-				_currentSequence[i] = ++_currentSequence[i] > 9 ? 0 : _currentSequence[i];
+				int n = _currentSequence[i] + 1;
+				if (n >= (int)_iconsPerDial)
+					n = 0;
+				_currentSequence[i] = (byte)n;
 				drawDial(i);
 			}
 
@@ -193,14 +268,16 @@ void RotatingLockPuzzle::handleInput(NancyInput &input) {
 
 	for (uint i = 0; i < _downHotspots.size(); ++i) {
 		if (NancySceneState.getViewport().convertViewportToScreen(_downHotspots[i]).contains(input.mousePos)) {
-			g_nancy->_cursor->setCursorType(CursorManager::kHotspot);
+			g_nancy->_cursor->setCursorType(_downCursorType, true, false);
 
-			if (!g_nancy->_sound->isSoundPlaying(_clickSound) && input.input & NancyInput::kLeftMouseButtonUp) {
+			if (input.input & NancyInput::kLeftMouseButtonUp) {
+				g_nancy->_sound->loadSound(_clickSound, nullptr, true);
 				g_nancy->_sound->playSound(_clickSound);
 
-				int8 n = _currentSequence[i];
-				n = --n < 0 ? 9 : n;
-				_currentSequence[i] = n;
+				int n = (int)_currentSequence[i] - 1;
+				if (n < 0)
+					n = (int)_iconsPerDial - 1;
+				_currentSequence[i] = (byte)n;
 				drawDial(i);
 			}
 

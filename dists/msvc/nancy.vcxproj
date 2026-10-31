@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{F105ABCD-7C3D-4F13-940B-93C4A8553E47}</ProjectGuid>
+		<ProjectGuid>{DAF208D3-94E1-4282-96DE-941523363649}</ProjectGuid>
 		<RootNamespace>nancy</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -170,63 +173,99 @@
 	</ImportGroup>
 	<PropertyGroup Label="UserMacros" />
 	<ItemGroup>
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\adjustpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\angletosspuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\arcadepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\assemblypuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\bballpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\beadpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\blockingpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\blockspuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\boardgamepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\bombpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\buildpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\bulpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\cardgamepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\collisionpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\cubepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\cuttingpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\decoderpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\dotconnectpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\drivingpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\dropsortpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\escapegridpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\gridmappuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\hamradiopuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\hangmanpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\lettergridpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\leverpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\magicboxpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\magnetmazepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\matchpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\mazechasepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\memorypuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\meterpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\mindpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\minigolfpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\mirrorlightpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\mouselightpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\multibuildpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\necklacepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\onebuildpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\orderingpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\overridelockpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\pachinkopuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\paintpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\passwordpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\peepholepuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\pegspuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\quizpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\raycastpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\riddlepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\rippedletterpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\rotatinglockpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\safedialpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\scalepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\setplayerclock.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\sewingmachinepuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\sliderpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\sortpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\soundequalizerpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\soundmatchpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\spigotpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\stepobjectspuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\tangrampuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\telephone.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\towerpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\turningpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\twodialpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\typingquizpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\weightsortpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\puzzle\whalesurvivorpuzzle.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzle\wordfindpuzzle.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\actionmanager.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\actionrecord.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\actionzone.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\arfactory.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\autotext.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\cameraaction.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\conversation.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\datarecords.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\interactivevideo.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\inventoryrecords.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\miscrecords.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\mousefollow.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\navigationrecords.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\overlay.cpp" />
+		<ClCompile Include="..\..\engines\nancy\action\puzzlerecord.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\secondarymovie.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\secondaryvideo.cpp" />
 		<ClCompile Include="..\..\engines\nancy\action\soundrecords.cpp" />
 		<ClCompile Include="..\..\engines\nancy\misc\hypertext.cpp" />
 		<ClCompile Include="..\..\engines\nancy\misc\lightning.cpp" />
-		<ClCompile Include="..\..\engines\nancy\misc\mousefollow.cpp" />
 		<ClCompile Include="..\..\engines\nancy\misc\specialeffect.cpp" />
 		<ClCompile Include="..\..\engines\nancy\state\credits.cpp" />
+		<ClCompile Include="..\..\engines\nancy\state\designselect.cpp" />
 		<ClCompile Include="..\..\engines\nancy\state\help.cpp" />
 		<ClCompile Include="..\..\engines\nancy\state\loadsave.cpp" />
 		<ClCompile Include="..\..\engines\nancy\state\logo.cpp" />
@@ -237,11 +276,18 @@
 		<ClCompile Include="..\..\engines\nancy\state\setupmenu.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\animatedbutton.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\button.cpp" />
+		<ClCompile Include="..\..\engines\nancy\ui\camera.cpp" />
+		<ClCompile Include="..\..\engines\nancy\ui\cellphonepopup.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\clock.cpp" />
+		<ClCompile Include="..\..\engines\nancy\ui\conversationpopup.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\fullscreenimage.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\inventorybox.cpp" />
+		<ClCompile Include="..\..\engines\nancy\ui\inventorypopup.cpp" />
+		<ClCompile Include="..\..\engines\nancy\ui\notebookpopup.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\ornaments.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\scrollbar.cpp" />
+		<ClCompile Include="..\..\engines\nancy\ui\scrolltextbox.cpp" />
+		<ClCompile Include="..\..\engines\nancy\ui\taskbar.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\textbox.cpp" />
 		<ClCompile Include="..\..\engines\nancy\ui\viewport.cpp" />
 		<ClCompile Include="..\..\engines\nancy\cif.cpp" />
@@ -255,6 +301,7 @@
 		<ClCompile Include="..\..\engines\nancy\iff.cpp" />
 		<ClCompile Include="..\..\engines\nancy\input.cpp" />
 		<ClCompile Include="..\..\engines\nancy\metaengine.cpp" />
+		<ClCompile Include="..\..\engines\nancy\movieplayer.cpp" />
 		<ClCompile Include="..\..\engines\nancy\nancy.cpp" />
 		<ClCompile Include="..\..\engines\nancy\puzzledata.cpp" />
 		<ClCompile Include="..\..\engines\nancy\renderobject.cpp" />
@@ -265,62 +312,98 @@
 		<ClCompile Include="..\..\engines\nancy\video.cpp" />
 	</ItemGroup>
 	<ItemGroup>
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\adjustpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\angletosspuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\arcadepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\assemblypuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\bballpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\beadpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\blockingpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\blockspuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\boardgamepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\bombpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\buildpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\bulpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\cardgamepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\collisionpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\cubepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\cuttingpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\decoderpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\dotconnectpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\drivingpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\dropsortpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\escapegridpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\gridmappuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\hamradiopuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\hangmanpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\lettergridpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\leverpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\magicboxpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\magnetmazepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\matchpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\mazechasepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\memorypuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\meterpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\mindpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\minigolfpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\mirrorlightpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\mouselightpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\multibuildpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\necklacepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\onebuildpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\orderingpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\overridelockpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\pachinkopuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\paintpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\passwordpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\peepholepuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\pegspuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\quizpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\raycastpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\riddlepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\rippedletterpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\rotatinglockpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\safedialpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\scalepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\setplayerclock.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\sewingmachinepuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\sliderpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\sortpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\soundequalizerpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\soundmatchpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\spigotpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\stepobjectspuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\tangrampuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\telephone.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\towerpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\turningpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\twodialpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\typingquizpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\weightsortpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\puzzle\whalesurvivorpuzzle.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzle\wordfindpuzzle.h" />
 		<ClInclude Include="..\..\engines\nancy\action\actionmanager.h" />
 		<ClInclude Include="..\..\engines\nancy\action\actionrecord.h" />
+		<ClInclude Include="..\..\engines\nancy\action\actionzone.h" />
 		<ClInclude Include="..\..\engines\nancy\action\autotext.h" />
+		<ClInclude Include="..\..\engines\nancy\action\cameraaction.h" />
 		<ClInclude Include="..\..\engines\nancy\action\conversation.h" />
 		<ClInclude Include="..\..\engines\nancy\action\datarecords.h" />
 		<ClInclude Include="..\..\engines\nancy\action\interactivevideo.h" />
 		<ClInclude Include="..\..\engines\nancy\action\inventoryrecords.h" />
 		<ClInclude Include="..\..\engines\nancy\action\miscrecords.h" />
+		<ClInclude Include="..\..\engines\nancy\action\mousefollow.h" />
 		<ClInclude Include="..\..\engines\nancy\action\navigationrecords.h" />
 		<ClInclude Include="..\..\engines\nancy\action\overlay.h" />
+		<ClInclude Include="..\..\engines\nancy\action\puzzlerecord.h" />
 		<ClInclude Include="..\..\engines\nancy\action\secondarymovie.h" />
 		<ClInclude Include="..\..\engines\nancy\action\secondaryvideo.h" />
 		<ClInclude Include="..\..\engines\nancy\action\soundrecords.h" />
 		<ClInclude Include="..\..\engines\nancy\misc\hypertext.h" />
 		<ClInclude Include="..\..\engines\nancy\misc\lightning.h" />
-		<ClInclude Include="..\..\engines\nancy\misc\mousefollow.h" />
 		<ClInclude Include="..\..\engines\nancy\misc\specialeffect.h" />
 		<ClInclude Include="..\..\engines\nancy\state\credits.h" />
+		<ClInclude Include="..\..\engines\nancy\state\designselect.h" />
 		<ClInclude Include="..\..\engines\nancy\state\help.h" />
 		<ClInclude Include="..\..\engines\nancy\state\loadsave.h" />
 		<ClInclude Include="..\..\engines\nancy\state\logo.h" />
@@ -332,11 +415,18 @@
 		<ClInclude Include="..\..\engines\nancy\state\state.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\animatedbutton.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\button.h" />
+		<ClInclude Include="..\..\engines\nancy\ui\camera.h" />
+		<ClInclude Include="..\..\engines\nancy\ui\cellphonepopup.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\clock.h" />
+		<ClInclude Include="..\..\engines\nancy\ui\conversationpopup.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\fullscreenimage.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\inventorybox.h" />
+		<ClInclude Include="..\..\engines\nancy\ui\inventorypopup.h" />
+		<ClInclude Include="..\..\engines\nancy\ui\notebookpopup.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\ornaments.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\scrollbar.h" />
+		<ClInclude Include="..\..\engines\nancy\ui\scrolltextbox.h" />
+		<ClInclude Include="..\..\engines\nancy\ui\taskbar.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\textbox.h" />
 		<ClInclude Include="..\..\engines\nancy\ui\viewport.h" />
 		<ClInclude Include="..\..\engines\nancy\cif.h" />
@@ -351,6 +441,7 @@
 		<ClInclude Include="..\..\engines\nancy\graphics.h" />
 		<ClInclude Include="..\..\engines\nancy\iff.h" />
 		<ClInclude Include="..\..\engines\nancy\input.h" />
+		<ClInclude Include="..\..\engines\nancy\movieplayer.h" />
 		<ClInclude Include="..\..\engines\nancy\nancy.h" />
 		<ClInclude Include="..\..\engines\nancy\puzzledata.h" />
 		<ClInclude Include="..\..\engines\nancy\renderobject.h" />

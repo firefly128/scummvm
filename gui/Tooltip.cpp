@@ -23,25 +23,20 @@
 #include "gui/widget.h"
 #include "gui/dialog.h"
 #include "gui/gui-manager.h"
-
 #include "gui/Tooltip.h"
 #include "gui/ThemeEval.h"
 
 namespace GUI {
 
-
 Tooltip::Tooltip() :
-	Dialog(-1, -1, -1, -1), _maxWidth(-1), _parent(nullptr), _xdelta(0), _ydelta(0), _xpadding(0), _ypadding(0) {
-
+	Dialog(-1, -1, -1, -1), _maxWidth(-1), _widget(nullptr), _xdelta(0), _ydelta(0), _xpadding(0), _ypadding(0) {
 	_backgroundType = GUI::ThemeEngine::kDialogBackgroundTooltip;
 }
 
-void Tooltip::setup(Dialog *parent, Widget *widget, int x, int y) {
+void Tooltip::setup(Widget *widget, int x, int y) {
 	assert(widget->hasTooltip());
 
-	_parent = parent;
-
-	setMouseUpdatedOnFocus(false);
+	_widget = widget;
 
 	_maxWidth = g_gui.xmlEval()->getVar("Globals.Tooltip.MaxWidth", 100);
 	_xdelta = g_gui.xmlEval()->getVar("Globals.Tooltip.XDelta", 0);
@@ -55,8 +50,8 @@ void Tooltip::setup(Dialog *parent, Widget *widget, int x, int y) {
 	_w = tooltipFont->wordWrapText(widget->getTooltip(), _maxWidth - _xpadding * 2, _wrappedLines) + _xpadding * 2;
 	_h = (tooltipFont->getFontHeight() + 2) * _wrappedLines.size() + _ypadding * 2;
 
-	_x = MIN<int16>(parent->_x + x + _xdelta + _xpadding, g_system->getOverlayWidth() - _w - _xpadding * 2);
-	_y = MIN<int16>(parent->_y + y + _ydelta + _ypadding, g_system->getOverlayHeight() - _h - _ypadding * 2);
+	_x = MIN<int16>(x + _xdelta + _xpadding, g_system->getOverlayWidth() - _w - _xpadding * 2);
+	_y = MIN<int16>(y + _ydelta + _ypadding, g_system->getOverlayHeight() - _h - _ypadding * 2);
 
 	if (ConfMan.hasKey("tts_enabled", "scummvm") &&
 			ConfMan.getBool("tts_enabled", "scummvm")) {
@@ -67,11 +62,11 @@ void Tooltip::setup(Dialog *parent, Widget *widget, int x, int y) {
 	}
 }
 
-void Tooltip::drawDialog(DrawLayer layerToDraw) {
+void Tooltip::drawDialog(DrawLayer layerToDraw, bool resetClipping) {
 	int num = 0;
 	int h = g_gui.theme()->getFontHeight(ThemeEngine::kFontStyleTooltip) + 2;
 
-	Dialog::drawDialog(layerToDraw);
+	Dialog::drawDialog(layerToDraw, resetClipping);
 
 	int16 textX = _x + 1 + _xpadding;
 	if (g_gui.useRTL()) {
@@ -98,4 +93,34 @@ void Tooltip::drawDialog(DrawLayer layerToDraw) {
 	}
 }
 
+void Tooltip::handleMouseDown(int x, int y, int button, int clickCount) {
+	close();
+	_widget->handleMouseDown(x + (getAbsX() - _widget->getAbsX()), y + (getAbsY() - _widget->getAbsY()), button, clickCount);
 }
+
+void Tooltip::handleMouseUp(int x, int y, int button, int clickCount) {
+	close();
+	_widget->handleMouseUp(x + (getAbsX() - _widget->getAbsX()), y + (getAbsY() - _widget->getAbsY()), button, clickCount);
+}
+
+void Tooltip::handleMouseWheel(int x, int y, int direction) {
+	close();
+	_widget->handleMouseWheel(x + (getAbsX() - _widget->getAbsX()), y + (getAbsX() - _widget->getAbsX()), direction);
+}
+
+void Tooltip::handleKeyDown(Common::KeyState state) {
+	close();
+	_widget->handleKeyDown(state);
+}
+
+void Tooltip::handleKeyUp(Common::KeyState state) {
+	close();
+	_widget->handleKeyUp(state);
+}
+
+void Tooltip::handleMouseMoved(int x, int y, int button) {
+	close();
+	_widget->handleMouseMoved(x, y, button);
+}
+
+} // End of namespace GUI

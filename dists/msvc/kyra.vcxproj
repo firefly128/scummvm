@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{840DB0DF-C9EF-4D19-8F48-1F68BB937627}</ProjectGuid>
+		<ProjectGuid>{8D653B22-235D-4263-A9B0-B9953301721A}</ProjectGuid>
 		<RootNamespace>kyra</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -286,6 +289,7 @@
 		<ClCompile Include="..\..\engines\kyra\graphics\screen_v2.cpp" />
 		<ClCompile Include="..\..\engines\kyra\graphics\vqa.cpp" />
 		<ClCompile Include="..\..\engines\kyra\graphics\wsamovie.cpp" />
+		<ClCompile Include="..\..\engines\kyra\gui\automap_eob.cpp" />
 		<ClCompile Include="..\..\engines\kyra\gui\debugger.cpp" />
 		<ClCompile Include="..\..\engines\kyra\gui\gui.cpp" />
 		<ClCompile Include="..\..\engines\kyra\gui\gui_eob.cpp" />
@@ -333,7 +337,6 @@
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\audiomaster2.cpp" />
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\audstream.cpp" />
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\capcom98.cpp" />
-		<ClCompile Include="..\..\engines\kyra\sound\drivers\halestorm.cpp" />
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\mlalf98.cpp" />
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\pcspeaker_v1.cpp" />
 		<ClCompile Include="..\..\engines\kyra\sound\drivers\pcspeaker_v2.cpp" />
@@ -388,6 +391,7 @@
 		<ClInclude Include="..\..\engines\kyra\graphics\screen_v2.h" />
 		<ClInclude Include="..\..\engines\kyra\graphics\vqa.h" />
 		<ClInclude Include="..\..\engines\kyra\graphics\wsamovie.h" />
+		<ClInclude Include="..\..\engines\kyra\gui\automap_eob.h" />
 		<ClInclude Include="..\..\engines\kyra\gui\debugger.h" />
 		<ClInclude Include="..\..\engines\kyra\gui\gui.h" />
 		<ClInclude Include="..\..\engines\kyra\gui\gui_eob.h" />
@@ -409,7 +413,6 @@
 		<ClInclude Include="..\..\engines\kyra\sequence\sequences_hof.h" />
 		<ClInclude Include="..\..\engines\kyra\sound\drivers\audiomaster2.h" />
 		<ClInclude Include="..\..\engines\kyra\sound\drivers\capcom98.h" />
-		<ClInclude Include="..\..\engines\kyra\sound\drivers\halestorm.h" />
 		<ClInclude Include="..\..\engines\kyra\sound\drivers\mlalf98.h" />
 		<ClInclude Include="..\..\engines\kyra\sound\drivers\pc_base.h" />
 		<ClInclude Include="..\..\engines\kyra\sound\drivers\segacd.h" />

@@ -1,68 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="mm1">
-			<UniqueIdentifier>65E010CD-D60B-4E59-9896-4C4F9A59E2EB</UniqueIdentifier>
+			<UniqueIdentifier>2A38B474-6A8A-4F4F-AFDC-61D64FE62253</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\data">
-			<UniqueIdentifier>18AF0D39-7A77-47AD-9767-56328F365B35</UniqueIdentifier>
+			<UniqueIdentifier>0C06FE20-18E2-40A3-8C5B-38AE4C3E4E43</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\game">
-			<UniqueIdentifier>AAAD8CE7-7C4A-49CC-B4A4-8F5F9BBB0B75</UniqueIdentifier>
+			<UniqueIdentifier>6DE11B8D-0671-4E9B-AA44-329E45262408</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\gfx">
-			<UniqueIdentifier>E1AA4E51-7FAA-4EF7-ABBD-5A2B3EA077B9</UniqueIdentifier>
+			<UniqueIdentifier>D741E16F-87CC-4517-9548-48542AB5A991</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\maps">
-			<UniqueIdentifier>D1233D50-DAFB-4A10-BD31-60CC846B3223</UniqueIdentifier>
+			<UniqueIdentifier>F7B4400D-CA42-4C34-BD78-70E1EEB17611</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\utils">
-			<UniqueIdentifier>07346A2D-526F-4B21-AF0C-C0A8868BDB55</UniqueIdentifier>
+			<UniqueIdentifier>E6EE1B48-DF0D-4694-8EF1-FB5CC0FE3F9D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views">
-			<UniqueIdentifier>CB78974E-3BF2-4554-9810-B77B2758A69D</UniqueIdentifier>
+			<UniqueIdentifier>2615E3BB-1A35-4AB9-A778-AE70E17DF62E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views\interactions">
-			<UniqueIdentifier>A989876D-538C-40AA-B25A-CEC517E9FD02</UniqueIdentifier>
+			<UniqueIdentifier>FBD80F83-6B52-435F-B617-6E48CFA3B4E5</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views\locations">
-			<UniqueIdentifier>4B44F861-244D-42E1-B917-9C6EF6D03A45</UniqueIdentifier>
+			<UniqueIdentifier>A269732D-2389-4D73-8994-67E92D1578FE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views\spells">
-			<UniqueIdentifier>63951133-77F5-4C99-B44B-C0EAA5E1E791</UniqueIdentifier>
+			<UniqueIdentifier>517E35C5-51AC-4210-B264-1DA98A740632</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views_enh">
-			<UniqueIdentifier>1E490C26-52E5-433D-8CE6-BF1CD9388237</UniqueIdentifier>
+			<UniqueIdentifier>9031977E-5231-4741-9348-4599D26D4543</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views_enh\interactions">
-			<UniqueIdentifier>30979C64-FAEF-4855-8B61-DE5E07A7AD3B</UniqueIdentifier>
+			<UniqueIdentifier>5BD1D6D8-3AB0-4B1E-9E95-D9A6617F92A4</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views_enh\locations">
-			<UniqueIdentifier>60F238C9-8AB2-4B51-A8F9-491ECD71699B</UniqueIdentifier>
+			<UniqueIdentifier>B2D37F92-83BD-437E-AF86-2B1273C9CAEA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="mm1\views_enh\spells">
-			<UniqueIdentifier>E682BBF0-3779-4908-97EF-2C689E0D26B9</UniqueIdentifier>
+			<UniqueIdentifier>B1B5A5D4-202A-4311-8B6D-66C04E19FAE1</UniqueIdentifier>
 		</Filter>
 		<Filter Include="shared">
-			<UniqueIdentifier>9BD8002A-C0EE-46F7-900C-90717124B6AA</UniqueIdentifier>
+			<UniqueIdentifier>2D5262BA-D78F-4933-ABE4-EE211E4986B3</UniqueIdentifier>
+		</Filter>
+		<Filter Include="shared\classic">
+			<UniqueIdentifier>A1475F7A-FC8F-496E-8CBD-BEEFCFE6FEB8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="shared\utils">
-			<UniqueIdentifier>EB015059-C0D6-4DE0-A620-F8396C5D41F7</UniqueIdentifier>
+			<UniqueIdentifier>A2890836-5CAF-4703-B65F-956766F36CE6</UniqueIdentifier>
 		</Filter>
 		<Filter Include="shared\xeen">
-			<UniqueIdentifier>2E988C49-1A77-4433-A152-FC780D77A8B3</UniqueIdentifier>
+			<UniqueIdentifier>48178709-6E37-4E4D-8852-991420B0D19F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="xeen">
-			<UniqueIdentifier>9E0A5994-2F91-4E2C-89D8-7EC77F1A2F9D</UniqueIdentifier>
+			<UniqueIdentifier>00745A4A-C404-4CAB-86AE-C86B16EA7BDE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="xeen\dialogs">
-			<UniqueIdentifier>AA3816B9-B9D9-47EC-B1C9-4FBC1AA6FEFC</UniqueIdentifier>
+			<UniqueIdentifier>7E1C90E8-54E0-4510-89DC-B5BE4EC64814</UniqueIdentifier>
 		</Filter>
 		<Filter Include="xeen\swordsofxeen">
-			<UniqueIdentifier>37072D73-C4F0-4565-B2F3-15928AAB8D38</UniqueIdentifier>
+			<UniqueIdentifier>AD6051FA-9D2B-4291-AA48-32AD80A13BBD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="xeen\worldofxeen">
-			<UniqueIdentifier>2AD4D172-4C55-4462-BBB2-6D5E9F92BB7B</UniqueIdentifier>
+			<UniqueIdentifier>DE7BD438-5E06-4147-A7B5-C745C1AB1797</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -825,6 +828,9 @@
 		<ClCompile Include="..\..\engines\mm\mm1\views_enh\title.cpp">
 			<Filter>mm1\views_enh</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\mm\mm1\views_enh\town_select.cpp">
+			<Filter>mm1\views_enh</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\mm\mm1\views_enh\trade.cpp">
 			<Filter>mm1\views_enh</Filter>
 		</ClCompile>
@@ -872,6 +878,9 @@
 		</ClCompile>
 		<ClCompile Include="..\..\engines\mm\mm1\sound.cpp">
 			<Filter>mm1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mm\shared\classic\pc_speaker.cpp">
+			<Filter>shared\classic</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\mm\shared\utils\bitmap_font.cpp">
 			<Filter>shared\utils</Filter>
@@ -1852,6 +1861,9 @@
 		<ClInclude Include="..\..\engines\mm\mm1\views_enh\title.h">
 			<Filter>mm1\views_enh</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\mm\mm1\views_enh\town_select.h">
+			<Filter>mm1\views_enh</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\mm\mm1\views_enh\trade.h">
 			<Filter>mm1\views_enh</Filter>
 		</ClInclude>
@@ -1899,6 +1911,9 @@
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mm\mm1\sound.h">
 			<Filter>mm1</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mm\shared\classic\pc_speaker.h">
+			<Filter>shared\classic</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\mm\shared\utils\bitmap_font.h">
 			<Filter>shared\utils</Filter>

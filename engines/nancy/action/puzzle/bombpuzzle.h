@@ -22,14 +22,14 @@
 #ifndef NANCY_ACTION_BOMBPUZZLE_H
 #define NANCY_ACTION_BOMBPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 
 namespace Nancy {
 namespace Action {
 
-class BombPuzzle : public RenderActionRecord {
+class BombPuzzle : public PuzzleRecord {
 public:
-	BombPuzzle() : RenderActionRecord(7) {}
+	BombPuzzle() : PuzzleRecord(7) {}
 	virtual ~BombPuzzle() {}
 
 	void init() override;
@@ -39,11 +39,11 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
-protected:
-	Common::String getRecordTypeName() const override { return "BombPuzzle"; }
 	bool isViewportRelative() const override { return true; }
 
-	Common::Path _imageName;
+protected:
+	Common::String getRecordTypeName() const override { return "BombPuzzle"; }
+
 	Common::Array<Common::Rect> _wireSrcs;
 	Common::Array<Common::Rect> _wireDests;
 	Common::Array<Common::Rect> _digitSrcs;
@@ -55,12 +55,9 @@ protected:
 	SoundDescription _snipSound;
 	SoundDescription _noToolSound;
 	uint16 _toolID = 0;
-	SceneChangeWithFlag _solveSceneChange;
-	SoundDescription _solveSound;
 	SceneChangeWithFlag _failSceneChange;
 	SoundDescription _failSound;
 
-	Graphics::ManagedSurface _image;
 	Common::Array<byte> _playerOrder;
 
 	Time _timerTotalTime;

@@ -34,7 +34,7 @@ class Actor;
 
 class ScriptValue {
 public:
-	ScriptValue() : _type(kScriptValueTypeEmpty), _collection(nullptr) {}
+	ScriptValue() : _type(kScriptValueTypeEmpty), _u{}, _collection(nullptr) {}
 	ScriptValue(ParameterReadStream *stream);
 	ScriptValue(const ScriptValue &other);
 	~ScriptValue();
@@ -45,7 +45,9 @@ public:
 	void setToFloat(int i);
 	void setToFloat(double d);
 	double asFloat() const;
-	int asIntFromFloat() const;
+	// Some transitions expect either a float or a time depending on engine version.
+	// To keep things simple, we have a method to try both.
+	double asFloatOrTime() const;
 
 	void setToBool(bool b);
 	bool asBool() const;
@@ -71,7 +73,7 @@ public:
 	void setToMethodId(BuiltInMethod methodId);
 	BuiltInMethod asMethodId() const;
 
-	Common::String getDebugString() const;
+	Common::String getDebugString(bool includeDefaultName = true) const;
 
 	void operator=(const ScriptValue &other);
 	bool operator==(const ScriptValue &other) const;

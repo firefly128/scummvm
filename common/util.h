@@ -26,6 +26,8 @@
 
 #include "common/type_traits.h"
 
+struct TimeDate;
+
 /**
  * @defgroup common_util Util
  * @ingroup common
@@ -81,7 +83,7 @@ template<typename T> inline T CLIP(T v, T amin, T amax)
 /**
  * Template method to swap the values of its two parameters.
  */
-template<typename T> inline void SWAP(T &a, T &b) { T tmp = a; a = b; b = tmp; }
+template<typename T> inline void SWAP(T &a, T &b);
 
 /** Function to rotate the 32-bit integer @p x left by @p r bits */
 static inline uint32 ROTATE_LEFT_32(const uint32 x, const uint32 r) {
@@ -411,8 +413,57 @@ bool isBlank(int c);
  */
 Common::String getHumanReadableBytes(uint64 bytes, const char *&unitsOut);
 
+/**
+ * Utility functions for converting a TimeDate structure into an integer representation of the time, and vice versa.
+ * The integer representation is the number of seconds since the Unix epoch (1970-01-01 00:00:00 UTC).
+ */
+namespace DateTime {
+	/**
+	 * Convert a time value (number of seconds since the Unix epoch) to a TimeDate struct representing the corresponding date and time components.
+	 */
+	TimeDate int64ToTimeDate(int64 integer);
+
+	/**
+	 * Convert a TimeDate struct representing date and time components to a time value (number of seconds since the Unix epoch).
+	 */
+	int64_t dateTimeToInt64(const TimeDate &timeDate);
+
+	/**
+	 * Convert a time value (number of seconds since the Unix epoch) to a human-readable string format.
+	 */
+	Common::String formatTime(int64 integer);
+
+	/**
+	 * Get the current time as a time value (number of seconds since the Unix epoch).
+	 */
+	int64 getTime();
+}
+
+template<typename T, bool useMove = Common::is_move_constructible<T>::v && Common::is_move_assignable<T>::v>
+struct SWAP_helper {};
+
+template<typename T>
+struct SWAP_helper<T, true> {
+	static void swap(T &a, T &b) {
+		T tmp = Common::move(a);
+		a = Common::move(b);
+		b = Common::move(tmp);
+	}
+};
+
+template<typename T>
+struct SWAP_helper<T, false> {
+	static void swap(T &a, T &b) {
+		T tmp = a;
+		a = b;
+		b = tmp;
+	}
+};
+
 /** @} */
 
 } // End of namespace Common
+
+template<typename T> inline void SWAP(T &a, T &b) { Common::SWAP_helper<T>::swap(a, b); }
 
 #endif

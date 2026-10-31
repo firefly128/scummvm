@@ -1,166 +1,2246 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
+		<Filter Include="animview">
+			<UniqueIdentifier>4F79227F-1B0E-4654-814A-56324E83DA3D</UniqueIdentifier>
+		</Filter>
+		<Filter Include="core">
+			<UniqueIdentifier>62FBE18E-8C9B-49DC-9365-965B34C77B92</UniqueIdentifier>
+		</Filter>
+		<Filter Include="dragonsphere">
+			<UniqueIdentifier>14F4CBC0-619C-4332-B3EC-75FB7A3C5BF0</UniqueIdentifier>
+		</Filter>
+		<Filter Include="dragonsphere\mads">
+			<UniqueIdentifier>340AB578-C7B5-4094-8FE4-AC35447B0BD2</UniqueIdentifier>
+		</Filter>
+		<Filter Include="dragonsphere\rooms">
+			<UniqueIdentifier>8E7B4B94-749B-4057-A666-F6A267F0D9CE</UniqueIdentifier>
+		</Filter>
+		<Filter Include="dragonsphere\sound">
+			<UniqueIdentifier>BB12988D-5973-4F21-856B-B47B23BE0F0D</UniqueIdentifier>
+		</Filter>
+		<Filter Include="forest">
+			<UniqueIdentifier>EC5671FA-2E97-4E5F-96F0-CDA679ABCAAF</UniqueIdentifier>
+		</Filter>
+		<Filter Include="forest\mads">
+			<UniqueIdentifier>37AA43AE-935D-4017-9703-EE19984C9E8F</UniqueIdentifier>
+		</Filter>
+		<Filter Include="forest\rooms">
+			<UniqueIdentifier>ED9F03FE-3C75-4FFC-BEFE-F8C0B6113C54</UniqueIdentifier>
+		</Filter>
+		<Filter Include="forest\sound">
+			<UniqueIdentifier>554BEC28-7D54-4DC1-8F16-557E503B18A5</UniqueIdentifier>
+		</Filter>
 		<Filter Include="nebular">
-			<UniqueIdentifier>A3ECA9DD-62DD-49F1-BBEC-E14971C4DDEB</UniqueIdentifier>
+			<UniqueIdentifier>8035C0FA-C660-46EF-90CF-8B958C64F3D8</UniqueIdentifier>
+		</Filter>
+		<Filter Include="nebular\bonus">
+			<UniqueIdentifier>A11C12F5-2913-48DA-B42C-FA65A26FFC2D</UniqueIdentifier>
+		</Filter>
+		<Filter Include="nebular\mads">
+			<UniqueIdentifier>4D5D578E-4043-4779-A332-C75C85EE329A</UniqueIdentifier>
+		</Filter>
+		<Filter Include="nebular\rooms">
+			<UniqueIdentifier>535AD5DF-897C-468A-AE3B-323AA6A92892</UniqueIdentifier>
+		</Filter>
+		<Filter Include="nebular\sound">
+			<UniqueIdentifier>333E234F-CCAD-414F-AE29-DB31BD4FAC83</UniqueIdentifier>
+		</Filter>
+		<Filter Include="phantom">
+			<UniqueIdentifier>9DEF81A8-7171-4939-A3AF-58190BEDD27A</UniqueIdentifier>
+		</Filter>
+		<Filter Include="phantom\mads">
+			<UniqueIdentifier>6DC58682-6110-4378-BADD-335C290D53D9</UniqueIdentifier>
+		</Filter>
+		<Filter Include="phantom\rooms">
+			<UniqueIdentifier>1097F136-439D-4CE6-8BDE-E2CB917EF4DD</UniqueIdentifier>
+		</Filter>
+		<Filter Include="phantom\sound">
+			<UniqueIdentifier>9457E33D-87F7-4E8D-8B0B-04B19F560789</UniqueIdentifier>
+		</Filter>
+		<Filter Include="textview">
+			<UniqueIdentifier>36A6EE89-F2DB-495C-8B83-C14F82E0F600</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
-		<ClCompile Include="..\..\engines\mads\nebular\dialogs_nebular.cpp">
+		<ClCompile Include="..\..\engines\mads\animview\anim_timer.cpp">
+			<Filter>animview</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\animview\animview.cpp">
+			<Filter>animview</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\animview\functions.cpp">
+			<Filter>animview</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\anim.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\attr.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\buffer.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\camera.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\color.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\config.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\conv.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\cursor.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\cycle.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\dialog.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\env.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\error.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\fileio.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\font.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\game.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\global.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\heap.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\hspot.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\image.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\imath.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\implode.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\inter.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\kernel.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\keys.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\lib.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\loader.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\magic.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\matte.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\mcga.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\mem.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\mouse.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\mps_archive.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\object.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\pack.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\pack_dcl.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\pal.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\pcspk_pit.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\pfab.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\player.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\popup.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\quote.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\rail.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\room.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\screen.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\sort.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\sound.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\sound_manager.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\speech.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\sprite.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\text.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\tile.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\timer.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\video.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\vocab.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\core\window.cpp">
+			<Filter>core</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\mads\mads.cpp">
+			<Filter>dragonsphere\mads</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room101.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room102.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room103.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room104.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room105.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room106.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room107.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room108.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room109.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room110.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room111.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room112.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room113.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room114.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room115.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room116.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room117.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room118.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room119.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room120.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room201.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room203.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room204.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room205.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room206.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room301.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room302.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room303.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room401.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room402.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room403.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room404.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room405.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room406.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room407.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room408.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room409.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room410.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room411.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room412.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room454.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room501.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room502.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room503.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room504.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room505.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room506.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room507.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room508.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room509.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room510.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room511.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room512.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room557.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room601.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room603.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room604.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room605.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room606.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room607.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room609.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room612.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room613.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room614.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room909.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section1.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section2.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section3.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section4.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section5.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section6.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section9.cpp">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\asound.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\asound_dragonsphere.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\gsound.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\gsound_dragonsphere.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\psound.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\psound_dragonsphere.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\rsound.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\rsound_dragonsphere.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\sound.cpp">
+			<Filter>dragonsphere\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\dragonsphere.cpp">
+			<Filter>dragonsphere</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\global.cpp">
+			<Filter>dragonsphere</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\main.cpp">
+			<Filter>dragonsphere</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\main_menu.cpp">
+			<Filter>dragonsphere</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\dragonsphere\menus.cpp">
+			<Filter>dragonsphere</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\mads\mads.cpp">
+			<Filter>forest\mads</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room101.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room103.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room104.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room106.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room107.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room199.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room201.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room203.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room204.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room205.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room210.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room211.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room220.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room221.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room301.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room302.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room303.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room304.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room305.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room306.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room307.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room308.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room321.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room322.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room401.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room402.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room403.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room404.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room405.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room420.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room501.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room503.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room509.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room510.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room520.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room901.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room903.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room904.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section1.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section2.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section3.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section4.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section5.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section9.cpp">
+			<Filter>forest\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\sound\digi.cpp">
+			<Filter>forest\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\sound\midi.cpp">
+			<Filter>forest\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\console.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\extra.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\forest.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\global.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\inventory.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\journal.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\main.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\forest\menus.cpp">
+			<Filter>forest</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\bonus.cpp">
+			<Filter>nebular\bonus</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\bonus_exe_data.cpp">
+			<Filter>nebular\bonus</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\bonus_text_ui.cpp">
+			<Filter>nebular\bonus</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\dos_text_screen.cpp">
+			<Filter>nebular\bonus</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\mads\mads.cpp">
+			<Filter>nebular\mads</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\dialog.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\forcefield.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room101.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room102.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room103.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room104.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room105.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room106.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room107.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room108.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room109.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room110.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room111.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room112.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room201.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room202.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room203.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room205.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room207.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room208.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room209.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room210.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room211.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room212.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room213.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room214.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room215.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room216.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room301.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room302.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room303.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room304.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room307.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room308.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room309.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room310.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room311.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room313.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room316.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room318.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room319.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room320.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room321.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room322.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room351.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room352.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room353.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room354.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room357.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room358.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room359.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room360.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room361.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room366.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room387.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room388.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room389.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room390.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room391.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room399.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room401.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room402.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room405.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room406.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room407.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room408.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room409.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room410.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room411.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room413.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room501.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room502.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room503.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room504.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room505.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room506.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room507.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room508.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room511.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room512.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room513.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room515.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room551.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room601.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room602.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room603.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room604.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room605.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room607.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room608.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room609.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room610.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room611.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room612.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room620.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room701.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room702.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room703.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room704.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room705.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room706.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room707.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room710.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room711.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room751.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room752.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room801.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room802.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room803.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room804.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room805.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room807.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room808.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room810.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section1.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section2.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section3.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section4.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section5.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section6.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section7.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section8.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\teleporter.cpp">
+			<Filter>nebular\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\asound.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\asound_nebular.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\isound.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\isound_nebular.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\mac_sound.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\psound.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\psound_nebular.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\rsound.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\rsound_nebular.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\sound\sound.cpp">
+			<Filter>nebular\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\nebular\console.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\game_nebular.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\copy.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\globals_nebular.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\extra.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\menu_nebular.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\global.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\mac_dialogs.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes1.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\mac_frontend.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes2.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\mac_menus.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes3.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\mac_nebular.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes4.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\mac_resources.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes5.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\main.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes6.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\main_menu.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes7.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\menus.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes8.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\mps_installer.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\nebular\sound_nebular.cpp">
+		<ClCompile Include="..\..\engines\mads\nebular\nebular.cpp">
 			<Filter>nebular</Filter>
 		</ClCompile>
-		<ClCompile Include="..\..\engines\mads\action.cpp" />
-		<ClCompile Include="..\..\engines\mads\animation.cpp" />
-		<ClCompile Include="..\..\engines\mads\assets.cpp" />
-		<ClCompile Include="..\..\engines\mads\audio.cpp" />
-		<ClCompile Include="..\..\engines\mads\camera.cpp" />
-		<ClCompile Include="..\..\engines\mads\compression.cpp" />
-		<ClCompile Include="..\..\engines\mads\conversations.cpp" />
-		<ClCompile Include="..\..\engines\mads\debugger.cpp" />
-		<ClCompile Include="..\..\engines\mads\dialogs.cpp" />
-		<ClCompile Include="..\..\engines\mads\events.cpp" />
-		<ClCompile Include="..\..\engines\mads\font.cpp" />
-		<ClCompile Include="..\..\engines\mads\game.cpp" />
-		<ClCompile Include="..\..\engines\mads\game_data.cpp" />
-		<ClCompile Include="..\..\engines\mads\globals.cpp" />
-		<ClCompile Include="..\..\engines\mads\hotspots.cpp" />
-		<ClCompile Include="..\..\engines\mads\inventory.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\popup.cpp">
+			<Filter>nebular</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\mads\mads.cpp">
+			<Filter>phantom\mads</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room101.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room102.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room103.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room104.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room105.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room106.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room107.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room108.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room109.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room110.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room111.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room112.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room113.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room114.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room150.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room201.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room202.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room203.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room204.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room205.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room206.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room207.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room208.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room250.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room301.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room302.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room303.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room304.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room305.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room306.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room307.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room308.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room309.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room310.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room401.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room403.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room404.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room406.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room407.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room408.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room409.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room410.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room453.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room456.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room501.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room502.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room504.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room505.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room506.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section1.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section2.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section3.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section4.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section5.cpp">
+			<Filter>phantom\rooms</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\asound.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\asound_phantom.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\isound.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\isound_phantom.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\psound.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\psound_phantom.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\rsound.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\rsound_phantom.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\sound\sound.cpp">
+			<Filter>phantom\sound</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\catacombs.cpp">
+			<Filter>phantom</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\global.cpp">
+			<Filter>phantom</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\main.cpp">
+			<Filter>phantom</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\main_menu.cpp">
+			<Filter>phantom</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\menus.cpp">
+			<Filter>phantom</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\phantom\phantom.cpp">
+			<Filter>phantom</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\textview\textview.cpp">
+			<Filter>textview</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\mads\console.cpp" />
 		<ClCompile Include="..\..\engines\mads\mads.cpp" />
-		<ClCompile Include="..\..\engines\mads\menu_views.cpp" />
-		<ClCompile Include="..\..\engines\mads\messages.cpp" />
 		<ClCompile Include="..\..\engines\mads\metaengine.cpp" />
-		<ClCompile Include="..\..\engines\mads\mps_installer.cpp" />
-		<ClCompile Include="..\..\engines\mads\msurface.cpp" />
-		<ClCompile Include="..\..\engines\mads\palette.cpp" />
-		<ClCompile Include="..\..\engines\mads\player.cpp" />
-		<ClCompile Include="..\..\engines\mads\rails.cpp" />
-		<ClCompile Include="..\..\engines\mads\resources.cpp" />
-		<ClCompile Include="..\..\engines\mads\scene.cpp" />
-		<ClCompile Include="..\..\engines\mads\scene_data.cpp" />
-		<ClCompile Include="..\..\engines\mads\screen.cpp" />
-		<ClCompile Include="..\..\engines\mads\sequence.cpp" />
-		<ClCompile Include="..\..\engines\mads\sound.cpp" />
-		<ClCompile Include="..\..\engines\mads\sprites.cpp" />
-		<ClCompile Include="..\..\engines\mads\staticres.cpp" />
-		<ClCompile Include="..\..\engines\mads\user_interface.cpp" />
 	</ItemGroup>
 	<ItemGroup>
-		<ClInclude Include="..\..\engines\mads\nebular\dialogs_nebular.h">
+		<ClInclude Include="..\..\engines\mads\animview\anim_timer.h">
+			<Filter>animview</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\animview\animview.h">
+			<Filter>animview</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\animview\functions.h">
+			<Filter>animview</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\anim.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\attr.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\btype.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\buffer.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\camera.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\color.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\concat.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\config.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\conv.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\cursor.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\cycle.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\dialog.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\echo.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\env.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\error.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\fileio.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\font.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\game.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\general.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\global.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\heap.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\hspot.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\image.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\imath.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\implode.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\inter.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\kernel.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\keys.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\lib.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\loader.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\mads.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\magic.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\matte.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\mcga.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\mem.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\mouse.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\mps_archive.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\native_sound_timer.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\object.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\pack.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\pack_dcl.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\pal.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\pcspk_pit.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\pfab.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\player.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\popup.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\qual.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\quote.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\rail.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\room.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\screen.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\sort.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\sound.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\sound_manager.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\speech.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\sprite.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\sprite_h.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\text.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\tile.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\timer.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\video.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\vocab.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\vocabh.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\core\window.h">
+			<Filter>core</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\conv.h">
+			<Filter>dragonsphere\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\inventory.h">
+			<Filter>dragonsphere\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\quotes.h">
+			<Filter>dragonsphere\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\sounds.h">
+			<Filter>dragonsphere\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\words.h">
+			<Filter>dragonsphere\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room101.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room102.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room103.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room104.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room105.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room106.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room107.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room108.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room109.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room110.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room111.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room112.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room113.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room114.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room115.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room116.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room117.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room118.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room119.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room120.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room201.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room203.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room204.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room205.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room206.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room301.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room302.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room303.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room401.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room402.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room403.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room404.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room405.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room406.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room407.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room408.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room409.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room410.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room411.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room412.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room454.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room501.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room502.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room503.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room504.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room505.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room506.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room507.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room508.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room509.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room510.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room511.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room512.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room557.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room601.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room603.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room604.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room605.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room606.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room607.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room609.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room612.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room613.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room614.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room909.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section1.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section2.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section3.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section4.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section5.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section6.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section9.h">
+			<Filter>dragonsphere\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\asound.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\asound_dragonsphere.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\gsound.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\gsound_dragonsphere.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\psound.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\psound_dragonsphere.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\rsound.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\rsound_dragonsphere.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\sound.h">
+			<Filter>dragonsphere\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\dragonsphere.h">
+			<Filter>dragonsphere</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\global.h">
+			<Filter>dragonsphere</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\main.h">
+			<Filter>dragonsphere</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\main_menu.h">
+			<Filter>dragonsphere</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\dragonsphere\menus.h">
+			<Filter>dragonsphere</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\mads\inventory.h">
+			<Filter>forest\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\mads\quotes.h">
+			<Filter>forest\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\mads\sounds.h">
+			<Filter>forest\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\mads\words.h">
+			<Filter>forest\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section1.h">
+			<Filter>forest\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section2.h">
+			<Filter>forest\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section3.h">
+			<Filter>forest\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section4.h">
+			<Filter>forest\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section5.h">
+			<Filter>forest\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section9.h">
+			<Filter>forest\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\sound\digi.h">
+			<Filter>forest\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\sound\midi.h">
+			<Filter>forest\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\console.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\extra.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\forest.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\global.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\inventory.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\journal.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\main.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\forest\menus.h">
+			<Filter>forest</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\bonus.h">
+			<Filter>nebular\bonus</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\bonus_exe_data.h">
+			<Filter>nebular\bonus</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\bonus_text_ui.h">
+			<Filter>nebular\bonus</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\dos_text_screen.h">
+			<Filter>nebular\bonus</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\mads\inventory.h">
+			<Filter>nebular\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\mads\quotes.h">
+			<Filter>nebular\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\mads\sounds.h">
+			<Filter>nebular\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\mads\words.h">
+			<Filter>nebular\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\dialog.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\forcefield.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section1.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section2.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section3.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section4.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section5.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section6.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section7.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section8.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\teleporter.h">
+			<Filter>nebular\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\asound.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\asound_nebular.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\isound.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\isound_nebular.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\mac_sound.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\psound.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\psound_nebular.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\rsound.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\rsound_nebular.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\sound\sound.h">
+			<Filter>nebular\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\nebular\console.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\game_nebular.h">
+		<ClInclude Include="..\..\engines\mads\nebular\copy.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\globals_nebular.h">
+		<ClInclude Include="..\..\engines\mads\nebular\extra.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\menu_nebular.h">
+		<ClInclude Include="..\..\engines\mads\nebular\global.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes.h">
+		<ClInclude Include="..\..\engines\mads\nebular\mac_dialogs.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes1.h">
+		<ClInclude Include="..\..\engines\mads\nebular\mac_frontend.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes2.h">
+		<ClInclude Include="..\..\engines\mads\nebular\mac_menus.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes3.h">
+		<ClInclude Include="..\..\engines\mads\nebular\mac_nebular.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes4.h">
+		<ClInclude Include="..\..\engines\mads\nebular\mac_resources.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes5.h">
+		<ClInclude Include="..\..\engines\mads\nebular\main.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes6.h">
+		<ClInclude Include="..\..\engines\mads\nebular\main_menu.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes7.h">
+		<ClInclude Include="..\..\engines\mads\nebular\menus.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes8.h">
+		<ClInclude Include="..\..\engines\mads\nebular\mps_installer.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\nebular\sound_nebular.h">
+		<ClInclude Include="..\..\engines\mads\nebular\nebular.h">
 			<Filter>nebular</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\mads\action.h" />
-		<ClInclude Include="..\..\engines\mads\animation.h" />
-		<ClInclude Include="..\..\engines\mads\assets.h" />
-		<ClInclude Include="..\..\engines\mads\audio.h" />
-		<ClInclude Include="..\..\engines\mads\camera.h" />
-		<ClInclude Include="..\..\engines\mads\compression.h" />
-		<ClInclude Include="..\..\engines\mads\conversations.h" />
-		<ClInclude Include="..\..\engines\mads\debugger.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\popup.h">
+			<Filter>nebular</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\mads\conv.h">
+			<Filter>phantom\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\mads\inventory.h">
+			<Filter>phantom\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\mads\quotes.h">
+			<Filter>phantom\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\mads\sounds.h">
+			<Filter>phantom\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\mads\speeches.h">
+			<Filter>phantom\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\mads\text.h">
+			<Filter>phantom\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\mads\words.h">
+			<Filter>phantom\mads</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room101.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room102.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room103.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room104.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room105.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room106.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room107.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room108.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room109.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room110.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room111.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room112.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room113.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room114.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room150.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room201.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room202.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room203.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room204.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room205.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room206.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room207.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room208.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room250.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room301.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room302.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room303.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room304.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room305.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room306.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room307.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room308.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room309.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room310.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room401.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room403.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room404.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room406.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room407.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room408.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room409.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room410.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room453.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room456.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room501.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room502.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room504.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room505.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room506.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section1.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section2.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section3.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section4.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section5.h">
+			<Filter>phantom\rooms</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\asound.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\asound_phantom.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\isound.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\isound_phantom.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\psound.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\psound_phantom.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\rsound.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\rsound_phantom.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\sound\sound.h">
+			<Filter>phantom\sound</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\catacombs.h">
+			<Filter>phantom</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\global.h">
+			<Filter>phantom</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\main.h">
+			<Filter>phantom</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\main_menu.h">
+			<Filter>phantom</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\menus.h">
+			<Filter>phantom</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\phantom\phantom.h">
+			<Filter>phantom</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\textview\textview.h">
+			<Filter>textview</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\mads\console.h" />
 		<ClInclude Include="..\..\engines\mads\detection.h" />
 		<ClInclude Include="..\..\engines\mads\detection_tables.h" />
-		<ClInclude Include="..\..\engines\mads\dialogs.h" />
-		<ClInclude Include="..\..\engines\mads\events.h" />
-		<ClInclude Include="..\..\engines\mads\font.h" />
-		<ClInclude Include="..\..\engines\mads\game.h" />
-		<ClInclude Include="..\..\engines\mads\game_data.h" />
-		<ClInclude Include="..\..\engines\mads\globals.h" />
-		<ClInclude Include="..\..\engines\mads\hotspots.h" />
-		<ClInclude Include="..\..\engines\mads\inventory.h" />
 		<ClInclude Include="..\..\engines\mads\mads.h" />
-		<ClInclude Include="..\..\engines\mads\menu_views.h" />
-		<ClInclude Include="..\..\engines\mads\messages.h" />
-		<ClInclude Include="..\..\engines\mads\mps_installer.h" />
-		<ClInclude Include="..\..\engines\mads\msurface.h" />
-		<ClInclude Include="..\..\engines\mads\palette.h" />
-		<ClInclude Include="..\..\engines\mads\player.h" />
-		<ClInclude Include="..\..\engines\mads\rails.h" />
-		<ClInclude Include="..\..\engines\mads\resources.h" />
-		<ClInclude Include="..\..\engines\mads\scene.h" />
-		<ClInclude Include="..\..\engines\mads\scene_data.h" />
-		<ClInclude Include="..\..\engines\mads\screen.h" />
-		<ClInclude Include="..\..\engines\mads\sequence.h" />
-		<ClInclude Include="..\..\engines\mads\sound.h" />
-		<ClInclude Include="..\..\engines\mads\sprites.h" />
-		<ClInclude Include="..\..\engines\mads\staticres.h" />
-		<ClInclude Include="..\..\engines\mads\user_interface.h" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\..\engines\mads\module.mk" />

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="game">
-			<UniqueIdentifier>E02B821B-8E60-4790-B923-19143543E87F</UniqueIdentifier>
+			<UniqueIdentifier>450B687F-2BE0-4740-9921-0CB40D626E4D</UniqueIdentifier>
 		</Filter>
 		<Filter Include="te">
-			<UniqueIdentifier>04DA41AC-7EF5-4E2D-A583-680396F416B7</UniqueIdentifier>
+			<UniqueIdentifier>9EB2DA74-18D9-44CA-A435-3BD4EBE590CE</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="fmv">
-			<UniqueIdentifier>BCD03D60-7670-465D-B0CF-651EABE2FE12</UniqueIdentifier>
+			<UniqueIdentifier>4378AC13-D454-421D-9108-64A05D10CC08</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gfx">
-			<UniqueIdentifier>7B710E88-7A0F-438C-9DE6-856613C05A68</UniqueIdentifier>
+			<UniqueIdentifier>00F8D56C-0BDF-4C65-8E8D-3BE40505DDDE</UniqueIdentifier>
 		</Filter>
 		<Filter Include="gfx\image">
-			<UniqueIdentifier>85BF7830-AEB4-4804-87DB-2CF7FB7EED1F</UniqueIdentifier>
+			<UniqueIdentifier>AFB7A898-0880-4692-9451-A79D85AC5021</UniqueIdentifier>
 		</Filter>
 		<Filter Include="input">
-			<UniqueIdentifier>A492BC20-A131-4B67-A552-631CF1088062</UniqueIdentifier>
+			<UniqueIdentifier>356C9663-4C70-44E6-8DB1-3772C0A8D80C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="kernel">
-			<UniqueIdentifier>C039AEDE-BE9B-4EF6-80E6-1629573B658D</UniqueIdentifier>
+			<UniqueIdentifier>6193093D-9026-4391-AF32-333633F77FB8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="math">
-			<UniqueIdentifier>A539F47F-7FA6-417E-BFE1-F3DD3B48E124</UniqueIdentifier>
+			<UniqueIdentifier>7C7FC9FC-F3A7-40DD-A31E-8AF15B3BB17F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="package">
-			<UniqueIdentifier>5BAF4B52-5405-4580-BA59-5B270F496E90</UniqueIdentifier>
+			<UniqueIdentifier>1188EAC9-158E-46DE-9E28-B93459706AA3</UniqueIdentifier>
 		</Filter>
 		<Filter Include="script">
-			<UniqueIdentifier>58E4F2D7-8EE7-4822-BFD0-FB0678878DCC</UniqueIdentifier>
+			<UniqueIdentifier>0A9F3675-02D2-45B1-AF1A-D1E96BA485BC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sfx">
-			<UniqueIdentifier>AA58DF43-56AF-46F6-A1D1-56D28233F212</UniqueIdentifier>
+			<UniqueIdentifier>F202C1BE-41FC-4C8E-92CB-9E5DF4214529</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

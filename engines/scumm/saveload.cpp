@@ -42,6 +42,11 @@
 #include "scumm/he/sprite_he.h"
 #include "scumm/verbs.h"
 
+#ifdef ENABLE_SCUMM_7_8
+#include "scumm/insane/rebel1/rebel.h"
+#include "scumm/insane/rebel2/rebel.h"
+#endif
+
 #include "backends/audiocd/audiocd.h"
 
 #include "graphics/thumbnail.h"
@@ -76,6 +81,20 @@ struct SaveInfoSection {
 #pragma mark -
 
 Common::Error ScummEngine::loadGameState(int slot) {
+#ifdef ENABLE_SCUMM_7_8
+	if (_game.id == GID_REBEL1) {
+		InsaneRebel1 *rebel = (InsaneRebel1 *)((ScummEngine_v7 *)this)->getInsane();
+		if (rebel)
+			return rebel->loadGameState(slot);
+	}
+
+	if (_game.id == GID_REBEL2) {
+		InsaneRebel2 *rebel = (InsaneRebel2 *)((ScummEngine_v7 *)this)->getInsane();
+		if (rebel)
+			return rebel->loadGameState(slot);
+	}
+#endif
+
 	requestLoad(slot);
 	return Common::kNoError;
 }
@@ -83,6 +102,17 @@ Common::Error ScummEngine::loadGameState(int slot) {
 bool ScummEngine::canLoadGameStateCurrently(Common::U32String *msg) {
 	if (!_setupIsComplete)
 		return false;
+
+#ifdef ENABLE_SCUMM_7_8
+	if (_game.id == GID_REBEL1) {
+		const InsaneRebel1 *rebel = (InsaneRebel1 *)((ScummEngine_v7 *)this)->getInsane();
+		return rebel && rebel->hasPlayableLevels();
+	}
+	if (_game.id == GID_REBEL2) {
+		const InsaneRebel2 *rebel = (InsaneRebel2 *)((ScummEngine_v7 *)this)->getInsane();
+		return rebel && !rebel->_release.nonInteractiveVideos;
+	}
+#endif
 
 	// FIXME: For now always allow loading in V0-V3 games
 	// FIXME: Actually, we might wish to support loading in more places.
@@ -139,6 +169,18 @@ bool ScummEngine::canLoadGameStateCurrently(Common::U32String *msg) {
 }
 
 Common::Error ScummEngine::saveGameState(int slot, const Common::String &desc, bool isAutosave) {
+#ifdef ENABLE_SCUMM_7_8
+	if (_game.id == GID_REBEL1) {
+		InsaneRebel1 *rebel = (InsaneRebel1 *)((ScummEngine_v7 *)this)->getInsane();
+		if (rebel)
+			return rebel->saveGameState(slot, desc, isAutosave);
+	}
+
+	// RA2 writes the active pilot itself, and pilot slots must stay contiguous.
+	if (_game.id == GID_REBEL2)
+		return Common::kNoError;
+#endif
+
 	requestSave(slot, desc);
 	return Common::kNoError;
 }
@@ -146,6 +188,21 @@ Common::Error ScummEngine::saveGameState(int slot, const Common::String &desc, b
 bool ScummEngine::canSaveGameStateCurrently(Common::U32String *msg) {
 	if (!_setupIsComplete)
 		return false;
+
+#ifdef ENABLE_SCUMM_7_8
+	if (_game.id == GID_REBEL1) {
+		const InsaneRebel1 *rebel = (InsaneRebel1 *)((ScummEngine_v7 *)this)->getInsane();
+		return rebel && rebel->hasPlayableLevels();
+	}
+
+	// No save interface: progress is written as levels are completed.
+	if (_game.id == GID_REBEL2) {
+		if (msg)
+			*msg = _("This game does not support saving from the menu. Progress is saved automatically when a level is completed");
+
+		return false;
+	}
+#endif
 
 	// Disallow saving in v0-v3 games when a 'prequel' to a cutscene is shown.
 	// This is a blank screen with text, and while this is shown, saving should

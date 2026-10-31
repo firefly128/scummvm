@@ -1501,7 +1501,7 @@ int ScummEngine::readSoundResource(ResId idx) {
 	}
 
 	if (total_size)
-		warning("Unrecognized base tag '%c%c%c%c' in sound %d", (basetag >> 24) & 0xFF, (basetag >> 16) & 0xFF, (basetag >> 8) & 0xFF, basetag & 0xFF, idx);
+		warning("Unrecognized base tag '%s' in sound %d", tag2str(basetag), idx);
 	_res->_types[rtSound][idx]._roomoffs = RES_INVALID_OFFSET;
 	return 0;
 }
@@ -2216,7 +2216,14 @@ void Sound::updateMusicTimer() {
 			_vm->VAR(_vm->VAR_MUSIC_TIMER) = _soundCD->getMusicTimer();
 		} else if (_vm->_musicEngine) {
 			// The music engine generates the timer data for us.
-			_vm->VAR(_vm->VAR_MUSIC_TIMER) = _vm->_musicEngine->getMusicTimer() * _vm->getTimerFrequency() / 240.0;
+			// Note that on the C64 we use the cue value, not the
+			// elapsed time, or the Zak intro will hang when
+			// playing the game in PAL mode.
+			if (_vm->_game.platform != Common::kPlatformC64) {
+				_vm->VAR(_vm->VAR_MUSIC_TIMER) = _vm->_musicEngine->getMusicTimer() * _vm->getTimerFrequency() / 240.0;
+			} else {
+				_vm->VAR(_vm->VAR_MUSIC_TIMER) = _vm->_musicEngine->getMusicTimer();
+			}
 		}
 	}
 }

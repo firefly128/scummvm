@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="objects">
-			<UniqueIdentifier>F4E721C5-EE32-4E98-A9A5-111A2A04B1CC</UniqueIdentifier>
+			<UniqueIdentifier>F9C44DFD-70CF-4622-8954-4F1DC4F0F566</UniqueIdentifier>
 		</Filter>
 		<Filter Include="objects\actions">
-			<UniqueIdentifier>BAA1CFDE-2ADF-4A07-A966-ACFC145A8551</UniqueIdentifier>
+			<UniqueIdentifier>BCF78210-B342-43DC-B11C-E50C8425C9BC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="objects\actors">
-			<UniqueIdentifier>D69BCEF9-1505-4954-B75B-92C643C71F0E</UniqueIdentifier>
+			<UniqueIdentifier>7CF07F34-192A-473F-9498-91FC2D477F76</UniqueIdentifier>
 		</Filter>
 		<Filter Include="objects\handlers">
-			<UniqueIdentifier>3760BBB9-C45A-4A1D-B157-79977AC53975</UniqueIdentifier>
+			<UniqueIdentifier>ADE7B194-3791-486F-BA53-36B2ED3B0ACD</UniqueIdentifier>
 		</Filter>
 		<Filter Include="objects\pages">
-			<UniqueIdentifier>30FAD3DD-1E74-45AF-8888-E1C55ACB84B0</UniqueIdentifier>
+			<UniqueIdentifier>6AC10FDC-9EC5-4CB9-B669-FAFB333EB000</UniqueIdentifier>
 		</Filter>
 		<Filter Include="objects\sequences">
-			<UniqueIdentifier>A7953EBB-1587-4925-9B15-712636C21C2F</UniqueIdentifier>
+			<UniqueIdentifier>9073B767-B24E-45E2-B3E1-F07D7A793378</UniqueIdentifier>
 		</Filter>
 		<Filter Include="objects\walk">
-			<UniqueIdentifier>4745735E-FBBD-4018-89F5-F021D48C798E</UniqueIdentifier>
+			<UniqueIdentifier>71852C8C-45E3-4F9A-A0BB-D287502CAA6C</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

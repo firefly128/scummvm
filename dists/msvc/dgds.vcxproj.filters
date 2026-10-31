@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="minigames">
-			<UniqueIdentifier>7F4F5E6F-6804-4506-B743-83EE54CB7ED2</UniqueIdentifier>
+			<UniqueIdentifier>D3B226C2-38A0-4CCA-84A3-10D2EADDD1CA</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound">
-			<UniqueIdentifier>346ABCBB-C66F-4E0C-B62F-EFF8926FCCC9</UniqueIdentifier>
+			<UniqueIdentifier>8FFDFC9E-7B88-4755-928D-86B423E86499</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound\drivers">
-			<UniqueIdentifier>7755E78A-4477-4A92-9FCB-E0DFAE0B9B52</UniqueIdentifier>
+			<UniqueIdentifier>B4F468DD-74DC-4AFB-AF7A-F34EB469C752</UniqueIdentifier>
 		</Filter>
 		<Filter Include="sound\resource">
-			<UniqueIdentifier>B2F10829-792E-4A4C-AD39-4AEDD6FBDD85</UniqueIdentifier>
+			<UniqueIdentifier>4719D175-D89D-4771-85E1-2F30A5BC6316</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

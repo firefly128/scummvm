@@ -60,6 +60,8 @@
 #include "graphics/fontman.h"
 #include "graphics/paletteman.h"
 #include "graphics/pixelformat.h"
+#include "graphics/font.h"
+#include "graphics/hotspot_renderer.h"
 #include "image/bmp.h"
 
 #include "common/text-to-speech.h"
@@ -154,7 +156,10 @@ Engine::Engine(OSystem *syst)
 		_mainMenuDialog(NULL),
 		_debugger(NULL),
 		_autosaveInterval(ConfMan.getInt("autosave_period")),
-		_lastAutosaveTime(_system->getMillis()) {
+		_lastAutosaveTime(_system->getMillis()),
+		_showHotspots(false),
+		_hotspotForceRedraw(false),
+		_hotspotPrevCursorVisible(false) {
 
 	g_engine = this;
 	_quitRequested = false;
@@ -213,10 +218,6 @@ Engine::Engine(OSystem *syst)
 Engine::~Engine() {
 	_mixer->stopAll();
 
-	// Flush any pending remaining events
-	Common::Event evt;
-	while (g_system->getEventManager()->pollEvent(evt)) {}
-
 	delete _debugger;
 	delete _mainMenuDialog;
 	g_engine = NULL;
@@ -230,7 +231,7 @@ void Engine::initializePath(const Common::FSNode &gamePath) {
 	SearchMan.addDirectory(gamePath, 0, 4);
 }
 
-bool Engine::enhancementEnabled(int32 cls) {
+bool Engine::enhancementEnabled(int32 cls) const {
 	return _activeEnhancements & cls;
 }
 
@@ -311,10 +312,10 @@ void splashScreen() {
 
 	// Print version information
 	const Graphics::Font *font = FontMan.getFontByUsage(Graphics::FontManager::kConsoleFont);
-	int w = font->getStringWidth(gScummVMVersionDate);
+	int w = font->getStringWidth(gScummVMFullVersion);
 	int x = screen.w - w - 5;
 	int y = screen.h - font->getFontHeight() - 5;
-	font->drawString(&screen, gScummVMVersionDate, x, y, w, screen.format.ARGBToColor(0xff, 0, 0, 0));
+	font->drawString(&screen, gScummVMFullVersion, x, y, w, screen.format.ARGBToColor(0xff, 0, 0, 0));
 
 	// Scale if needed and copy to overlay
 	if (screen.w != overlayWidth) {
@@ -376,14 +377,12 @@ static void warnTransactionFailures(OSystem::TransactionError gfxError, int widt
 	}
 
 	// Just show warnings then these occur:
-#ifdef USE_RGB_COLOR
 	if (gfxError & OSystem::kTransactionFormatNotSupported) {
 		Common::U32String message = _("Could not initialize color format.");
 
 		GUI::MessageDialog dialog(message);
 		dialog.runModal();
 	}
-#endif
 
 	if (gfxError & OSystem::kTransactionModeSwitchFailed) {
 		Common::U32String message;
@@ -434,16 +433,12 @@ int initGraphicsAny(const Graphics::ModeWithFormatList &modes, int start) {
 	for (candidate = start; candidate < (int)modes.size(); candidate++) {
 		g_system->beginGFXTransaction();
 		initCommonGFX(false);
-#ifdef USE_RGB_COLOR
 		if (modes[candidate].hasFormat)
 			g_system->initSize(modes[candidate].width, modes[candidate].height, &modes[candidate].format);
 		else {
 			Graphics::PixelFormat bestFormat = g_system->getSupportedFormats().front();
 			g_system->initSize(modes[candidate].width, modes[candidate].height, &bestFormat);
 		}
-#else
-		g_system->initSize(modes[candidate].width, modes[candidate].height);
-#endif
 		last_width = modes[candidate].width;
 		last_height = modes[candidate].height;
 
@@ -482,14 +477,12 @@ void initGraphics(int width, int height, const Graphics::PixelFormat *format) {
  *					or PixelFormat::createFormatCLUT8() if no matching formats were found.
  */
 inline Graphics::PixelFormat findCompatibleFormat(const Common::List<Graphics::PixelFormat> &backend, const Common::List<Graphics::PixelFormat> &frontend) {
-#ifdef USE_RGB_COLOR
 	for (const auto &back : backend) {
 		for (auto &front : frontend) {
 			if (back == front)
 				return back;
 		}
 	}
-#endif
 	return Graphics::PixelFormat::createFormatCLUT8();
 }
 
@@ -649,7 +642,7 @@ bool Engine::warnBeforeOverwritingAutosave() {
 	altButtons.push_back(_("Delete"));
 	altButtons.push_back(_("Skip autosave"));
 	const Common::U32String message = Common::U32String::format(
-				_("WARNING: The autosave slot contains a saved game named %S, and an autosave is pending.\n"
+				_("WARNING: The autosave slot contains a saved game named %s, and an autosave is pending.\n"
 				  "Please move this saved game to a new slot, or delete it if it's no longer needed.\n"
 				  "Alternatively, you can skip the autosave (will prompt again in 5 minutes)."), desc.getDescription().c_str());
 	GUI::MessageDialog warn(message, _("Move"), altButtons);
@@ -750,6 +743,73 @@ void Engine::pauseEngineIntern(bool pause) {
 	_mixer->pauseAll(pause);
 }
 
+void Engine::showHotspots(bool show) {
+	bool wasShowing = _showHotspots;
+	_showHotspots = show;
+
+	if (show) {
+		_hotspotForceRedraw = true;
+		if (!wasShowing)
+			_hotspotPrevCursorVisible = CursorMan.showMouse(false);
+	} else {
+		if (wasShowing)
+			CursorMan.showMouse(_hotspotPrevCursorVisible);
+		if (g_system->isOverlayVisible())
+			g_system->hideOverlay();
+	}
+}
+
+void Engine::getHotspotPositions(Common::Array<Graphics::HotspotInfo> &hotspots) {
+}
+
+bool Engine::hotspotDirty() const {
+	return true;
+}
+
+void Engine::drawHotspots() {
+	if (!_showHotspots)
+		return;
+
+	if (!hotspotDirty() && !_hotspotForceRedraw)
+		return;
+	_hotspotForceRedraw = false;
+
+	Common::Array<Graphics::HotspotInfo> hotspots;
+	getHotspotPositions(hotspots);
+
+	if (hotspots.empty())
+		return;
+
+	int16 gameWidth = g_system->getWidth();
+	int16 gameHeight = g_system->getHeight();
+	int16 overlayWidth = g_system->getOverlayWidth();
+	int16 overlayHeight = g_system->getOverlayHeight();
+	Graphics::PixelFormat overlayFormat = g_system->getOverlayFormat();
+
+	if (!g_system->isOverlayVisible())
+		g_system->showOverlay(false);
+
+	g_system->clearOverlay();
+
+	Graphics::Surface overlayBuffer;
+	overlayBuffer.create(overlayWidth, overlayHeight, overlayFormat);
+	g_system->grabOverlay(overlayBuffer);
+
+	bool showText = ConfMan.getBool("show_hotspot_text");
+	if (!ConfMan.hasKey("show_hotspot_text"))
+		showText = true;
+
+	int markerType = ConfMan.getInt("hotspot_marker");
+
+	Graphics::HotspotRenderer renderer;
+	renderer.render(&overlayBuffer, hotspots, gameWidth, gameHeight,
+		overlayWidth, overlayHeight, overlayFormat,
+		(Graphics::MarkerShape)markerType, showText);
+
+	g_system->copyRectToOverlay(overlayBuffer.getPixels(), overlayBuffer.pitch, 0, 0, overlayWidth, overlayHeight);
+	overlayBuffer.free();
+}
+
 void Engine::openMainMenuDialog() {
 	if (!_mainMenuDialog)
 		_mainMenuDialog = new MainMenuDialog(this);
@@ -765,7 +825,13 @@ void Engine::openMainMenuDialog() {
 	if (hasVKeyb)
 		g_system->setFeatureState(OSystem::kFeatureVirtualKeyboard, false);
 
+#ifdef ENABLE_EVENTRECORDER
+	g_eventRec.setRecordModalDialog(true);
+#endif
 	runDialog(*_mainMenuDialog);
+#ifdef ENABLE_EVENTRECORDER
+	g_eventRec.setRecordModalDialog(false);
+#endif
 
 	if (hasVKeyb)
 		g_system->setFeatureState(OSystem::kFeatureVirtualKeyboard, true);
@@ -817,7 +883,7 @@ bool Engine::warnUserAboutUnsupportedGame(Common::String msg) {
 }
 
 bool Engine::warnUserAboutUnsupportedAddOn(Common::String addOnName) {
-	if (ConfMan.getBool("enable_unsupported_addon_warning")) {
+	if (ConfMan.getBool("enable_unsupported_game_warning")) {
 		Common::TextToSpeechManager *ttsMan = g_system->getTextToSpeechManager();
 		if (ttsMan != nullptr) {
 			ttsMan->pushState();
@@ -840,6 +906,23 @@ bool Engine::warnUserAboutUnsupportedAddOn(Common::String addOnName) {
 	}
 
 	return true;
+}
+
+void Engine::warnUserAboutTestingMode() {
+	if (ConfMan.getBool("enable_unsupported_game_warning")) {
+		Common::TextToSpeechManager *ttsMan = g_system->getTextToSpeechManager();
+		if (ttsMan != nullptr) {
+			ttsMan->pushState();
+			g_gui.initTextToSpeech();
+		}
+
+		GUI::MessageDialog alert(_("WARNING: The game you are about to start is newly supported and is in testing mode.\n"
+						"If you encounter any bugs or oddities, please report them to our bugtracker."), _("OK"));
+		alert.runModal();
+
+		if (ttsMan != nullptr)
+			ttsMan->popState();
+	}
 }
 
 void Engine::errorAddingAddOnWithoutBaseGame(Common::String addOnName, Common::String gameId) {
@@ -1016,7 +1099,7 @@ bool Engine::loadGameDialog() {
 		return false;
 	}
 
-	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(_("Load game:"), _("Load"), false);
+	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(false);
 
 	int slotNum;
 	{
@@ -1045,7 +1128,7 @@ bool Engine::saveGameDialog() {
 		return false;
 	}
 
-	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(_("Save game:"), _("Save"), true);
+	GUI::SaveLoadChooser *dialog = new GUI::SaveLoadChooser(true);
 	int slotNum;
 	{
 		PauseToken pt = pauseEngine();

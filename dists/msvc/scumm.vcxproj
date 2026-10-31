@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{A06BA9BB-59AE-4E07-B535-4A3206F7B396}</ProjectGuid>
+		<ProjectGuid>{18558AE6-4089-473E-B5C1-72A098AB335F}</ProjectGuid>
 		<RootNamespace>scumm</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -274,6 +277,27 @@
 		<ClCompile Include="..\..\engines\scumm\imuse_digi\dimuse_utils.cpp" />
 		<ClCompile Include="..\..\engines\scumm\imuse_digi\dimuse_wave.cpp" />
 		<ClCompile Include="..\..\engines\scumm\imuse_digi\dimuse_waveout.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel\rebel_audio.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel\rebel_gamepad.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel\rebel_touch.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\audio.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\iact.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\levels.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\menu.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\rebel.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\releases.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\render.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\runlevels.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\saveload.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\audio.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\iact.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\levels.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\mac_archive.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\menu.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\rebel.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\releases.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\render.cpp" />
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\runlevels.cpp" />
 		<ClCompile Include="..\..\engines\scumm\insane\insane.cpp" />
 		<ClCompile Include="..\..\engines\scumm\insane\insane_ben.cpp" />
 		<ClCompile Include="..\..\engines\scumm\insane\insane_enemy.cpp" />
@@ -306,6 +330,13 @@
 		<ClCompile Include="..\..\engines\scumm\players\player_v2cms.cpp" />
 		<ClCompile Include="..\..\engines\scumm\players\player_v3a.cpp" />
 		<ClCompile Include="..\..\engines\scumm\players\player_v4a.cpp" />
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\codec_ra1.cpp" />
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\codec_ra2.cpp" />
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\font_rebel2.cpp" />
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_multi_font.cpp" />
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_player_ra1.cpp" />
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_player_ra2.cpp" />
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_player_rebel.cpp" />
 		<ClCompile Include="..\..\engines\scumm\smush\codec1.cpp" />
 		<ClCompile Include="..\..\engines\scumm\smush\codec20.cpp" />
 		<ClCompile Include="..\..\engines\scumm\smush\codec37.cpp" />
@@ -313,6 +344,7 @@
 		<ClCompile Include="..\..\engines\scumm\smush\smush_player.cpp" />
 		<ClCompile Include="..\..\engines\scumm\actor.cpp" />
 		<ClCompile Include="..\..\engines\scumm\akos.cpp" />
+		<ClCompile Include="..\..\engines\scumm\base-costume-optimised.cpp" />
 		<ClCompile Include="..\..\engines\scumm\base-costume.cpp" />
 		<ClCompile Include="..\..\engines\scumm\bomp.cpp" />
 		<ClCompile Include="..\..\engines\scumm\boxes.cpp" />
@@ -443,6 +475,15 @@
 		<ClInclude Include="..\..\engines\scumm\imuse_digi\dimuse_sndmgr.h" />
 		<ClInclude Include="..\..\engines\scumm\imuse_digi\dimuse_tables.h" />
 		<ClInclude Include="..\..\engines\scumm\imuse_digi\dimuse_triggers.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel\rebel_audio.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel\rebel_gamepad.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel\rebel_touch.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel1\rebel.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel1\releases.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\mac_archive.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\rebel.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\releases.h" />
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\shared.h" />
 		<ClInclude Include="..\..\engines\scumm\insane\insane.h" />
 		<ClInclude Include="..\..\engines\scumm\macgui\macgui.h" />
 		<ClInclude Include="..\..\engines\scumm\macgui\macgui_colors.h" />
@@ -469,6 +510,13 @@
 		<ClInclude Include="..\..\engines\scumm\players\player_v2cms.h" />
 		<ClInclude Include="..\..\engines\scumm\players\player_v3a.h" />
 		<ClInclude Include="..\..\engines\scumm\players\player_v4a.h" />
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\anim_ra1.h" />
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\codec_ra1.h" />
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\codec_ra2.h" />
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\font_rebel2.h" />
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\smush_multi_font.h" />
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\smush_player_ra1.h" />
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\smush_player_ra2.h" />
 		<ClInclude Include="..\..\engines\scumm\smush\codec37.h" />
 		<ClInclude Include="..\..\engines\scumm\smush\codec47.h" />
 		<ClInclude Include="..\..\engines\scumm\smush\smush_font.h" />
@@ -479,6 +527,7 @@
 		<ClInclude Include="..\..\engines\scumm\base-costume.h" />
 		<ClInclude Include="..\..\engines\scumm\bomp.h" />
 		<ClInclude Include="..\..\engines\scumm\boxes.h" />
+		<ClInclude Include="..\..\engines\scumm\bylerledecodeM68K.h" />
 		<ClInclude Include="..\..\engines\scumm\cdda.h" />
 		<ClInclude Include="..\..\engines\scumm\charset.h" />
 		<ClInclude Include="..\..\engines\scumm\charset_v7.h" />

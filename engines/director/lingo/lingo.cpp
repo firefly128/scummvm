@@ -109,6 +109,10 @@ Symbol& Symbol::operator=(const Symbol &s) {
 }
 
 bool Symbol::operator==(Symbol &s) const {
+	if ((s.type == VOIDSYM) && (type == VOIDSYM))
+		return true;
+	if ((!name || !s.name))
+		return false;
 	return ctx == s.ctx && (name->equalsIgnoreCase(*s.name));
 }
 
@@ -160,6 +164,9 @@ LingoState::~LingoState() {
 		if (callstack[i]->retContext) {
 			callstack[i]->retContext->decRefCount();
 		}
+		if (callstack[i]->retWindow) {
+			callstack[i]->retWindow->decRefCount();
+		}
 		delete callstack[i];
 	}
 	if (localVars)
@@ -174,7 +181,6 @@ Lingo::Lingo(DirectorEngine *vm) : _vm(vm) {
 	g_lingo = this;
 
 	_state = nullptr;
-	_currentChannelId = -1;
 	_globalCounter = 0;
 	_freezeState = false;
 	_freezePlay = false;
@@ -201,6 +207,7 @@ Lingo::Lingo(DirectorEngine *vm) : _vm(vm) {
 	_trace = false;
 	_traceLoad = 0;
 	_updateMovieEnabled = false;
+	_soundDevice = "DirectSound";
 
 	// events
 	_passEvent = false;
@@ -398,6 +405,7 @@ void LingoArchive::addCode(const Common::U32String &code, ScriptType type, uint1
 
 	ScriptContext *sc = g_lingo->_compiler->compileLingo(code, this, type, CastMemberID(id, cast->_castLibID), contextName, false, preprocFlags);
 	if (sc) {
+		sc->setCast(cast);
 		scriptContexts[type][id] = sc;
 		sc->incRefCount();
 	}
@@ -422,7 +430,7 @@ Common::String Lingo::formatStack() {
 
 	for (uint i = 0; i < _state->stack.size(); i++) {
 		Datum d = _state->stack[i];
-		stack += Common::String::format("<%s> ", d.asString(true).c_str());
+		stack += Common::String::format("<%s> ", formatStringForDump(d.asString(true)).c_str());
 	}
 	return stack;
 }
@@ -648,7 +656,7 @@ bool Lingo::execute(int targetFrame) {
 
 		// process events every so often
 		if (localCounter > 0 && localCounter % 100 == 0) {
-			_vm->processEvents();
+			_vm->processSysEvents();
 			// Also process update widgets!
 			Movie *movie = g_director->getCurrentMovie();
 			Score *score = movie->getScore();
@@ -657,6 +665,8 @@ bool Lingo::execute(int targetFrame) {
 			if (g_system->getMillis() - lastUpdate > 20) {
 				lastUpdate = g_system->getMillis();
 				g_system->updateScreen();
+				// On Emscripten, updateScreen() may skip the swap, so force a yield here; a no-op elsewhere.
+				g_system->delayMillis(0);
 			}
 		}
 
@@ -703,9 +713,22 @@ bool Lingo::execute(int targetFrame) {
 			break;
 		}
 
-		if (!_abort && _state->pc >= (*_state->script).size()) {
+		if (!_abort && _state->pc >= _state->script->size()) {
 			warning("Lingo::execute(): Bad PC (%d)", _state->pc);
 			break;
+		}
+
+		if (_playDone) {
+			// Returning from a script with "play done" does not freeze the state. Instead it obliterates it,
+			// replacing it with the script context from the entry "play" statement.
+			// To be clear, if "play movie B" was invoked in movie A, and "play done" was invoked in movie B,
+			// the script from movie A will be resumed in movie B -before- the normal movie switch procedure.
+			while (_state->callstack.size()) {
+				popContext(true);
+			}
+
+			_playDone = false;
+			requeuePlayState();
 		}
 	}
 
@@ -716,19 +739,16 @@ bool Lingo::execute(int targetFrame) {
 	} else if (_freezeState) {
 		debugC(5, kDebugLingoExec, "Lingo::execute(): Context is frozen, pausing execution");
 		freezeState();
-	// Returning from a script with "play done" does not freeze the state. Instead it obliterates it.
-	} else if (_abort || _playDone || _vm->getCurrentMovie()->getScore()->_playState == kPlayStopped) {
+	} else if (_abort || _vm->getCurrentMovie()->getScore()->_playState == kPlayStopped) {
 		// Clean up call stack
 		while (_state->callstack.size()) {
 			popContext(true);
-		}
-		if (_playDone) {
-			_playDone = false;
 		}
 	}
 	_abort = false;
 	_freezeState = false;
 	_freezePlay = false;
+	_playDone = false;
 
 	g_debugger->stepHook();
 	// return true if execution finished, false if the context froze for later
@@ -782,6 +802,9 @@ void Lingo::lingoError(const char *s, ...) {
 		_caughtError = true;
 	} else {
 		warning("BUILDBOT: Uncaught Lingo error: %s", buf);
+		debug("Movie: %s", _vm->getCurrentMovie()->getArchive()->getPathName().toString(Common::Path::kNativeSeparator).c_str());
+		debugN("%s", formatCallStack(_state->pc).c_str());
+
 		if (debugChannelSet(-1, kDebugLingoStrict)) {
 			error("Uncaught Lingo error");
 		}
@@ -1442,6 +1465,17 @@ int Datum::equalTo(const Datum &d, bool ignoreCase) const {
 		} else {
 			return compareStringEquality(asString(), d.asString());
 		}
+	case ARRAY:
+	case POINT:
+	case RECT:
+		// Compare element by element.
+		if (u.farr->arr.size() != d.u.farr->arr.size())
+			return 0;
+		for (uint i = 0; i < u.farr->arr.size(); i++) {
+			if (!u.farr->arr[i].equalTo(d.u.farr->arr[i], ignoreCase))
+				return 0;
+		}
+		return 1;
 	case MEDIA:
 	case OBJECT:
 		return u.obj == d.u.obj;
@@ -1956,23 +1990,35 @@ CastMemberID Lingo::resolveCastMember(const Datum &memberID, const Datum &castLi
 		return CastMemberID(-1, castLib.asInt());
 	}
 
-	switch (memberID.type) {
+	int libID = -1;
+	switch (castLib.type) {
 	case STRING:
-		return movie->getCastMemberIDByNameAndType(memberID.asString(), castLib.asInt(), type);
+		libID = movie->getCastLibIDByName(castLib.asString());
 		break;
 	case INT:
 	case FLOAT:
-		if (g_director->getVersion() >= 500 && memberID.asInt() > 0x20000) {
+	case VOID:
+		libID = castLib.asInt();
+		break;
+	default:
+		error("Lingo::resolveCastMember: unsupported castLib type %s", castLib.type2str());
+		break;
+	}
+
+	switch (memberID.type) {
+	case STRING:
+		return movie->getCastMemberIDByNameAndType(memberID.asString(), libID, type);
+		break;
+	case INT:
+	case FLOAT: {
 			// Composite ID
-			return CastMemberID().fromMultiplex(memberID.asInt());
-		}
-		if (castLib.asInt() == 0) {
-			// When specifying 0 as the castlib, D5 will assume this
-			// means the default (i.e. first) cast library. It will not
-			// try other libraries for matches if the member is a number.
-			return CastMemberID(memberID.asInt(), DEFAULT_CAST_LIB);
-		} else {
-			return CastMemberID(memberID.asInt(), castLib.asInt());
+			CastMemberID multi = CastMemberID().fromMultiplex(memberID.asInt());
+			// All numbers up to 0x20000 count as castLib 1, aka DEFAULT_CAST_LIB
+			// If the castLib is defined, then use the masked-off member number but
+			// override the castLib.
+			if (libID > 0)
+				multi.castLib = libID;
+			return multi;
 		}
 		break;
 	case VOID:

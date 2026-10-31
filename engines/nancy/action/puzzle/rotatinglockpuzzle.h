@@ -22,15 +22,17 @@
 #ifndef NANCY_ACTION_ROTATINGLOCKPUZZLE_H
 #define NANCY_ACTION_ROTATINGLOCKPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
+#include "engines/nancy/cursor.h"
 
 namespace Nancy {
 namespace Action {
 
-class RotatingLockPuzzle : public RenderActionRecord {
+class RotatingLockPuzzle : public PuzzleRecord {
 public:
 	enum SolveState { kNotSolved, kPlaySound, kWaitForSound };
-	RotatingLockPuzzle() : RenderActionRecord(7) {}
+	static const byte kRandomStart = 99;
+	RotatingLockPuzzle() : PuzzleRecord(7) {}
 	virtual ~RotatingLockPuzzle() {}
 
 	void init() override;
@@ -39,27 +41,30 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
-	Common::Path _imageName;
 	Common::Array<Common::Rect> _srcRects;
 	Common::Array<Common::Rect> _destRects;
 	Common::Array<Common::Rect> _upHotspots;
 	Common::Array<Common::Rect> _downHotspots;
+	// Nancy 14+: per-dial starting positions; kRandomStart picks a random
+	// position that differs from the solution
+	Common::Array<byte> _startSequence;
 	Common::Array<byte> _correctSequence;
-	Nancy::SoundDescription _clickSound;
-	SceneChangeWithFlag _solveExitScene;
-	uint16 _solveSoundDelay = 0;
-	Nancy::SoundDescription _solveSound;
-	SceneChangeWithFlag _exitScene;
-	Common::Rect _exitHotspot;
+	uint16 _iconsPerDial = 10;
+	// Cursor types shown while hovering a dial's up/down hotspot. Nancy 10+
+	// stores these per-puzzle (e.g. a crank uses the rotate-clockwise cursor);
+	// older games and unset fields default to the up/down movement cursors.
+	CursorManager::CursorType _upCursorType = CursorManager::kMoveUp;
+	CursorManager::CursorType _downCursorType = CursorManager::kMoveDown;
+	SoundDescription _clickSound;
 
 	SolveState _solveState = kNotSolved;
-	Graphics::ManagedSurface _image;
 	Common::Array<byte> _currentSequence;
 	Time _solveSoundPlayTime;
 
+	bool isViewportRelative() const override { return true; }
+
 protected:
 	Common::String getRecordTypeName() const override { return "RotatingLockPuzzle"; }
-	bool isViewportRelative() const override { return true; }
 
 	void drawDial(uint id);
 };

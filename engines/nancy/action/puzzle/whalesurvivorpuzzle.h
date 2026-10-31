@@ -22,7 +22,7 @@
 #ifndef NANCY_ACTION_WHALESURVIVORPUZZLE_H
 #define NANCY_ACTION_WHALESURVIVORPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 #include "engines/nancy/commontypes.h"
 
 #include "graphics/managed_surface.h"
@@ -34,9 +34,9 @@ namespace Action {
 // The player controls Dolly the dall's porpoise, eating fish while avoiding hazards
 // (sharks, octopuses, orcas, pollution) and periodically surfacing to breathe.
 // Win by reaching the score target. Two difficulty levels (easy/hard).
-class WhaleSurvivorPuzzle : public RenderActionRecord {
+class WhaleSurvivorPuzzle : public PuzzleRecord {
 public:
-	WhaleSurvivorPuzzle() : RenderActionRecord(7) {}
+	WhaleSurvivorPuzzle() : PuzzleRecord(7) {}
 	virtual ~WhaleSurvivorPuzzle() {}
 
 	void init() override;
@@ -45,9 +45,10 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
+	bool isViewportRelative() const override { return true; }
+
 protected:
 	Common::String getRecordTypeName() const override { return "WhaleSurvivorPuzzle"; }
-	bool isViewportRelative() const override { return true; }
 
 private:
 	// ---- Constants ----
@@ -155,8 +156,6 @@ private:
 	SoundDescription _sound5;        // 0x9ea - unused (silence)
 
 	SceneChangeWithFlag _lossScene;  // 0xa1b
-	SoundDescription    _winSound;   // 0xa35
-	SceneChangeWithFlag _winScene;   // 0xa66
 
 	SoundDescription _gameOverSound; // 0xa80
 	SoundDescription _tryAgainSound; // 0xab1
@@ -226,6 +225,12 @@ private:
 	int    _oxygenStage     = 0;     // 0=full, 8=dead
 	uint32 _oxygenNextTickMs = 0;
 
+	// Underwater scoring multiplier — grows the longer the porpoise stays
+	// submerged. Per fish: score += scoreDivisor * multiplier.
+	float  _underwaterMultiplier = 1.0f; // original +0x200, clamped >= 1.0
+	uint32 _diveStartMs          = 0;    // original +0x204, set when diving
+	float  _deplPerMs            = 0.0f; // oxygenDeplSpeed / (oxygenTickMs * 8)
+
 	// Score and lives
 	int    _score = 0;
 	int    _lives = kMaxLives;
@@ -246,7 +251,7 @@ private:
 	void updateGame(uint32 nowMs);
 	void checkCollisions();
 	void updateOxygen(uint32 nowMs);
-	void loseLife(uint32 nowMs);
+	void loseLife();
 	void redraw();
 	int  findFreeEntity() const;
 };

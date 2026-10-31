@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="rooms">
-			<UniqueIdentifier>FA13E77D-A1AF-4DFA-B5B2-21D6E64B6C44</UniqueIdentifier>
+			<UniqueIdentifier>FEAFECF2-C026-42E1-90DD-A26D02D4BF3F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="rooms\monster">
-			<UniqueIdentifier>1D05BBD9-DD63-4048-A8AB-65FEEBC501E6</UniqueIdentifier>
+			<UniqueIdentifier>556B53DE-349B-49EF-B33F-BC64D3D4AA8C</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

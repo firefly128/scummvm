@@ -1,7 +1,240 @@
 Umfangreichere Informationen über die Änderungen des aktuellen Codes findest Du unter:
         https://github.com/scummvm/scummvm/commits/
 
-#### 2026.2.0 (28.03.2026)
+#### 2026.4.0 "Never-slop" (10.10.2026)
+
+ Neue Spiele:
+   - Unterstützung für Mortadelo y Filemón: Una Aventura de Cine Edición Original hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: Dos vaqueros chapuceros hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: Terror, Espanto y Pavor hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: La Sexta Secta hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: Operación Moscú hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: El Escarabajo de Cleopatra hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: La Banda de Corvino hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: Balones y Patadones hinzugefügt.
+   - Unterstützung für Mortadelo y Filemón: Mamelucos a la Romana hinzugefügt.
+   - Unterstützung für Dracula: Resurrection hinzugefügt.
+   - Unterstützung für Dracula 2: The Last Sanctuary hinzugefügt.
+   - Unterstützung für Amerzone: The Explorer's Legacy hinzugefügt.
+   - Unterstützung für The Cameron Files: The Secret at Loch Ness hinzugefügt.
+   - Unterstützung für The Messenger / Louvre: The Final Curse hinzugefügt.
+   - Unterstützung für Nancy Drew: The Secret of Shadow Ranch hinzugefügt.
+   - Unterstützung für Nancy Drew: Curse of Blackmoor Manor hinzugefügt.
+   - Unterstützung für Nancy Drew: Secret of the Old Clock hinzugefügt.
+   - Unterstützung für Nancy Drew: Last Train to Blue Moon Canyon hinzugefügt.
+   - Unterstützung für Nancy Drew: Danger by Design hinzugefügt.
+   - Unterstützung für Nancy Drew: The Creature of Kapu Cave hinzugefügt.
+   - Unterstützung für Chamber of the Sci-Mutant Priestess hinzugefügt.
+   - Unterstützung für Star Wars: Rebel Assault hinzugefügt.
+   - Unterstützung für Star Wars: Rebel Assault II: The Hidden Empire hinzugefügt.
+   - Unterstützung für Dragonsphere hinzugefügt.
+   - Unterstützung für Return of the Phantom hinzugefügt.
+   - Unterstützung für Once Upon a Forest hinzugefügt.
+   - Unterstützung für Alpha Polaris hinzugefügt.
+   - Unterstützung für Art of Murder: FBI Confidential hinzugefügt.
+   - Unterstützung für Barrow Hill - The Dark Path hinzugefügt.
+   - Unterstützung für Dark Fall: Lost Souls hinzugefügt.
+   - Unterstützung für Devil In The Capital hinzugefügt.
+   - Unterstützung für Dirty Split hinzugefügt.
+   - Unterstützung für Face Noir hinzugefügt.
+   - Unterstützung für Ghost in the Sheet hinzugefügt.
+   - Unterstützung für Hamlet hinzugefügt.
+   - Unterstützung für The Lost Crown - A Ghost-Hunting Adventure hinzugefügt.
+   - Unterstützung für Murder In Tehran's Alleys 2016 hinzugefügt.
+   - Unterstützung für Murder In Tehran's Alleys 1933 hinzugefügt.
+   - Unterstützung für Reversion series hinzugefügt.
+   - Unterstützung für Rhiannon: Curse of the Four Branches hinzugefügt.
+   - Unterstützung für Shadows on the Vatican series hinzugefügt.
+   - Unterstützung für mehr als 140 weitere Wintermute-Spiele hinzugefügt.
+   - Unterstützung für Der Schatz im Silbersee hinzugefügt.
+   - Unterstützung für The Fool's Errand hinzugefügt.
+   - Unterstützung für Harvester hinzugefügt.
+   - Unterstützung für Lord Avalot d'Argent hinzugefügt.
+   - Unterstützung für Dungeon Master hinzugefügt.
+
+ Allgemein:
+   - Zur Verbesserung der Perforamcen wurden die Audio-Mixer und -Konverter optimiert.
+   - ImGui-basierte Oberfläche für den Event-Recorder implementiert.
+   - Fehler korrigiert, durch den MIDI- und MT-32-Geräte in den Spiel-Optionen
+     nicht überschrieben werden konnten
+   - Der Nuked-OPL3 AdLib-Emulator wurden durch den Nuked-OPL3-fast-Fork ausgetauscht.
+   - Unterstützung für "verschleierte" InstallShield-Dateien hinzugefügt. Das betrifft
+     hauptsächlich einige Nancy Drew-Spiele, die jetzt auch gespielt werden können, ohne
+	 das Windows-Installationsprogramm vorher ausführen zu müssen.
+
+ Asylum:
+   - Fehlende oder falsche Schrittegeräusche in einigen Szenen wurden behoben.
+
+ AWE:
+   - Absturz des Audio-Codes in OpenBSD korrigiert.
+
+ Bagel:
+   - Speicher-Optionen in Hodj n' Podj's Th Gesng Gme korrigiert.
+
+ GLK:
+   - Fehler korrigiert, durch den ausgewählte Schriftarten nicht korrekt angewendet wurden.
+   - Unterstützung für das Laden von ZX Spectrum-Spielen von TAP/TZX-Tape-Images hinzugefügt.
+
+ Freescape:
+   - Unterstützung für das Laden von ZX Spectrum-Spielen von TAP/TZX-Tape-Images hinzugefügt.
+
+ Hopkins:
+   - Fehlender 3D-Shooter "Unterwasser-Basis" hinzugefügt.
+
+ Kyra:
+   - Unterstützung für die koreanische Fan-Übersetzung in Kyra1 hinzugefügt (in ScummVM 2026.3.0).
+   - Fehlerhafte nicht-koreanische kyra1-Spiele (Fehlermeldung "You're missing the 'KYRA.DAT'
+     engine data file or it got corrupted...) wiederhergestellt.
+   - Unterstützung für ein optionales Automap-Overlay in Eye of the Beholder 1 und 2 hinzugefügt.
+
+ Lure:
+   - Charakter-Wegfindung optimiert.
+   - Fehler korrigiert, durch den Charaktere nach einer einseitigen Konversation nicht mehr angesprochen werden konnten.
+
+ M4:
+   - Mehrere Fehlerkorrekturen für Riddle of Master Lu, einschließlich Abstürzen, fehlender Funktionen und Spiel-Fehler.
+   - Fehler im Originalspiel korrigiert, der dafür sorgt, dass bei einer Unterhaltung mit Wolf das Spiel einfriert.
+   - Unterstützung für originale Cheat-Codes hinzugefügt.
+   - Log-Einträge können jetzt übersetzt werden.
+
+ MM:
+   - Mehrere Abstürze in Kämpfen in M&M1 korrigiert.
+   - Unterstützung für PC-Speaker in M&M1 implementiert.
+   - Fehler korrigiert, der einen Absturz beim Schließen veralteter Ansichten auslöst.
+   - Schreibfehler in M&M1 korrigiert.
+   - Verbesserung des erweiterten Maus-Modus, der Charakter-Erzeugung und der Spiel-Oberfläche
+     in M&M1.
+   - Darstellung der Untertitel in Zwischensequenzen korrigiert.
+   - Unterstützung für die französische Übersetzung von Xeen hinzugefügt.
+   - Die Stimme des Pharao wird im Intro von Dark Side of Xeen jetzt nicht wiederholt.
+
+ NANCY:
+   - Allgemeine Flags werden nicht mehr gelöscht, wenn das Spiel (automatisch) gespeichert
+     wird. Das Löschen der Flags hat in einigen Szenen zu Problemen geführt.
+   - Spielstände können jetzt über den GMM geladen werden, bevor eine neue Szene gestartet wird.
+   - Zwischensequenzen und Dialoge können jetzt mit "ESC" übersprungen werden.
+   - Unterstützung für das Mausrad zu einigen UI-Elementen hinzugefügt.
+   - Mehrere Probleme mit dem Memory-Puzzle in Nancy 9 korrigiert.
+   - Mehrere Probleme mit dem "I can't" Item-Sound korrigiert.
+   - Die Passwort-Angaben in einigen Puzzles sind jetzt fehlertoleranter, so sind etwa
+     "Xoc" und "Lady Xoc" akzeptierte Antworten).
+
+ SCUMM:
+   - Cursor-Skalierung in frühen Windows HE-Spielen korrigiert.
+   - In C64-Spielen kann jetzt das PAL-Timing für die SID-Emulation genutzt werden.
+     Dadurch wird die Musik langsamer abgespielt, was dem Spiel-Erlebnis für viele nicht-US-Spieler entspricht.
+
+ Sherlock:
+   - Abweichung in der Darstellung der Bewegungen in Rose Tattoo korrigiert.
+
+ SLUDGE:
+   - Shape-Shift Escape wurde zur Spiele-Datenbank hinzugefügt.
+
+ TsAGE:
+   - Unterstützung für MIDI und MT-32 hinzugefügt.
+   - Verbesserte Wiedergabe von Sound Blaster-Samples.
+   - Sound wird jetzt korrekt pausiert, wenn das Spiel selbst pausiert wird.
+
+ V-Cruise:
+   - Fehler behoben, durch den einige zeitgesteuerte Puzzles nach einem Neustart von ScummVM nicht mehr korrekt funktioniert haben.
+
+ Voyeur:
+   - Die Bewegung aus der Ego-Perspektive beim Anblick der Villa entspricht jetzt dem Original.
+
+ Android-Portierung:
+   - Unterstützung für Android 17 hinzugefügt.
+   - Unterstützung für Text-to-Speech hinzugefügt.
+   - Unterstützung für externe MIDI-Geräte hinzugefügt.
+
+ Atari-Portierung:
+   - Unterstützung für die nFM-Bibliothek hinzugefügt.
+
+#### 2026.3.0 "Carousels & Killer Whales" (20.06.2026)
+
+ Neue Spiele:
+   - Unterstützung für Nancy Drew: The Haunted Carousel hinzugefügt.
+   - Unterstützung für Nancy Drew: Danger on Deception Island hinzugefügt.
+   - Unterstützung für Noctropolis hinzugefügt.
+   - Unterstützung für Cartoon Carnival hinzugefügt.
+   - Unterstützung für Alfred Pelrock: En Busca de un Sueño hinzugefügt.
+   - Unterstützung für Pilot Brothers: On the Track of Striped Elephant,
+     Pilot Brothers: The Case of Serial Maniac, und 5 kleinere Spiele,
+     die die Gamos-Engine nutzen, hinzugefügt.
+
+ Allgemein:
+   - Klickbare Links in der Benutzeroberfläche werden jetzt durch einen veränderten Cursor hervorgehoben.
+   - Die Fenstergröße wird jetzt korrekt wiederhergestellt, wenn in 3D-Engines von Vollbild zurück zum Fenster-Modus gewechselt wird.
+   - NULL OPL-Treiber für schwächere Systeme implementiert.
+   - Flüssiges Scrollen in Listen innerhalb der Benutzeroberfläche implementiert.
+
+ ACCESS:
+   - Mehrere Skript-Fehler in Martian Memorandum behoben.
+
+ AGOS:
+   - Unterstützung für die von der Amiga- und Macintosh-Versionen von Simon2 verwendeten
+     Sprachdateien hinzugefügt.
+
+ GLK:
+   - Text- und Engine-Optionen können jetzt über die Benutzeroberfläche gesetzt werden.
+
+ LastExpress:
+   - Das Spiel wird schon seit einer Weile (2026.1.0) unterstützt,
+     wir haben aber vergessen, hier einen News-Eintrag hinzuzufügen. Ups!
+   - Mehrere Ungenauigkeiten in der Charakter-Logik wurden korrigiert,
+     sodass einige seltene Probleme mit Charakteren nun nicht mehr auftreten
+	 sollten.
+
+ MADS:
+   - Fehler in Rex Nebular behoben, der dazu führt, dass das Spiel einfriert, wenn
+     das Fernglas benutzt wird.
+
+ MM:
+   - Verbesserte Unterstützung für Tastenkürzel in MM1.
+   - Charaktere können in MM1 Enhanced nur die Gegenstände verkaufen, die sie besitzen.
+   - In MM1 Enhanced ist kostenfreies Heilen jetzt nur noch an ausgewählten Tempeln möglich.
+   - In MM1 Enhanced wird die Musik nicht mehr fälschlicherweise neu gestartet, wenn der
+     GMM geöffnet und wieder geschlossen wird.
+
+ MYST3:
+   - Fehler in der Animation des Kontroll-Rads am Strand von J'nanin behoben.
+   - Die Kamera kann nun frei bewegt werden, nachdem ein Symbol am Uhren-Turm in J'nanin abgelegt wurde.
+
+ NANCY:
+   - Ein Fehler bei Rätseln mit herausgerissenen Buchstaben wurde behoben,
+     der alle Nancy-Spiele betraf, in denen solche Rätsel vorkommen.
+   - Mögliche Abstürze bei Rätseln mit herausgerissenen Buchstaben nach dem Laden eines Spielstandes wurden behoben.
+   - Bei Rätseln mit drehbaren Schlössern wird nun der richtige Mauszeiger angezeigt.
+   - Beim Laden eines gespeicherten Spiels über den Launcher oder das GMM wird nun direkt
+     die Spielszene aufgerufen, anstatt im Hauptmenü des Spiels zu starten.
+   - Die Schaltfläche "Spiel fortsetzen" wird nun korrekt verarbeitet, nachdem auf die Schaltfläche "Mehr Nancy" geklickt wurde.
+   - Es wurde ein seltener Fehler bei Klavierrätseln behoben, bei dem es zu einem Grafikfehler kam,
+     wenn auf eine Taste geklickt wurde, während eine andere noch gedrückt war.
+   - Es wurde ein Problem behoben, bei dem einige Sounds in "Nancy Drew: Secret of the Scarlet Hand" und neueren Spielen vorzeitig abbrachen.
+   - Die Animationsgeschwindigkeit und das Timing bei Drehpuzzles wurden angepasst.
+
+ SLUDGE:
+   - Zwei weitere Spiele wurden zur Erkennungs-Datenbank hinzugefügt:
+     "Sam and Max Flintlocked" und "Full Moon".
+
+ TwinE:
+   - Fehler behoben, der bei Kollisionen mit dem Bulldozer zu einem Soft-Lock führte.
+   - Falsche Skalierung des Plasma-Menüeffekts behoben.
+   - Darstellung des Holomap-Modells korrigiert.
+   - Automatische Speicherung beim Fahren eines Fahrzeugs deaktiviert.
+
+ Atari-Portierung:
+   - Native Unterstützung für CDDA hinzugefügt.
+   - Unterstützung für Plugins hinzugefügt. ScummVM kann jetzt schon mit wenigen MB RAM genutzt werden.
+   - Native Unterstützung für YM2149 hinzugefügt (aktuell verwendbar in Wlvira 1 und 2).
+   - Audio-Mixer überarbeitet, was auch Audio-Probleme in Secret of Monkey Island behebt.
+   - Autosave ist jetzt standardmäßig deaktiviert, da die Funktion zu hörbaren Audio-Problemen
+     während des Spiels führt.
+
+ PS3-Portierung:
+   - ScummVM-Engines können jetzt als separate Module/Programmdateien ausgeführt werden.
+     Dadurch werden etwa 90 MB RAM eingespart. Die Option wird nur in Release-Paketen aktiviert.
+
+#### 2026.2.0 "Railmonicon" (28.03.2026)
 
  Neue Spiele:
    - Unterstützung für Necronomicon: The Dawning of Darkness hinzugefügt.

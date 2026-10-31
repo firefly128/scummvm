@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="clipper">
-			<UniqueIdentifier>C2C926FA-7905-4E8A-B397-1B7EA6D76DA0</UniqueIdentifier>
+			<UniqueIdentifier>CF682CD0-BAA5-483E-9F4A-982928BD80E3</UniqueIdentifier>
 		</Filter>
 		<Filter Include="squirrel">
-			<UniqueIdentifier>EEAA3015-C607-46A7-840F-A05410C1581C</UniqueIdentifier>
+			<UniqueIdentifier>7C9DD226-F6EA-4366-A77F-509C1B21F652</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -96,7 +96,6 @@
 		<ClCompile Include="..\..\engines\twp\squtil.cpp" />
 		<ClCompile Include="..\..\engines\twp\syslib.cpp" />
 		<ClCompile Include="..\..\engines\twp\thread.cpp" />
-		<ClCompile Include="..\..\engines\twp\time.cpp" />
 		<ClCompile Include="..\..\engines\twp\tsv.cpp" />
 		<ClCompile Include="..\..\engines\twp\twp.cpp" />
 		<ClCompile Include="..\..\engines\twp\util.cpp" />
@@ -205,7 +204,6 @@
 		<ClInclude Include="..\..\engines\twp\squtil.h" />
 		<ClInclude Include="..\..\engines\twp\task.h" />
 		<ClInclude Include="..\..\engines\twp\thread.h" />
-		<ClInclude Include="..\..\engines\twp\time.h" />
 		<ClInclude Include="..\..\engines\twp\tsv.h" />
 		<ClInclude Include="..\..\engines\twp\twp.h" />
 		<ClInclude Include="..\..\engines\twp\util.h" />

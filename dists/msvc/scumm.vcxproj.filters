@@ -1,50 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="debugger">
-			<UniqueIdentifier>A558F0A6-1577-4B82-8217-A9AAC9D7E501</UniqueIdentifier>
+			<UniqueIdentifier>7252199D-27D4-4CA2-AB5F-F566A601A6F8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="he">
-			<UniqueIdentifier>A4911A19-B439-4211-8E37-0D728756886D</UniqueIdentifier>
+			<UniqueIdentifier>A9B72F48-3B0D-4B7E-BD15-3E30F8B93C70</UniqueIdentifier>
 		</Filter>
 		<Filter Include="he\basketball">
-			<UniqueIdentifier>4075DF67-06C9-4CD7-9C3B-DEDD1CA7BBF0</UniqueIdentifier>
+			<UniqueIdentifier>7AB8F4F7-42B4-45A7-BDFA-7FCABC574E8E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="he\basketball\collision">
-			<UniqueIdentifier>2456E3A3-7B15-48EB-BEAD-A1AC9397C1EE</UniqueIdentifier>
+			<UniqueIdentifier>3504877A-4DC6-4B94-88E7-34F7C3603E01</UniqueIdentifier>
 		</Filter>
 		<Filter Include="he\gfx_comp">
-			<UniqueIdentifier>71711E7D-2C9A-4F8B-B247-5195D22073F3</UniqueIdentifier>
+			<UniqueIdentifier>F8E5BDAE-4E37-4626-AB64-F250D8CAF54A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="he\logic">
-			<UniqueIdentifier>D00A3C23-4CF3-4487-81D8-3A62A907E7F9</UniqueIdentifier>
+			<UniqueIdentifier>3A3A216E-3FE2-4879-9304-75F698AD218C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="he\moonbase">
-			<UniqueIdentifier>AE8BC69D-6D50-4C2A-8A0F-D65D5D1CDB21</UniqueIdentifier>
+			<UniqueIdentifier>3B8BCC26-336A-4981-A905-5D5FD769502E</UniqueIdentifier>
 		</Filter>
 		<Filter Include="he\net">
-			<UniqueIdentifier>FB8804DE-3E58-45E1-81A9-429AB6D22BBC</UniqueIdentifier>
+			<UniqueIdentifier>4CA26D93-4CCE-4978-9AE0-EFBEE0B7BFB2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="imuse">
-			<UniqueIdentifier>A401737E-7DCE-45C9-AD99-AC087F959BAA</UniqueIdentifier>
+			<UniqueIdentifier>6CB02B6E-DC0A-4859-89A7-5EAA3473343F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="imuse\drivers">
-			<UniqueIdentifier>9DF5173B-213A-47A3-8264-7A818E71AFBA</UniqueIdentifier>
+			<UniqueIdentifier>E56B07C8-1EB5-4D62-A45D-8034685C6B30</UniqueIdentifier>
 		</Filter>
 		<Filter Include="imuse_digi">
-			<UniqueIdentifier>BB4C52A5-FC83-4300-B55E-EF9F6CE7B4A7</UniqueIdentifier>
+			<UniqueIdentifier>6372711A-56A7-4784-802D-D241577008E4</UniqueIdentifier>
 		</Filter>
 		<Filter Include="insane">
-			<UniqueIdentifier>05D4A871-D51A-4D33-8E78-F2893056A140</UniqueIdentifier>
+			<UniqueIdentifier>60364223-2579-4AF6-BDF4-C589521BA165</UniqueIdentifier>
+		</Filter>
+		<Filter Include="insane\rebel">
+			<UniqueIdentifier>F7A1A7F6-AA30-4915-A89B-35543513F32C</UniqueIdentifier>
+		</Filter>
+		<Filter Include="insane\rebel1">
+			<UniqueIdentifier>9F89F88B-F442-4729-8A7C-E077164F2159</UniqueIdentifier>
+		</Filter>
+		<Filter Include="insane\rebel2">
+			<UniqueIdentifier>447FC00B-D71A-47DC-9E71-F64D2010CBCC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="macgui">
-			<UniqueIdentifier>3549D67A-33ED-4A0B-B8DE-AB0ED39E8265</UniqueIdentifier>
+			<UniqueIdentifier>7CDE053D-805D-45D9-B7E3-F8C185FB8519</UniqueIdentifier>
 		</Filter>
 		<Filter Include="players">
-			<UniqueIdentifier>575CD030-6765-4F0C-ADF8-5EC11C72C6D6</UniqueIdentifier>
+			<UniqueIdentifier>35756FA1-A110-42AB-90CD-D1782E402725</UniqueIdentifier>
 		</Filter>
 		<Filter Include="smush">
-			<UniqueIdentifier>DD003680-6E4B-4AFA-AE2F-F4A427E3A974</UniqueIdentifier>
+			<UniqueIdentifier>417D32DA-9B67-41D8-92C4-E6F138392F47</UniqueIdentifier>
+		</Filter>
+		<Filter Include="smush\rebel">
+			<UniqueIdentifier>87F58073-A31E-40C3-8F4D-176BFD69726F</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -62,6 +74,9 @@
 		</ClCompile>
 		<ClCompile Include="..\..\engines\scumm\debugger\resource.cpp">
 			<Filter>debugger</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\he\basketball\basketball.cpp">
+			<Filter>he\basketball</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\scumm\he\basketball\collision\bball_collision.cpp">
 			<Filter>he\basketball\collision</Filter>
@@ -97,9 +112,6 @@
 			<Filter>he\basketball\collision</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\scumm\he\basketball\ai.cpp">
-			<Filter>he\basketball</Filter>
-		</ClCompile>
-		<ClCompile Include="..\..\engines\scumm\he\basketball\basketball.cpp">
 			<Filter>he\basketball</Filter>
 		</ClCompile>
 		<ClCompile Include="..\..\engines\scumm\he\basketball\court.cpp">
@@ -360,6 +372,69 @@
 		<ClCompile Include="..\..\engines\scumm\imuse_digi\dimuse_waveout.cpp">
 			<Filter>imuse_digi</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel\rebel_audio.cpp">
+			<Filter>insane\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel\rebel_gamepad.cpp">
+			<Filter>insane\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel\rebel_touch.cpp">
+			<Filter>insane\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\audio.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\iact.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\levels.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\menu.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\rebel.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\releases.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\render.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\runlevels.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel1\saveload.cpp">
+			<Filter>insane\rebel1</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\audio.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\iact.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\levels.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\mac_archive.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\menu.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\rebel.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\releases.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\render.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\insane\rebel2\runlevels.cpp">
+			<Filter>insane\rebel2</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\scumm\insane\insane.cpp">
 			<Filter>insane</Filter>
 		</ClCompile>
@@ -456,6 +531,27 @@
 		<ClCompile Include="..\..\engines\scumm\players\player_v4a.cpp">
 			<Filter>players</Filter>
 		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\codec_ra1.cpp">
+			<Filter>smush\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\codec_ra2.cpp">
+			<Filter>smush\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\font_rebel2.cpp">
+			<Filter>smush\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_multi_font.cpp">
+			<Filter>smush\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_player_ra1.cpp">
+			<Filter>smush\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_player_ra2.cpp">
+			<Filter>smush\rebel</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\engines\scumm\smush\rebel\smush_player_rebel.cpp">
+			<Filter>smush\rebel</Filter>
+		</ClCompile>
 		<ClCompile Include="..\..\engines\scumm\smush\codec1.cpp">
 			<Filter>smush</Filter>
 		</ClCompile>
@@ -473,6 +569,7 @@
 		</ClCompile>
 		<ClCompile Include="..\..\engines\scumm\actor.cpp" />
 		<ClCompile Include="..\..\engines\scumm\akos.cpp" />
+		<ClCompile Include="..\..\engines\scumm\base-costume-optimised.cpp" />
 		<ClCompile Include="..\..\engines\scumm\base-costume.cpp" />
 		<ClCompile Include="..\..\engines\scumm\bomp.cpp" />
 		<ClCompile Include="..\..\engines\scumm\boxes.cpp" />
@@ -544,6 +641,9 @@
 		<ClInclude Include="..\..\engines\scumm\debugger\resource.h">
 			<Filter>debugger</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\he\basketball\basketball.h">
+			<Filter>he\basketball</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\he\basketball\collision\bball_collision.h">
 			<Filter>he\basketball\collision</Filter>
 		</ClInclude>
@@ -583,9 +683,6 @@
 		<ClInclude Include="..\..\engines\scumm\he\basketball\ai.h">
 			<Filter>he\basketball</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\scumm\he\basketball\basketball.h">
-			<Filter>he\basketball</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\he\basketball\court.h">
 			<Filter>he\basketball</Filter>
 		</ClInclude>
@@ -600,12 +697,6 @@
 		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\he\basketball\shooting.h">
 			<Filter>he\basketball</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\scumm\he\localizer.h">
-			<Filter>he</Filter>
-		</ClInclude>
-		<ClInclude Include="..\..\engines\scumm\he\logic_he.h">
-			<Filter>he</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\he\moonbase\ai_defenseunit.h">
 			<Filter>he\moonbase</Filter>
@@ -655,9 +746,6 @@
 		<ClInclude Include="..\..\engines\scumm\he\moonbase\moonbase.h">
 			<Filter>he\moonbase</Filter>
 		</ClInclude>
-		<ClInclude Include="..\..\engines\scumm\he\mixer_he.h">
-			<Filter>he</Filter>
-		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\he\net\net_defines.h">
 			<Filter>he\net</Filter>
 		</ClInclude>
@@ -677,6 +765,15 @@
 			<Filter>he</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\he\intern_he.h">
+			<Filter>he</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\he\localizer.h">
+			<Filter>he</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\he\logic_he.h">
+			<Filter>he</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\he\mixer_he.h">
 			<Filter>he</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\he\resource_he.h">
@@ -750,6 +847,33 @@
 		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\imuse_digi\dimuse_triggers.h">
 			<Filter>imuse_digi</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel\rebel_audio.h">
+			<Filter>insane\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel\rebel_gamepad.h">
+			<Filter>insane\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel\rebel_touch.h">
+			<Filter>insane\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel1\rebel.h">
+			<Filter>insane\rebel1</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel1\releases.h">
+			<Filter>insane\rebel1</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\mac_archive.h">
+			<Filter>insane\rebel2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\rebel.h">
+			<Filter>insane\rebel2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\releases.h">
+			<Filter>insane\rebel2</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\insane\rebel2\shared.h">
+			<Filter>insane\rebel2</Filter>
 		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\insane\insane.h">
 			<Filter>insane</Filter>
@@ -829,6 +953,27 @@
 		<ClInclude Include="..\..\engines\scumm\players\player_v4a.h">
 			<Filter>players</Filter>
 		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\anim_ra1.h">
+			<Filter>smush\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\codec_ra1.h">
+			<Filter>smush\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\codec_ra2.h">
+			<Filter>smush\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\font_rebel2.h">
+			<Filter>smush\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\smush_multi_font.h">
+			<Filter>smush\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\smush_player_ra1.h">
+			<Filter>smush\rebel</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\engines\scumm\smush\rebel\smush_player_ra2.h">
+			<Filter>smush\rebel</Filter>
+		</ClInclude>
 		<ClInclude Include="..\..\engines\scumm\smush\codec37.h">
 			<Filter>smush</Filter>
 		</ClInclude>
@@ -847,6 +992,7 @@
 		<ClInclude Include="..\..\engines\scumm\base-costume.h" />
 		<ClInclude Include="..\..\engines\scumm\bomp.h" />
 		<ClInclude Include="..\..\engines\scumm\boxes.h" />
+		<ClInclude Include="..\..\engines\scumm\bylerledecodeM68K.h" />
 		<ClInclude Include="..\..\engines\scumm\cdda.h" />
 		<ClInclude Include="..\..\engines\scumm\charset.h" />
 		<ClInclude Include="..\..\engines\scumm\charset_v7.h" />

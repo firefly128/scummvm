@@ -57,12 +57,12 @@ const LingoDec::Handler *getHandler(const Cast *cast, CastMemberID id, const Com
 	// for the moment it's happening with Director version < 4
 	if (!cast->_lingodec)
 		return nullptr;
-	for (auto p : cast->_lingodec->scripts) {
+	for (const auto &p : cast->_lingodec->scripts) {
 		if (cast->getCastIdByScriptId(p.first) != id.member)
 			continue;
 
 		for (const LingoDec::Handler &handler : p.second->handlers) {
-			if (handler.name == handlerId) {
+			if (handler.name == handlerId || (handler.isGenericEvent && handlerId == "scummvm_generic")) {
 				return &handler;
 			}
 		}
@@ -79,16 +79,21 @@ const LingoDec::Handler *getHandler(const Cast *cast, CastMemberID id, const Com
 
 const LingoDec::Handler *getHandler(CastMemberID id, const Common::String &handlerId) {
 	const Director::Movie *movie = g_director->getCurrentMovie();
+	if (!movie)
+		return nullptr;
 	if (id.castLib == SHARED_CAST_LIB)
 		return getHandler(movie->getSharedCast(), id, handlerId);
 
-	const Cast *cast = movie->getCasts()->getVal(id.castLib);
+	const Cast *cast = movie->getCasts()->getValOrDefault(id.castLib, nullptr);
 
 	const LingoDec::Handler *handler = getHandler(cast, id, handlerId);
 	if (handler)
 		return handler;
 
-	return getHandler(movie->getSharedCast(), id, handlerId);
+	Cast *sharedCast = movie->getSharedCast();
+	if (!sharedCast)
+		return nullptr;
+	return getHandler(sharedCast, id, handlerId);
 }
 
 ImGuiScript toImGuiScript(ScriptType scriptType, CastMemberID id, const Common::String &handlerId) {
@@ -99,11 +104,18 @@ ImGuiScript toImGuiScript(ScriptType scriptType, CastMemberID id, const Common::
 
 	const LingoDec::Handler *handler = getHandler(id, handlerId);
 	if (!handler) {
+		Movie *movie = g_director->getCurrentMovie();
+		if (!movie)
+			return result;
 		const ScriptContext *ctx;
 		if (id.castLib == SHARED_CAST_LIB) {
-			ctx = g_director->getCurrentMovie()->getSharedCast()->_lingoArchive->getScriptContext(scriptType, id.member);
+			// null guard
+			Cast *sharedCast = movie->getSharedCast();
+			if (!sharedCast)
+				return result;
+			ctx = sharedCast->_lingoArchive->getScriptContext(scriptType, id.member);
 		} else {
-			ctx = g_director->getCurrentMovie()->getScriptContext(scriptType, id);
+			ctx = movie->getScriptContext(scriptType, id);
 		}
 		if (!ctx) return result;
 		result.oldAst = ctx->_assemblyAST;
@@ -114,40 +126,59 @@ ImGuiScript toImGuiScript(ScriptType scriptType, CastMemberID id, const Common::
 	result.root = handler->ast.root;
 	result.isGenericEvent = handler->isGenericEvent;
 	result.argumentNames = handler->argumentNames;
-	result.propertyNames = handler->script->propertyNames;
 	result.globalNames = handler->globalNames;
 
 	LingoDec::Script *script = handler->script;
 	if (!script)
 		return result;
 
+	result.propertyNames = script->propertyNames;
 	result.isMethod = script->isFactory();
 	return result;
 }
 
 ScriptContext *getScriptContext(CastMemberID id) {
-	const Director::Movie *movie = g_director->getCurrentMovie();;
-	const Cast *cast = movie->getCasts()->getVal(id.castLib);
+	const Director::Movie *movie = g_director->getCurrentMovie();
+	if (!movie)
+		return nullptr;
+	const Cast *cast;
 
 	if (id.castLib == SHARED_CAST_LIB)
 		cast = movie->getSharedCast();
 	else
-		cast = movie->getCasts()->getVal(id.castLib);
+		cast = movie->getCasts()->getValOrDefault(id.castLib, nullptr);
 
-	if (!cast) {
+	if (!cast)
 		return nullptr;
-	}
 
 	ScriptContext *ctx = cast->_lingoArchive->findScriptContext(id.member);
-	return ctx;
+	if (ctx)
+		return ctx;
+
+	// Some scripts are only in lctxContexts (keyed by lctx index, not cast member ID).
+	// Do a reverse lookup: find the lctx entry whose cast ID maps to id.member.
+	for (auto &entry : cast->_lingoArchive->lctxContexts) {
+		if (cast->getCastIdByScriptId(entry._key) == id.member)
+			return entry._value;
+	}
+	return nullptr;
 }
 
 ScriptContext *getScriptContext(uint32 nameIndex, CastMemberID id, Common::String handlerName) {
 	Movie *movie = g_director->getCurrentMovie();
-	Cast *cast = movie->getCasts()->getVal(id.castLib);
+	if (!movie)
+		return nullptr;
+	Cast *cast;
+	if (id.castLib == SHARED_CAST_LIB)
+		cast = movie->getSharedCast();
+	else
+		cast = movie->getCasts()->getValOrDefault(id.castLib, nullptr);
+
+	if (!cast)
+		return nullptr;
 
 	// If the name at nameIndex is not the same as handler name, means its a local script (in the same Lscr resource)
-	if (cast && cast->_lingoArchive->names[nameIndex] != handlerName) {
+	if (nameIndex < cast->_lingoArchive->names.size() && cast->_lingoArchive->names[nameIndex] != handlerName) {
 		return cast->_lingoArchive->findScriptContext(id.member);
 	}
 
@@ -158,6 +189,45 @@ ScriptContext *getScriptContext(uint32 nameIndex, CastMemberID id, Common::Strin
 	}
 
 	return nullptr;
+}
+
+static bool archiveOwnsContext(LingoArchive *archive, const ScriptContext *ctx) {
+	if (!archive)
+		return false;
+	for (int i = 0; i <= kMaxScriptType; i++) {
+		for (auto &it : archive->scriptContexts[i])
+			if (it._value == ctx)
+				return true;
+	}
+	for (auto &it : archive->lctxContexts)
+		if (it._value == ctx)
+			return true;
+	for (auto &factory : archive->factoryContexts) {
+		if (!factory._value)
+			continue;
+		for (auto &it : *factory._value)
+			if (it._value == ctx)
+				return true;
+	}
+	return false;
+}
+
+// Find the cast library (or shared cast) a script context belongs to.
+int getCastLibIDForContext(const ScriptContext *ctx) {
+	Movie *movie = g_director->getCurrentMovie();
+	if (!movie || !ctx)
+		return DEFAULT_CAST_LIB;
+
+	for (auto &it : *movie->getCasts()) {
+		if (it._value && archiveOwnsContext(it._value->_lingoArchive, ctx))
+			return it._key;
+	}
+
+	Cast *shared = movie->getSharedCast();
+	if (shared && archiveOwnsContext(shared->_lingoArchive, ctx))
+		return SHARED_CAST_LIB;
+
+	return movie->getCast() ? movie->getCast()->_castLibID : DEFAULT_CAST_LIB;
 }
 
 static ScriptContext *findHandlerContext(Cast *cast, const Common::String &handlerName) {
@@ -184,7 +254,7 @@ ScriptContext *resolveHandlerContext(int32 nameIndex, const CastMemberID &refId,
 	if (refId.castLib == SHARED_CAST_LIB) {
 		cast = movie->getSharedCast();
 	} else {
-		cast = movie->getCasts()->getVal(refId.castLib);
+		cast = movie->getCasts()->getValOrDefault(refId.castLib, nullptr);
 	}
 
 	if (cast && cast->_lingoArchive && nameIndex >= 0 && (uint32)nameIndex < cast->_lingoArchive->names.size()) {
@@ -217,7 +287,7 @@ ImGuiScript buildImGuiHandlerScript(ScriptContext *ctx, int castLibID, const Com
 	if (castLibID == SHARED_CAST_LIB) {
 		cast = movie ? movie->getSharedCast() : nullptr;
 	} else {
-		cast = movie ? movie->getCasts()->getVal(castLibID) : nullptr;
+		cast = movie ? movie->getCasts()->getValOrDefault(castLibID, nullptr) : nullptr;
 	}
 
 	int castId = ctx->_id;
@@ -269,6 +339,20 @@ Director::Breakpoint *getBreakpoint(const Common::String &handlerName, uint16 sc
 	return nullptr;
 }
 
+// Return the member's cached texture, dropping it first if the member changed
+// (isModified) so the caller regenerates it. Keeps thumbnails in sync with edits.
+static bool tryGetCachedTexture(CastMember *key, ImGuiImage &out) {
+	if (!_state->_cast._textures.contains(key))
+		return false;
+	if (key->isModified()) {
+		g_system->freeImGuiTexture((void *)(intptr_t)_state->_cast._textures[key].id);
+		_state->_cast._textures.erase(key);
+		return false;
+	}
+	out = _state->_cast._textures[key];
+	return true;
+}
+
 ImGuiImage getImageID(CastMember *castMember) {
 	if (castMember->_type != CastType::kCastBitmap) {
 		return {};
@@ -276,13 +360,13 @@ ImGuiImage getImageID(CastMember *castMember) {
 
 	BitmapCastMember *bmpMember = (BitmapCastMember *)castMember;
 
-	if (_state->_cast._textures.contains(bmpMember)) {
-		return _state->_cast._textures[bmpMember];
-	}
+	ImGuiImage cached;
+	if (tryGetCachedTexture(bmpMember, cached))
+		return cached;
 
 	bmpMember->load();
 	Picture *pic = bmpMember->_picture;
-	if (!pic)
+	if (!pic || !pic->_surface.getPixels())
 		return {};
 
 	ImTextureID textureID = (ImTextureID)(intptr_t)g_system->getImGuiTexture(pic->_surface, pic->_palette, pic->_paletteColors);
@@ -299,6 +383,8 @@ static void setToolTipImage(const ImGuiImage &image, const char *name) {
 }
 
 void showImage(const ImGuiImage &image, const char *name, float thumbnailSize) {
+	if (!image.width || !image.height)
+		return;
 	ImVec2 size;
 	if (image.width > image.height) {
 		size = {thumbnailSize - 2, (thumbnailSize - 2) * image.height / image.width};
@@ -320,6 +406,8 @@ void showImage(const ImGuiImage &image, const char *name, float thumbnailSize) {
 }
 
 void showImageWrappedBorder(const ImGuiImage &image, const char *name, float imageSize) {
+	if (!image.width || !image.height)
+		return;
 	ImVec2 size;
 	if (image.width > image.height) {
 		size = {imageSize, imageSize * image.height / image.width};
@@ -345,9 +433,9 @@ ImGuiImage getShapeID(CastMember *castMember) {
 		return {};
 	}
 
-	if (_state->_cast._textures.contains(castMember)) {
-		return _state->_cast._textures[castMember];
-	}
+	ImGuiImage cached;
+	if (tryGetCachedTexture(castMember, cached))
+		return cached;
 
 	ShapeCastMember *shapeMember = (ShapeCastMember *)castMember;
 
@@ -403,9 +491,9 @@ ImGuiImage getTextID(CastMember *castMember) {
 		return {};
 	}
 
-	if (_state->_cast._textures.contains(castMember)) {
-		return _state->_cast._textures[castMember];
-	}
+	ImGuiImage cached;
+	if (tryGetCachedTexture(castMember, cached))
+		return cached;
 
 	Common::Rect bbox(castMember->getBbox());
 
@@ -423,6 +511,13 @@ ImGuiImage getTextID(CastMember *castMember) {
 
 	Graphics::MacWidget *widget = castMember->createWidget(bbox, channel, kTextSprite);
 	Graphics::Surface surface;
+
+	if (!widget || !widget->getSurface() || !widget->getSurface()->getPixels()) {
+		delete channel;
+		delete sprite;
+		return {};
+	}
+
 	surface.copyFrom(*widget->getSurface());
 
 	if (debugChannelSet(8, kDebugImages)) {
@@ -450,12 +545,8 @@ ImGuiImage getTextID(CastMember *castMember) {
 
 void displayVariable(const Common::String &name, bool changed, bool outOfScope) {
 	ImU32 var_color = ImGui::GetColorU32(_state->theme->var_ref);
-	ImU32 color;
 
-	color = ImGui::GetColorU32(_state->theme->bp_color_disabled);
-
-	if (_state->_variables.contains(name))
-		color = ImGui::GetColorU32(_state->theme->bp_color_enabled);
+	bool watched = _state->_variables.contains(name);
 
 	ImDrawList *dl = ImGui::GetWindowDrawList();
 	ImVec2 pos = ImGui::GetCursorScreenPos();
@@ -464,12 +555,12 @@ void displayVariable(const Common::String &name, bool changed, bool outOfScope) 
 
 	ImGui::InvisibleButton("Line", ImVec2(textSize.x + eyeSize.x, textSize.y));
 	if (ImGui::IsItemClicked(0)) {
-		if (color == ImGui::GetColorU32(_state->theme->bp_color_enabled)) {
+		if (watched) {
 			_state->_variables.erase(name);
-			color = ImGui::GetColorU32(_state->theme->bp_color_disabled);
+			watched = false;
 		} else {
 			_state->_variables[name] = true;
-			color = ImGui::GetColorU32(_state->theme->bp_color_enabled);
+			watched = true;
 		}
 	}
 
@@ -479,9 +570,13 @@ void displayVariable(const Common::String &name, bool changed, bool outOfScope) 
 		var_color = ImGui::GetColorU32(_state->theme->var_ref_out_of_scope);
 	}
 
-	if (color == ImGui::GetColorU32(_state->theme->bp_color_disabled) && ImGui::IsItemHovered()) {
+	ImU32 color;
+	if (watched)
+		color = ImGui::GetColorU32(_state->theme->bp_color_enabled);
+	else if (ImGui::IsItemHovered())
 		color = ImGui::GetColorU32(_state->theme->bp_color_hover);
-	}
+	else
+		color = ImGui::GetColorU32(_state->theme->bp_color_disabled);
 
 	dl->AddText(pos, color, ICON_MS_VISIBILITY " ");
 	dl->AddText(ImVec2(pos.x + eyeSize.x, pos.y), var_color, name.c_str());
@@ -499,21 +594,46 @@ ImVec4 convertColor(uint32 color) {
 	return ImGui::ColorConvertU32ToFloat4(color);
 }
 
-static void addScriptCastToDisplay(CastMemberID &id) {
-	_state->_scriptCasts.remove(id);
-	_state->_scriptCasts.push_back(id);
-}
-
 void addToOpenHandlers(ImGuiScript handler) {
-	_state->_openHandlers.erase(handler.id.member);
-	_state->_openHandlers[handler.id.member] = handler;
+	// If no decompiled AST is available, fall back to the source text from CastMemberInfo.
+	if (!handler.root && !handler.oldAst && handler.rawText.empty()) {
+		Movie *movie = g_director->getCurrentMovie();
+		if (movie) {
+			CastMember *member = movie->getCastMember(handler.id);
+			if (member) {
+				const CastMemberInfo *info = member->getInfo();
+				if (info && !info->script.empty()) {
+					handler.rawText = info->script;
+					handler.rawText.replace('\r', '\n');
+				}
+			}
+		}
+	}
+
+	ScriptData &data = _state->_openScripts;
+	_state->_w.scripts = true;  // always (re)open the window
+	data._scrollToCurrent = true;
+	// Truncate forward history when navigating to a new script
+	if (data._current + 1 < data._scripts.size())
+		data._scripts.resize(data._current + 1);
+	// Don't add a duplicate at the current position
+	if (!data._scripts.empty() && data._scripts.back() == handler)
+		return;
+	data._scripts.push_back(handler);
+	data._current = data._scripts.size() - 1;
+	data._showScript = true;
 }
 
 void setScriptToDisplay(const ImGuiScript &script) {
 	ScriptData *scriptData = &_state->_functions._windowScriptData.getOrCreateVal(g_director->getCurrentWindow());
 	uint index = scriptData->_scripts.size();
+	scriptData->_scrollToCurrent = true;
 	if (index && scriptData->_scripts[index - 1] == script) {
+		// operator== ignores pc, so carry the new execution point over
+		scriptData->_scripts[index - 1].pc = script.pc;
+		scriptData->_current = index - 1;
 		scriptData->_showScript = true;
+		_state->_dbg._scrollToPC = true;
 		return;
 	}
 	scriptData->_scripts.push_back(script);
@@ -528,11 +648,36 @@ void displayScriptRef(CastMemberID &scriptId) {
 
 		ImGui::SetItemTooltip(scriptId.asString().c_str());
 
-		if (ImGui::IsItemClicked(0))
-			addScriptCastToDisplay(scriptId);
+		if (ImGui::IsItemClicked(0)) {
+			ScriptContext *ctx = getScriptContext(scriptId);
+			if (ctx) {
+				Common::String moviePath = g_director->getCurrentMovie()->getArchive()->getPathName().toString();
+				for (auto &handler : ctx->_functionHandlers) {
+					ImGuiScript script = toImGuiScript(ctx->_scriptType, scriptId, handler._key);
+					script.byteOffsets = ctx->_functionByteOffsets[script.handlerId];
+					script.moviePath = moviePath;
+					script.handlerName = formatHandlerName(ctx->_scriptId, scriptId.member, script.handlerId, ctx->_scriptType, false);
+					addToOpenHandlers(script);
+				}
+			}
+		}
 	} else {
 		ImGui::Selectable("  ");
 	}
+}
+
+// One button of a mutually exclusive pair: clicking selects it, the
+// already-selected button is inert (unlike ImGuiEx::toggleButton).
+bool selectableViewButton(const char *label, bool selected) {
+	int pop = 0;
+	if (selected) {
+		ImVec4 hovered = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_Button, hovered);
+		pop = 1;
+	}
+	bool clicked = ImGui::Button(label);
+	ImGui::PopStyleColor(pop);
+	return clicked;
 }
 
 ImColor brightenColor(const ImColor& color, float factor) {
@@ -543,18 +688,46 @@ ImColor brightenColor(const ImColor& color, float factor) {
 	return ImColor(col);
 }
 
+// Identity for a window's movie: the archive path, which is stable even when
+// two movies share a Mac name. Falls back to the Mac name if there's no archive.
+Common::String movieId(const Movie *m) {
+	if (!m)
+		return Common::String();
+	return m->getArchive() ? m->getArchive()->getPathName().toString() : m->getMacName();
+}
+
+// Human-readable label for the window selector (the movie's Mac name).
+static Common::String movieLabel(Window *w) {
+	Movie *m = w ? w->getCurrentMovie() : nullptr;
+	return m ? m->getMacName() : Common::String("(no movie)");
+}
+
+Window *findWindowByName(const Common::String &name) {
+	if (name.empty())
+		return nullptr;
+	Movie *stageMovie = g_director->getStage()->getCurrentMovie();
+	if (stageMovie && movieId(stageMovie) == name)
+		return g_director->getStage();
+	for (auto window : *g_director->getWindowList()) {
+		Movie *movie = window->getCurrentMovie();
+		if (movie && movieId(movie) == name)
+			return window;
+	}
+	return nullptr;
+}
+
 Window *windowListCombo(Common::String *target) {
 	const Common::Array<Window *> *windowList = g_director->getWindowList();
-	const Common::String selWin = *target;
 	Window *res = nullptr;
 
-	Common::String stage = g_director->getStage()->getCurrentMovie()->getMacName();
+	Window *stage = g_director->getStage();
+	Common::String stageId = movieId(stage->getCurrentMovie());
 
 	// Check if the relevant window is gone
 	bool found = false;
 	for (auto window : (*windowList)) {
-		if (window->getCurrentMovie()->getMacName() == selWin) {
-			// Found the selected window
+		Movie *m = window->getCurrentMovie();
+		if (m && movieId(m) == *target) {
 			found = true;
 			res = window;
 			break;
@@ -562,37 +735,41 @@ Window *windowListCombo(Common::String *target) {
 	}
 
 	// Our default is Stage
-	if (selWin.empty() || windowList->empty() || !found) {
-		*target = stage;
-		res = g_director->getStage();
+	if (target->empty() || windowList->empty() || !found) {
+		*target = stageId;
+		res = stage;
 	}
 
 	ImGui::Text("Window:");
 	ImGui::SameLine();
 
-	if (ImGui::BeginCombo("##window", selWin.c_str())) {
-		bool selected = (*target == stage);
-		if (ImGui::Selectable(stage.c_str(), selected))
-			*target = stage;
-
-		if (selected) {
-			ImGui::SetItemDefaultFocus();
-			res = g_director->getStage();
+	if (ImGui::BeginCombo("##window", movieLabel(res).c_str())) {
+		bool selected = (*target == stageId);
+		if (ImGui::Selectable(movieLabel(stage).c_str(), selected)) {
+			*target = stageId;
+			res = stage;
 		}
+		if (selected)
+			ImGui::SetItemDefaultFocus();
 
 		for (auto window : (*windowList)) {
-			Common::String winName = window->getCurrentMovie()->getMacName();
-			selected = (*target == winName);
-			if (ImGui::Selectable(winName.c_str(), selected)) {
-				*target = winName;
+			Movie *m = window->getCurrentMovie();
+			if (!m)
+				continue;
+			Common::String id = movieId(m);
+			// scope the ID by the (unique) path so windows that share a Mac
+			// name are still selectable independently
+			ImGui::PushID(id.c_str());
+			selected = (*target == id);
+			if (ImGui::Selectable(m->getMacName().c_str(), selected)) {
+				*target = id;
 				res = window;
 			}
-
 			if (selected) {
 				ImGui::SetItemDefaultFocus();
 				res = window;
 			}
-
+			ImGui::PopID();
 		}
 		ImGui::EndCombo();
 	}
@@ -657,7 +834,18 @@ static const DebuggerTheme themes[kThemeCount] = {
 		ImVec4(1.0f, 0.4f, 0.4f, 1.0f), // logger_error
 		ImVec4(1.0f, 1.0f, 0.4f, 1.0f), // logger_warning
 		ImVec4(1.0f, 0.8f, 0.6f, 1.0f), // logger_info
-		ImVec4(0.8f, 0.8f, 0.8f, 1.0f)  // logger_debug
+		ImVec4(0.8f, 0.8f, 0.8f, 1.0f), // logger_debug
+
+		ImVec4(0.00f, 0.00f, 0.00f, 0.157f), // prof_ruler_bg
+		ImVec4(0.55f, 0.55f, 0.55f, 0.086f), // prof_grid_line
+		ImVec4(0.90f, 0.47f, 0.24f, 1.0f),   // prof_freeze
+		ImVec4(0.35f, 0.78f, 0.47f, 1.0f),   // prof_thaw
+		ImVec4(0.00f, 0.00f, 0.00f, 0.392f), // prof_zone_border
+		ImVec4(0.08f, 0.08f, 0.08f, 1.0f),   // prof_zone_text
+		ImVec4(1.00f, 0.86f, 0.16f, 1.0f),   // prof_selected
+		ImVec4(1.00f, 1.00f, 0.71f, 0.784f), // prof_highlight
+		ImVec4(0.90f, 0.16f, 0.16f, 1.0f),   // prof_live_edge
+		ImVec4(0.59f, 0.59f, 0.59f, 0.353f)  // prof_crosshair
 	},
 	// [kThemeLight]
 	{
@@ -715,7 +903,18 @@ static const DebuggerTheme themes[kThemeCount] = {
 		ImVec4(0.7f, 0.0f, 0.0f, 1.0f),	// logger_error
 		ImVec4(0.7f, 0.4f, 0.0f, 1.0f),	// logger_warning
 		ImVec4(0.15f, 0.15f, 0.15f, 1.0f), // logger_info
-		ImVec4(0.4f, 0.4f, 0.4f, 1.0f)	 // logger_debug
+		ImVec4(0.4f, 0.4f, 0.4f, 1.0f),	// logger_debug
+
+		ImVec4(0.00f, 0.00f, 0.00f, 0.157f), // prof_ruler_bg
+		ImVec4(0.55f, 0.55f, 0.55f, 0.188f), // prof_grid_line
+		ImVec4(0.90f, 0.47f, 0.24f, 1.0f),   // prof_freeze
+		ImVec4(0.35f, 0.78f, 0.47f, 1.0f),   // prof_thaw
+		ImVec4(0.00f, 0.00f, 0.00f, 0.392f), // prof_zone_border
+		ImVec4(0.08f, 0.08f, 0.08f, 1.0f),   // prof_zone_text
+		ImVec4(0.82f, 0.56f, 0.00f, 1.0f),   // prof_selected
+		ImVec4(0.78f, 0.51f, 0.00f, 0.784f), // prof_highlight
+		ImVec4(0.90f, 0.16f, 0.16f, 1.0f),   // prof_live_edge
+		ImVec4(0.39f, 0.39f, 0.39f, 0.353f)  // prof_crosshair
 	}
 };
 
@@ -748,6 +947,14 @@ void setTheme(int themeIndex) {
 		lc._logger_info = _state->theme->logger_info;
 		lc._logger_debug = _state->theme->logger_debug;
 	}
+}
+
+// helper to draw Image Viewer
+void openImageViewer(ImGuiImage image, const Common::String &text, const Common::String &title) {
+	_state->_imageViewerState.image = image;
+    _state->_imageViewerState.text = text;
+    _state->_imageViewerState.title = title;
+    _state->_w.imageViewer = true;
 }
 
 static void showSettings() {
@@ -821,8 +1028,73 @@ void onImGuiInit() {
 	_state->_logger = new ImGuiEx::ImGuiLogger;
 
 	setTheme(_state->_activeThemeID);
+	initShortcuts();
 
 	Common::setLogWatcher(onLog);
+}
+
+// Caches keyed by CastMember pointers dangle when any window switches movies.
+static void invalidateStaleCaches() {
+	Common::String signature;
+	Movie *stageMovie = g_director->getStage()->getCurrentMovie();
+	if (stageMovie)
+		signature = stageMovie->getArchive()->getPathName().toString();
+	for (auto window : *g_director->getWindowList()) {
+		Movie *movie = window->getCurrentMovie();
+		if (movie) {
+			signature += '|';
+			signature += movie->getArchive()->getPathName().toString();
+		}
+	}
+
+	if (signature == _state->_movieSignature)
+		return;
+	_state->_movieSignature = signature;
+
+	for (auto &it : _state->_cast._textures)
+		g_system->freeImGuiTexture((void *)(intptr_t)it._value.id);
+	_state->_cast._textures.clear();
+	_state->_castDetails._filmLoopCurrentFrame.clear();
+}
+
+// Pick-from-stage: when armed, the next click on the stage (outside any DT
+// window) selects the sprite under the cursor and opens it in Cast Details.
+static void handlePickFromStage() {
+	if (!_state->_pickMode)
+		return;
+
+	ImGui::SetTooltip("Pick: click a sprite on the stage  (Esc to cancel)");
+
+	if (ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+		_state->_pickMode = false;
+		return;
+	}
+
+	// Select on button-down but stay armed until release, so isMouseInputIgnored()
+	// swallows both mouseDown and mouseUp instead of leaking the release to the game.
+	bool released = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+
+	if (!ImGui::GetIO().WantCaptureMouse && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+		Window *stage = g_director->getStage();
+		Movie *movie = stage ? stage->getCurrentMovie() : nullptr;
+		if (movie) {
+			Score *score = movie->getScore();
+			uint16 id = score->getSpriteIDFromPos(stage->getMousePos());
+			Channel *ch = id ? score->getChannelById(id) : nullptr;
+			if (ch && ch->_sprite && !ch->_sprite->_castId.isNull()) {
+				_state->_castDetails._castMemberID = ch->_sprite->_castId;
+				_state->_castDetails._window = movieId(movie);
+				_state->_w.castDetails = true;
+				_state->_scoreWindow = movieId(movie);
+				_state->_selectedScoreCast.frame = MAX(0, (int)score->getCurrentFrameNum() - 1);
+				_state->_selectedScoreCast.channel = id;
+				_state->_scrollToChannel = true;
+			}
+		}
+	}
+
+	if (released)
+		_state->_pickMode = false;
 }
 
 void onImGuiRender() {
@@ -834,22 +1106,13 @@ void onImGuiRender() {
 	if (!_state)
 		return;
 
-	if (_state->_windowToRedraw) {
-		Graphics::ManagedSurface *surface = _state->_windowToRedraw->getSurface();
-		if (surface) {
-			Common::Rect fullScreen(0, 0, surface->w, surface->h);
-
-			_state->_windowToRedraw->addDirtyRect(fullScreen);
-			_state->_windowToRedraw->setDirty(true);
-		}
-
-		_state->_windowToRedraw = nullptr;
-	}
+	invalidateStaleCaches();
 
 	ImGuiIO &io = ImGui::GetIO();
 	io.ConfigFlags &= ~(ImGuiConfigFlags_NoMouseCursorChange | ImGuiConfigFlags_NoMouse);
 
-	if (ImGui::IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_F1)) {
+	if (_state->_shortcutCapture < 0 && _state->_shortcuts[kActToggleMouseIgnore] != ImGuiKey_None
+			&& ImGui::IsKeyChordPressed(_state->_shortcuts[kActToggleMouseIgnore])) {
 		_state->_ignoreMouse = !_state->_ignoreMouse;
 
 		Common::String msg = Common::String::format("Debug Mouse Ignore: %s", _state->_ignoreMouse ? "ON" : "OFF");
@@ -858,7 +1121,28 @@ void onImGuiRender() {
 
 	ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
+	handleDebuggerShortcuts();
+
+	if (actionTriggered(kActQuickOpen)) {
+		_state->_quickOpen = true;
+		_state->_quickOpenInput[0] = '\0';
+	}
+
+	if (actionTriggered(kActPickFromStage)) {
+		_state->_pickMode = !_state->_pickMode;
+		if (_state->_pickMode)
+			g_system->displayMessageOnOSD(Common::U32String("Pick: click a sprite on the stage"));
+	}
+
+	handlePickFromStage();
+
 	if (ImGui::BeginMainMenuBar()) {
+		if (actionTriggered(kActToggleControlPanel))
+			_state->_w.controlPanel = !_state->_w.controlPanel;
+		if (actionTriggered(kActToggleCast))
+			_state->_w.cast = !_state->_w.cast;
+		if (actionTriggered(kActToggleScore))
+			_state->_w.score = !_state->_w.score;
 		if (ImGui::BeginMenu("View")) {
 			ImGui::SeparatorText("Windows");
 
@@ -890,7 +1174,16 @@ void onImGuiRender() {
 			ImGui::MenuItem("Watched Vars", NULL, &_state->_w.watchedVars);
 			ImGui::MenuItem("Logger", NULL, &_state->_w.logger);
 			ImGui::MenuItem("Archive", NULL, &_state->_w.archive);
+			ImGui::MenuItem("Windows", NULL, &_state->_w.windows);
 			ImGui::MenuItem("Execution Context", NULL, &_state->_w.executionContext);
+			ImGui::MenuItem("Profiler", NULL, &_state->_w.profiler);
+
+			ImGui::Separator();
+			if (ImGui::MenuItem("Pick from stage", NULL, _state->_pickMode)) {
+				_state->_pickMode = !_state->_pickMode;
+				if (_state->_pickMode)
+					g_system->displayMessageOnOSD(Common::U32String("Pick: click a sprite on the stage"));
+			}
 
 			ImGui::SeparatorText("Misc");
 			if (ImGui::MenuItem("Save state")) {
@@ -904,25 +1197,33 @@ void onImGuiRender() {
 
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("Help")) {
+			ImGui::MenuItem("Shortcuts & Tips", NULL, &_state->_w.help);
+			ImGui::EndMenu();
+		}
 		ImGui::EndMainMenuBar();
 	}
 
-	showScriptCasts();
 	showExecutionContext();
-	showHandlers();
+	showScriptsWindow();
+	showQuickOpen();
+	showHelp();
 
 	showControlPanel();
 	showVars();
 	showChannels();
 	showCast();
 	showCastDetails();
+	showImageViewer();
 	showFuncList();
 	showScore();
 	showSearchBar();
 	showBreakpointList();
 	showSettings();
 	showArchive();
+	showWindows();
 	showWatchedVars();
+	showProfiler();
 	_state->_logger->draw("Logger", &_state->_w.logger);
 }
 
@@ -930,12 +1231,23 @@ void onImGuiCleanup() {
 	Common::setLogWatcher(nullptr);
 	if (_state) {
 		free(_state->_archive.data);
+		free(_state->_imageViewerState.buffer);
+
+		for (auto &it : _state->_cast._textures)
+			g_system->freeImGuiTexture((void *)(intptr_t)it._value.id);
 
 		delete _state->_logger;
 	}
 
 	delete _state;
 	_state = nullptr;
+}
+
+void renderPendingWindow() {
+	if (!_state || !_state->_windowToRedraw)
+		return;
+	_state->_windowToRedraw->render(true);
+	_state->_windowToRedraw = nullptr;
 }
 
 int getSelectedChannel(){
@@ -947,14 +1259,22 @@ void setSelectedChannel(int channel) {
 		_state->_selectedChannel = channel;
 
 		if (channel > 0) {
-			_state->_scrollToChannel = true; 
+			_state->_scrollToChannel = true;
 			_state->_w.channels = true;
 		}
 	}
 }
 
 bool isMouseInputIgnored() {
-	if (!_state || !_state->_ignoreMouse)
+	if (!_state)
+		return false;
+
+	// While arming a stage pick, keep the selecting click out of the game so it
+	// only selects the sprite and does not fire its mouseDown/mouseUp handlers.
+	if (_state->_pickMode)
+		return true;
+
+	if (!_state->_ignoreMouse)
 		return false;
 
 	// Holding Shift temporarily allows mouse events to pass to the engine

@@ -39,6 +39,11 @@ void Game::onLoadedGameFiles() {}
 
 void Game::drawScreenStates() {}
 
+String Game::reencodePath(const String &path) {
+	// Except for the messed up Stream release of escarabajo, this suffices
+	return reencode(path);
+}
+
 int32 Game::getKernelTaskArgCount(int32 kernelTaskI) {
 	(void)kernelTaskI;
 	return 0;
@@ -77,6 +82,10 @@ void Game::tooManyDialogLines(uint lineCount, uint maxLineCount) {
 void Game::tooManyDrawRequests(int order) {
 	// similar, the bug will be some objects not being rendered
 	_message("Too many draw requests in order %d", order);
+}
+
+bool Game::shouldMusicLoop() {
+	return true;
 }
 
 bool Game::shouldCharacterTrigger(const Character *character, const char *action) {
@@ -142,6 +151,10 @@ void Game::unknownScriptCharacter(const char *action, const char *name) {
 PointObject *Game::unknownGoPutTarget(const Process &process, const char *action, const char *name) {
 	_message("Script tried to make character %s to invalid object %s", action, name);
 	return nullptr;
+}
+
+String Game::alternativeAnimationName(const String &fileName, int variant) {
+	return {};
 }
 
 void Game::missingAnimation(const String &fileName) {
@@ -227,6 +240,20 @@ Game *Game::create() {
 		switch (*desc.desc.gameId) {
 		case 's':
 			return createForSecta();
+		case 'm':
+			return createForMoscu();
+		case 'e':
+			return createForEscarabajo();
+		}
+		break;
+	case EngineVersion::V2_1:
+		switch (*desc.desc.gameId) {
+		case 'c':
+			return createForCorvino();
+		case 'b':
+			return createForBalones();
+		case 'm':
+			return createForMamelucos();
 		}
 		break;
 	case EngineVersion::V3_0:

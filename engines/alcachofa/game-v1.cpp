@@ -90,7 +90,7 @@ static constexpr const ScriptKernelTask kScriptKernelTaskMap[] = {
 	ScriptKernelTask::ChangeCharacter,
 	ScriptKernelTask::LerpOrSetCam,
 	ScriptKernelTask::Drop,
-	ScriptKernelTask::ChangeDoor,
+	ScriptKernelTask::Nop,
 	ScriptKernelTask::Disguise,
 	ScriptKernelTask::ToggleRoomFloor,
 	ScriptKernelTask::SetDialogLineReturn,
@@ -181,6 +181,10 @@ public:
 
 	Point getSubtitlePos() override {
 		return Point(g_system->getWidth() / 2, 150);
+	}
+
+	Point getObjectNameOffset() override {
+		return Point(0, -50);
 	}
 
 	const char *getMenuRoom() override {
@@ -377,11 +381,14 @@ public:
 	}
 
 	Path getVideoPath(int32 videoId) override {
-		return Path(String::format("disk1/Install/bin/data%02d.bin", videoId));
+		const auto &desc = g_engine->gameDescription();
+		return desc.desc.flags & ADGF_CD
+			? Path(String::format("disk1/Install/bin/data%02d.bin", videoId))
+			: Path(String::format("bin/data%02d.bin", videoId));
 	}
 
 	String getMusicPath(int32 trackId) override {
-		const Room *room = g_engine->player().currentRoom();
+		const Room *room = g_engine->player().lastGameRoom();
 		const int diskId = room != nullptr && room->mapIndex() == 1 ? 2 : 1;
 		return String::format("disk%d/track%02d", diskId, trackId);
 	}
@@ -398,7 +405,7 @@ public:
 	}
 
 	String getMusicPath(int32 trackId) override {
-		return String::format("track%02d", trackId);
+		return String::format("track%d", trackId);
 	}
 
 	// probably the original CDs have music, the Steam release has no music...

@@ -94,7 +94,7 @@ bool ResourceManager::loadImage(const Common::Path &name, Graphics::ManagedSurfa
 			// .cifs are compressed, so we need to extract
 			CifFile cifFile(stream, name); // cifFile takes ownership of the current stream
 			stream = cifFile.createReadStream();
-			info = cifFile._info;
+			info = cifFile.getInfo();
 		}
 	}
 
@@ -147,7 +147,7 @@ bool ResourceManager::loadImage(const Common::Path &name, Graphics::ManagedSurfa
 		return false;
 	}
 
-	if (info.depth != 16) {
+	if (info.depth != 16 && info.depth != 24 && info.depth != 32) {
 		warning("Image '%s' has unsupported depth %i", name.toString().c_str(), info.depth);
 		delete stream;
 		return false;
@@ -163,7 +163,7 @@ bool ResourceManager::loadImage(const Common::Path &name, Graphics::ManagedSurfa
 	}
 
 	// Finally, copy the data into the surface
-	uint32 bufSize = info.pitch * info.height * (info.depth / 16);
+	uint32 bufSize = info.pitch * info.height;
 	byte *buf = new byte[bufSize];
 	stream->read(buf, bufSize);
 
@@ -174,7 +174,30 @@ bool ResourceManager::loadImage(const Common::Path &name, Graphics::ManagedSurfa
 	}
 	#endif
 
-	GraphicsManager::copyToManaged(buf, surf, info.width, info.height, g_nancy->_graphics->getInputPixelFormat());
+	if (info.depth == 24 && surf.format.bpp() == 32) {
+		// Nancy13+ uses 32bpp surfaces for 24bpp images, so we need to convert the data
+		// to 32bpp before copying it into the surface
+		uint32 newBufSize = info.width * info.height * 4;
+		byte *newBuf = new byte[newBufSize];
+		for (uint y = 0; y < info.height; ++y) {
+			for (uint x = 0; x < info.width; ++x) {
+				uint32 srcIndex = y * info.pitch + x * 3;
+				uint32 destIndex = y * info.width * 4 + x * 4;
+				newBuf[destIndex + 0] = buf[srcIndex + 0];
+				newBuf[destIndex + 1] = buf[srcIndex + 1];
+				newBuf[destIndex + 2] = buf[srcIndex + 2];
+				newBuf[destIndex + 3] = 0xFF; // alpha channel
+			}
+		}
+		delete[] buf;
+		buf = newBuf;
+		bufSize = newBufSize;
+		info.pitch = info.width * 4;
+		info.depth = 32;
+	}
+
+	GraphicsManager::copyToManaged(buf, surf, info.width, info.height, g_nancy->_graphics->getInputPixelFormat(info.depth));
+
 	delete[] buf;
 	delete stream;
 	return true;
@@ -207,6 +230,12 @@ IFF *ResourceManager::loadIFF(const Common::Path &name) {
 }
 
 bool ResourceManager::readCifTree(const Common::String &name, const Common::String &ext, int priority) {
+	// Nancy15+ asks for a player character's tree again on every switch back
+	// to that character, so make sure each tree is only ever added once
+	if (hasCifTree(name)) {
+		return true;
+	}
+
 	CifTree *tree = CifTree::makeCifTreeArchive(name, ext);
 	if (!tree) {
 		return false;
@@ -220,6 +249,22 @@ bool ResourceManager::readCifTree(const Common::String &name, const Common::Stri
 	SearchMan.add(treePrefix + upper, tree, priority, true);
 	_cifTreeNames.push_back(name);
 	return true;
+}
+
+bool ResourceManager::hasCifTree(const Common::String &name) const {
+	for (const Common::String &loaded : _cifTreeNames) {
+		if (loaded.equalsIgnoreCase(name)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void ResourceManager::setCifTreePriority(const Common::String &name, int priority) {
+	Common::String upper = name;
+	upper.toUppercase();
+	SearchMan.setPriority(treePrefix + upper, priority);
 }
 
 PatchTree *ResourceManager::readPatchTree(Common::SeekableReadStream *stream, const Common::String &name, int priority) {
@@ -264,6 +309,11 @@ Common::String ResourceManager::getCifDescription(const Common::String &treeName
 		error("Couldn't find CifInfo struct inside loaded CifTrees");
 	}
 
+	if (!tree->hasFile(name)) {
+		Common::String ret = Common::String::format("Couldn't find CIF %s\n", name.toString().c_str());
+		return ret;
+	}
+
 	const CifInfo &info = tree->getCifInfo(name);
 
 	Common::String desc;
@@ -288,27 +338,21 @@ void ResourceManager::list(const Common::String &treeName, Common::Array<Common:
 		if (!tree) {
 			return;
 		}
-		for (auto &i : tree->_fileMap) {
-			if (type == CifInfo::kResTypeAny || i._value.type == type) {
-				outList.push_back(i._key);
-			}
-		}
+		Common::Array<Common::Path> result = tree->getPathsForType(type);
+		outList.insert_at(outList.size(), result);
 	} else {
 		for (uint i = 0; i < _cifTreeNames.size(); ++i) {
 			// No provided tree name, check inside every loaded tree
 			Common::String upper = _cifTreeNames[i];
 			upper.toUppercase();
 			const CifTree *tree = (const CifTree *)SearchMan.getArchive(treePrefix + upper);
-			for (auto &it : tree->_fileMap) {
-				if (type == CifInfo::kResTypeAny || it._value.type == type) {
-					outList.push_back(it._key);
-				}
-			}
+			Common::Array<Common::Path> result = tree->getPathsForType(type);
+			outList.insert_at(outList.size(), result);
 		}
 	}
 }
 
-bool ResourceManager::exportCif(const Common::String &treeName, const Common::Path &name) {
+bool ResourceManager::exportCif(const Common::Path &name) {
 	if (!SearchMan.hasFile(name)) {
 		return false;
 	}
@@ -319,8 +363,10 @@ bool ResourceManager::exportCif(const Common::String &treeName, const Common::Pa
 	if (stream) {
 		// .cifs are compressed, so we need to extract
 		CifFile cifFile(stream, name); // cifFile takes ownership of the current stream
-		stream = cifFile.createReadStreamRaw();
-		info = cifFile._info;
+		stream = cifFile.createReadStream();
+		if (!stream)
+			stream = cifFile.createReadStreamRaw();
+		info = cifFile.getInfo();
 	}
 
 	if (!stream) {
@@ -344,7 +390,9 @@ bool ResourceManager::exportCif(const Common::String &treeName, const Common::Pa
 			}
 
 			if (tree) {
-				stream = tree->createReadStreamRaw(name);
+				stream = tree->createReadStreamForMember(name);
+				if (!stream)
+					stream = tree->createReadStreamRaw(name);
 				info = tree->getCifInfo(name);
 			} else {
 				// Finally, use SearchMan to get a loose file. This is useful if we want to add files that
@@ -363,8 +411,7 @@ bool ResourceManager::exportCif(const Common::String &treeName, const Common::Pa
 		}
 	}
 
-	CifFile file;
-	file._info = info;
+	CifFile file(info);
 
 	Common::DumpFile dump;
 	dump.open(name.append(".cif"));
@@ -408,7 +455,7 @@ bool ResourceManager::exportCifTree(const Common::String &treeName, const Common
 			// .cifs are compressed, so we need to extract
 			CifFile cifFile(stream, path); // cifFile takes ownership of the current stream
 			stream = cifFile.createReadStreamRaw();
-			info = cifFile._info;
+			info = cifFile.getInfo();
 		}
 
 		if (!stream) {
@@ -452,14 +499,14 @@ bool ResourceManager::exportCifTree(const Common::String &treeName, const Common
 		}
 
 		resStreams.push_back(stream);
-		file._writeFileMap.push_back(info);
+		file.addInfo(info);
 	}
 
-	uint16 dataOffset = headerSize + file._writeFileMap.size() * infoSize; // Initial offset after header/infos
-	for (uint i = 0; i < file._writeFileMap.size(); ++i) {
-		file._writeFileMap[i].dataOffset = dataOffset;
+	uint16 dataOffset = headerSize + file.writeFileMapSize() * infoSize; // Initial offset after header/infos
+	for (uint i = 0; i < file.writeFileMapSize(); ++i) {
+		file.setDataOffset(i, dataOffset);
 		for (uint j = 0; j < i; ++j) {
-			file._writeFileMap[i].dataOffset += resStreams[j]->size(); // Final offset, following raw data of previous files
+			file.setDataOffset(i, file.getDataOffset(i) + resStreams[j]->size()); // Final offset, following raw data of previous files
 		}
 	}
 

@@ -438,12 +438,14 @@ bool AVIDecoder::loadStream(Common::SeekableReadStream *stream) {
 
 	if (!stream->size()) {
 		debugC(8, kDebugLevelGVideo, "AVIDecoder::loadStream(): skipping empty stream");
+		delete stream;
 		return false;
 	}
 
 	uint32 riffTag = stream->readUint32BE();
 	if (riffTag != ID_RIFF) {
 		warning("Failed to find RIFF header");
+		delete stream;
 		return false;
 	}
 
@@ -452,6 +454,7 @@ bool AVIDecoder::loadStream(Common::SeekableReadStream *stream) {
 
 	if (riffType != ID_AVI) {
 		warning("RIFF not an AVI file");
+		delete stream;
 		return false;
 	}
 
@@ -462,8 +465,16 @@ bool AVIDecoder::loadStream(Common::SeekableReadStream *stream) {
 		;
 
 	if (_decodedHeader) {
-		// Ensure there's at least a supported video track
-		_decodedHeader = findNextVideoTrack() != nullptr;
+		// Ensure there's at least one supported media track. Some AVI files
+		// carry only audio data, which is still valid for MCI-style playback.
+		bool hasSupportedTrack = findNextVideoTrack() != nullptr;
+		for (TrackListIterator it = getTrackListBegin(); it != getTrackListEnd(); it++) {
+			if ((*it)->getTrackType() == Track::kTrackTypeVideo || (*it)->getTrackType() == Track::kTrackTypeAudio) {
+				hasSupportedTrack = true;
+				break;
+			}
+		}
+		_decodedHeader = hasSupportedTrack;
 	}
 
 	if (!_decodedHeader) {
@@ -535,7 +546,7 @@ void AVIDecoder::close() {
 
 void AVIDecoder::readNextPacket() {
 	// Shouldn't get this unless called on a non-open video
-	if (_videoTracks.empty())
+	if (_videoTracks.empty() && _audioTracks.empty())
 		return;
 
 	// Handle the video first
@@ -649,6 +660,9 @@ bool AVIDecoder::shouldQueueAudio(TrackStatus& status) {
 	// Sanity check:
 	if (status.track->getTrackType() != Track::kTrackTypeAudio)
 		return false;
+
+	if (_videoTracks.empty())
+		return true;
 
 	// If video is done, make sure that the rest of the audio is queued
 	// (I guess this is also really a sanity check)
@@ -923,8 +937,8 @@ void AVIDecoder::readOldIndex(uint32 size) {
 }
 
 void AVIDecoder::checkTruemotion1() {
-	// If we got here from loadStream(), we know the track is valid
-	assert(!_videoTracks.empty());
+	if (_videoTracks.empty())
+		return;
 
 	TrackStatus &status = _videoTracks[0];
 	AVIVideoTrack *track = (AVIVideoTrack *)status.track;

@@ -26,11 +26,11 @@
 
 namespace MacVenture {
 
-#define ADGF_DEFAULT (ADGF_DROPLANGUAGE|ADGF_DROPPLATFORM|ADGF_MACRESFORK|ADGF_UNSTABLE)
+#define ADGF_DEFAULT (ADGF_DROPLANGUAGE|ADGF_DROPPLATFORM|ADGF_MACRESFORK)
 
-#define MACGAME(n, v, f, md5, s) {n, v, AD_ENTRY1s(f, md5, s), Common::EN_ANY, Common::kPlatformMacintosh, ADGF_DEFAULT, GUIO1(GUIO_NOMIDI)}
-#define MACDEMO(n, v, f, md5, s) {n, v, AD_ENTRY1s(f, md5, s), Common::EN_ANY, Common::kPlatformMacintosh, ADGF_DEFAULT|ADGF_DEMO, GUIO1(GUIO_NOMIDI)}
-#define IIGSGAME(n, v, f, md5, s) {n, v, AD_ENTRY1s(f, md5, s), Common::EN_ANY, Common::kPlatformApple2GS, ADGF_DEFAULT, GUIO1(GUIO_NOMIDI)}
+#define MACGAME(n, v, f, md5, s) {n, v, AD_ENTRY1s(f, md5, s), Common::EN_ANY, Common::kPlatformMacintosh, ADGF_DEFAULT|ADGF_TESTING, GUIO1(GUIO_NOMIDI)}
+#define MACDEMO(n, v, f, md5, s) {n, v, AD_ENTRY1s(f, md5, s), Common::EN_ANY, Common::kPlatformMacintosh, ADGF_DEFAULT|ADGF_TESTING|ADGF_DEMO, GUIO1(GUIO_NOMIDI)}
+#define IIGSGAME(n, v, f, md5, s) {n, v, AD_ENTRY1s(f, md5, s), Common::EN_ANY, Common::kPlatformApple2GS, ADGF_DEFAULT|ADGF_UNSTABLE, GUIO1(GUIO_NOMIDI)}
 
 static const ADGameDescription gameDescriptions[] = {
 	// Original Mac releases (uses protection)
@@ -46,11 +46,11 @@ static const ADGameDescription gameDescriptions[] = {
 	MACGAME("uninvited", "1993 rerelease", "Uninvited", "0f4eb65cf369c6c75e4b991b986c34a2", 68974),
 
 	// IIGS releases
-	IIGSGAME("shadowgate", "", "SHADOWGATE", "45924ea00ea4ef088e00db0ee774b8df", 101376),
-	IIGSGAME("deja_vu", "", "DEJAVU", "45924ea00ea4ef088e00db0ee774b8df", 101376),
-	IIGSGAME("deja_vu", "Zojoi rerelease", "DEJAVU", "81f1ee050d2afae2fa90a3306010dc56", 101376), // 6 bytes different, BB BE F0 -> BB BE 80
-	IIGSGAME("deja_vu2", "", "DEJAVUII", "f6ef6ead871d4d1cc0f6cf840f48b63f", 69047),
-	IIGSGAME("uninvited", "", "UNINVITED", "45924ea00ea4ef088e00db0ee774b8df", 101376),
+	IIGSGAME("shadowgate", "", "SHADOWGATE", "d:45924ea00ea4ef088e00db0ee774b8df", 101376),
+	IIGSGAME("deja_vu", "", "DEJAVU", "d:45924ea00ea4ef088e00db0ee774b8df", 101376),
+	IIGSGAME("deja_vu", "Zojoi rerelease", "DEJAVU", "d:81f1ee050d2afae2fa90a3306010dc56", 101376), // 6 bytes different, BB BE F0 -> BB BE 80
+	IIGSGAME("deja_vu2", "", "DEJAVUII", "d:f6ef6ead871d4d1cc0f6cf840f48b63f", 69047),
+	IIGSGAME("uninvited", "", "UNINVITED", "d:45924ea00ea4ef088e00db0ee774b8df", 101376),
 
 	// Misc
 	MACDEMO("uninvited", "Demo", "Uninvited Demo", "e53adca77d773dca926f61faac68df86", 53119),
@@ -72,8 +72,8 @@ static const DebugChannelDef debugFlagList[] = {
 
 static const PlainGameDescriptor macventureGames[] = {
 	{ "shadowgate", "Shadowgate" },
-	{ "deja_vu", "Deja Vu"},
-	{ "deja_vu2", "Deja Vu II"},
+	{ "deja_vu", "Deja Vu: A Nightmare Comes True!!"},
+	{ "deja_vu2", "Deja Vu II: Lost in Last Vegas"},
 	{ "uninvited", "Uninvited."},
 	{ nullptr, nullptr }
 };

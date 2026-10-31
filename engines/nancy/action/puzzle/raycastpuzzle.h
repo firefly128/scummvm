@@ -22,7 +22,7 @@
 #ifndef NANCY_ACTION_RAYCASTPUZZLE_H
 #define NANCY_ACTION_RAYCASTPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 
 namespace Nancy {
 
@@ -34,11 +34,10 @@ class RaycastDeferredLoader;
 class RaycastLevelBuilder;
 
 // Action record implementing nancy3's maze minigame
-class RaycastPuzzle : public RenderActionRecord {
+class RaycastPuzzle : public PuzzleRecord {
 	friend class RaycastDeferredLoader;
-	friend class RaycastLevelBuilder;
 public:
-	RaycastPuzzle() : RenderActionRecord(7), _map(7) {}
+	RaycastPuzzle() : PuzzleRecord(7), _map(7) {}
 	~RaycastPuzzle() override;
 
 	void init() override;
@@ -50,9 +49,10 @@ public:
 	void handleInput(NancyInput &input) override;
 	void updateGraphics() override;
 
+	bool isViewportRelative() const override { return true; }
+
 protected:
 	Common::String getRecordTypeName() const override { return "RaycastPuzzle"; }
-	bool isViewportRelative() const override { return true; }
 
 	void validateMap();
 
@@ -75,9 +75,6 @@ protected:
 	Common::String _unknownSoundName;
 	uint16 _unknownSoundChannelID = 0;
 	SoundDescription _dummySound;
-
-	SceneChangeWithFlag _solveScene;
-	SoundDescription _solveSound;
 
 	Common::Array<uint32> _wallMap, _infoMap;
 	Common::Array<int16> _floorMap, _ceilingMap;

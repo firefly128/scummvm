@@ -31,6 +31,7 @@
 static const PlainGameDescriptor MADSGames[] = {
 	{"dragonsphere", "Dragonsphere"},
 	{"nebular", "Rex Nebular and the Cosmic Gender Bender"},
+	{"nebularbonus", "Rex Nebular Bonus Disk"},
 	{"phantom", "Return of the Phantom"},
 	{"forest", "Once Upon a Forest"},
 	{nullptr, nullptr}
@@ -40,6 +41,7 @@ static const DebugChannelDef debugFlagList[] = {
 	{MADS::kDebugPath, "Path", "Pathfinding debug level"},
 	{MADS::kDebugScripts, "scripts", "Game scripts"},
 	{MADS::kDebugGraphics, "graphics", "Graphics handling"},
+	{MADS::kDebugConversations, "conv", "Game conversations"},
 	DEBUG_CHANNEL_END
 };
 

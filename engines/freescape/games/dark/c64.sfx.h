@@ -23,68 +23,22 @@
 #define FREESCAPE_DARK_C64_SFX_H
 
 #include "audio/sid.h"
+#include "freescape/sid.h"
+#include "freescape/sound.h"
 
 namespace Freescape {
 
-// SID register offsets (shared with Driller SFX player)
-enum DarkSIDRegs {
-	kDarkSIDV1FreqLo  = 0x00,
-	kDarkSIDV1FreqHi  = 0x01,
-	kDarkSIDV1PwLo    = 0x02,
-	kDarkSIDV1PwHi    = 0x03,
-	kDarkSIDV1Ctrl    = 0x04,
-	kDarkSIDV1AD      = 0x05,
-	kDarkSIDV1SR      = 0x06,
-
-	kDarkSIDV2FreqLo  = 0x07,
-	kDarkSIDV2FreqHi  = 0x08,
-	kDarkSIDV2PwLo    = 0x09,
-	kDarkSIDV2PwHi    = 0x0A,
-	kDarkSIDV2Ctrl    = 0x0B,
-	kDarkSIDV2AD      = 0x0C,
-	kDarkSIDV2SR      = 0x0D,
-
-	kDarkSIDV3FreqLo  = 0x0E,
-	kDarkSIDV3FreqHi  = 0x0F,
-	kDarkSIDV3PwLo    = 0x10,
-	kDarkSIDV3PwHi    = 0x11,
-	kDarkSIDV3Ctrl    = 0x12,
-	kDarkSIDV3AD      = 0x13,
-	kDarkSIDV3SR      = 0x14,
-
-	kDarkSIDFilterLo  = 0x15,
-	kDarkSIDFilterHi  = 0x16,
-	kDarkSIDFilterCtrl = 0x17,
-	kDarkSIDVolume    = 0x18
-};
-
-// 40-byte SFX descriptor from the data table at $C802 in dark2.prg
-struct DarkSideSFXData {
-	uint8 numNotes;        // Number of frequency transitions
-	uint8 repeatCount;     // Times to replay the full sequence
-	uint8 reserved;
-	uint8 freqWaypoints[20]; // Up to 10 frequency waypoints (lo,hi pairs)
-	uint8 padding;         // Offset 23
-	uint8 durations[9];    // Duration for each transition (in speed units)
-	uint8 speed;           // Frames per speed unit
-	uint8 padding2;        // Offset 34
-	uint8 pwLo;            // Pulse Width low byte
-	uint8 pwHi;            // Pulse Width high byte
-	uint8 waveform;        // SID control register (gate bit managed separately)
-	uint8 attackDecay;     // SID Attack/Decay register
-	uint8 sustainRelease;  // SID Sustain/Release register
-};
-
-class DarkSideC64SFXPlayer {
+class DarkSideC64SFXPlayer : public Sound {
 public:
 	DarkSideC64SFXPlayer();
 	~DarkSideC64SFXPlayer();
 
-	void playSfx(int sfxIndex);
-	void sfxTick();
-	void stopAllSfx();
+	void playSound(int sfxIndex, Type type) override;
+	void stopSound(Type type) override;
+	bool isPlayingSound(Type type) const override;
 
-	bool isSfxActive() const;
+	void sfxTick();
+
 	void initSID();
 	void destroySID();
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup Label="ProjectConfigurations">
 		<ProjectConfiguration Include="Debug|Win32">
 			<Configuration>Debug</Configuration>
@@ -51,70 +51,73 @@
 		</ProjectConfiguration>
 	</ItemGroup>
 	<PropertyGroup Label="Globals">
-		<ProjectGuid>{6D9E09FB-516F-4AB7-B256-D065B6FCB9A8}</ProjectGuid>
+		<ProjectGuid>{9EA90868-903D-4B0F-9557-CE21827DE8C3}</ProjectGuid>
 		<RootNamespace>mads</RootNamespace>
 		<Keyword>Win32Proj</Keyword>
-		<VCTargetsPath Condition="'$(VCTargetsPath14)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath14)</VCTargetsPath>
+		<VCTargetsPath Condition="'$(VCTargetsPath18)' != '' and '$(VSVersion)' == '' and $(VisualStudioVersion) == ''">$(VCTargetsPath18)</VCTargetsPath>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ASan|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
+		<EnableASAN>true</EnableASAN>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LLVM|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>LLVM-vs2014</PlatformToolset>
+		<PlatformToolset>llvm</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'" Label="Configuration">
 		<ConfigurationType>StaticLibrary</ConfigurationType>
-		<PlatformToolset>v140</PlatformToolset>
+		<PlatformToolset>v145</PlatformToolset>
 		<CharacterSet>Unicode</CharacterSet>
 	</PropertyGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -170,105 +173,738 @@
 	</ImportGroup>
 	<PropertyGroup Label="UserMacros" />
 	<ItemGroup>
-		<ClCompile Include="..\..\engines\mads\nebular\dialogs_nebular.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\game_nebular.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\globals_nebular.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\menu_nebular.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes1.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes2.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes3.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes4.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes5.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes6.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes7.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\nebular_scenes8.cpp" />
-		<ClCompile Include="..\..\engines\mads\nebular\sound_nebular.cpp" />
-		<ClCompile Include="..\..\engines\mads\action.cpp" />
-		<ClCompile Include="..\..\engines\mads\animation.cpp" />
-		<ClCompile Include="..\..\engines\mads\assets.cpp" />
-		<ClCompile Include="..\..\engines\mads\audio.cpp" />
-		<ClCompile Include="..\..\engines\mads\camera.cpp" />
-		<ClCompile Include="..\..\engines\mads\compression.cpp" />
-		<ClCompile Include="..\..\engines\mads\conversations.cpp" />
-		<ClCompile Include="..\..\engines\mads\debugger.cpp" />
-		<ClCompile Include="..\..\engines\mads\dialogs.cpp" />
-		<ClCompile Include="..\..\engines\mads\events.cpp" />
-		<ClCompile Include="..\..\engines\mads\font.cpp" />
-		<ClCompile Include="..\..\engines\mads\game.cpp" />
-		<ClCompile Include="..\..\engines\mads\game_data.cpp" />
-		<ClCompile Include="..\..\engines\mads\globals.cpp" />
-		<ClCompile Include="..\..\engines\mads\hotspots.cpp" />
-		<ClCompile Include="..\..\engines\mads\inventory.cpp" />
+		<ClCompile Include="..\..\engines\mads\animview\anim_timer.cpp" />
+		<ClCompile Include="..\..\engines\mads\animview\animview.cpp" />
+		<ClCompile Include="..\..\engines\mads\animview\functions.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\anim.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\attr.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\buffer.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\camera.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\color.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\config.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\conv.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\cursor.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\cycle.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\dialog.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\env.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\error.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\fileio.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\font.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\game.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\global.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\heap.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\hspot.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\image.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\imath.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\implode.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\inter.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\kernel.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\keys.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\lib.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\loader.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\magic.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\matte.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\mcga.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\mem.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\mouse.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\mps_archive.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\object.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\pack.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\pack_dcl.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\pal.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\pcspk_pit.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\pfab.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\player.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\popup.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\quote.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\rail.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\room.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\screen.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\sort.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\sound.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\sound_manager.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\speech.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\sprite.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\text.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\tile.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\timer.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\video.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\vocab.cpp" />
+		<ClCompile Include="..\..\engines\mads\core\window.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\mads\mads.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room101.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room102.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room103.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room104.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room105.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room106.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room107.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room108.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room109.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room110.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room111.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room112.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room113.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room114.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room115.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room116.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room117.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room118.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room119.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room120.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room201.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room203.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room204.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room205.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room206.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room301.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room302.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room303.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room401.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room402.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room403.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room404.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room405.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room406.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room407.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room408.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room409.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room410.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room411.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room412.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room454.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room501.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room502.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room503.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room504.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room505.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room506.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room507.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room508.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room509.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room510.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room511.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room512.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room557.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room601.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room603.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room604.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room605.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room606.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room607.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room609.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room612.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room613.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room614.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\room909.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section1.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section2.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section3.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section4.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section5.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section6.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\rooms\section9.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\asound.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\asound_dragonsphere.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\gsound.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\gsound_dragonsphere.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\psound.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\psound_dragonsphere.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\rsound.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\rsound_dragonsphere.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\sound\sound.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\dragonsphere.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\global.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\main.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\main_menu.cpp" />
+		<ClCompile Include="..\..\engines\mads\dragonsphere\menus.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\mads\mads.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room101.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room103.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room104.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room106.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room107.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room199.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room201.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room203.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room204.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room205.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room210.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room211.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room220.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room221.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room301.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room302.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room303.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room304.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room305.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room306.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room307.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room308.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room321.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room322.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room401.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room402.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room403.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room404.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room405.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room420.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room501.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room503.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room509.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room510.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room520.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room901.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room903.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\room904.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section1.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section2.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section3.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section4.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section5.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\rooms\section9.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\sound\digi.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\sound\midi.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\console.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\extra.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\forest.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\global.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\inventory.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\journal.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\main.cpp" />
+		<ClCompile Include="..\..\engines\mads\forest\menus.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\bonus.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\bonus_exe_data.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\bonus_text_ui.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\bonus\dos_text_screen.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\mads\mads.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\dialog.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\forcefield.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room101.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room102.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room103.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room104.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room105.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room106.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room107.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room108.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room109.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room110.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room111.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room112.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room201.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room202.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room203.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room205.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room207.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room208.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room209.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room210.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room211.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room212.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room213.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room214.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room215.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room216.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room301.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room302.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room303.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room304.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room307.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room308.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room309.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room310.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room311.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room313.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room316.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room318.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room319.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room320.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room321.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room322.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room351.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room352.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room353.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room354.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room357.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room358.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room359.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room360.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room361.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room366.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room387.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room388.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room389.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room390.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room391.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room399.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room401.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room402.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room405.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room406.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room407.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room408.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room409.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room410.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room411.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room413.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room501.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room502.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room503.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room504.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room505.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room506.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room507.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room508.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room511.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room512.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room513.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room515.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room551.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room601.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room602.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room603.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room604.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room605.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room607.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room608.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room609.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room610.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room611.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room612.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room620.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room701.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room702.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room703.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room704.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room705.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room706.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room707.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room710.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room711.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room751.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room752.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room801.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room802.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room803.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room804.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room805.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room807.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room808.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\room810.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section1.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section2.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section3.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section4.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section5.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section6.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section7.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\section8.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\rooms\teleporter.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\asound.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\asound_nebular.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\isound.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\isound_nebular.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\mac_sound.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\psound.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\psound_nebular.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\rsound.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\rsound_nebular.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\sound\sound.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\console.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\copy.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\extra.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\global.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\mac_dialogs.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\mac_frontend.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\mac_menus.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\mac_nebular.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\mac_resources.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\main.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\main_menu.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\menus.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\mps_installer.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\nebular.cpp" />
+		<ClCompile Include="..\..\engines\mads\nebular\popup.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\mads\mads.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room101.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room102.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room103.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room104.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room105.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room106.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room107.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room108.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room109.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room110.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room111.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room112.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room113.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room114.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room150.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room201.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room202.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room203.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room204.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room205.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room206.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room207.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room208.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room250.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room301.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room302.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room303.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room304.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room305.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room306.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room307.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room308.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room309.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room310.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room401.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room403.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room404.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room406.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room407.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room408.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room409.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room410.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room453.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room456.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room501.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room502.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room504.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room505.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\room506.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section1.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section2.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section3.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section4.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\rooms\section5.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\asound.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\asound_phantom.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\isound.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\isound_phantom.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\psound.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\psound_phantom.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\rsound.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\rsound_phantom.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\sound\sound.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\catacombs.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\global.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\main.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\main_menu.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\menus.cpp" />
+		<ClCompile Include="..\..\engines\mads\phantom\phantom.cpp" />
+		<ClCompile Include="..\..\engines\mads\textview\textview.cpp" />
+		<ClCompile Include="..\..\engines\mads\console.cpp" />
 		<ClCompile Include="..\..\engines\mads\mads.cpp" />
-		<ClCompile Include="..\..\engines\mads\menu_views.cpp" />
-		<ClCompile Include="..\..\engines\mads\messages.cpp" />
 		<ClCompile Include="..\..\engines\mads\metaengine.cpp" />
-		<ClCompile Include="..\..\engines\mads\mps_installer.cpp" />
-		<ClCompile Include="..\..\engines\mads\msurface.cpp" />
-		<ClCompile Include="..\..\engines\mads\palette.cpp" />
-		<ClCompile Include="..\..\engines\mads\player.cpp" />
-		<ClCompile Include="..\..\engines\mads\rails.cpp" />
-		<ClCompile Include="..\..\engines\mads\resources.cpp" />
-		<ClCompile Include="..\..\engines\mads\scene.cpp" />
-		<ClCompile Include="..\..\engines\mads\scene_data.cpp" />
-		<ClCompile Include="..\..\engines\mads\screen.cpp" />
-		<ClCompile Include="..\..\engines\mads\sequence.cpp" />
-		<ClCompile Include="..\..\engines\mads\sound.cpp" />
-		<ClCompile Include="..\..\engines\mads\sprites.cpp" />
-		<ClCompile Include="..\..\engines\mads\staticres.cpp" />
-		<ClCompile Include="..\..\engines\mads\user_interface.cpp" />
 	</ItemGroup>
 	<ItemGroup>
-		<ClInclude Include="..\..\engines\mads\nebular\dialogs_nebular.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\game_nebular.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\globals_nebular.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\menu_nebular.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes1.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes2.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes3.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes4.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes5.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes6.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes7.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\nebular_scenes8.h" />
-		<ClInclude Include="..\..\engines\mads\nebular\sound_nebular.h" />
-		<ClInclude Include="..\..\engines\mads\action.h" />
-		<ClInclude Include="..\..\engines\mads\animation.h" />
-		<ClInclude Include="..\..\engines\mads\assets.h" />
-		<ClInclude Include="..\..\engines\mads\audio.h" />
-		<ClInclude Include="..\..\engines\mads\camera.h" />
-		<ClInclude Include="..\..\engines\mads\compression.h" />
-		<ClInclude Include="..\..\engines\mads\conversations.h" />
-		<ClInclude Include="..\..\engines\mads\debugger.h" />
+		<ClInclude Include="..\..\engines\mads\animview\anim_timer.h" />
+		<ClInclude Include="..\..\engines\mads\animview\animview.h" />
+		<ClInclude Include="..\..\engines\mads\animview\functions.h" />
+		<ClInclude Include="..\..\engines\mads\core\anim.h" />
+		<ClInclude Include="..\..\engines\mads\core\attr.h" />
+		<ClInclude Include="..\..\engines\mads\core\btype.h" />
+		<ClInclude Include="..\..\engines\mads\core\buffer.h" />
+		<ClInclude Include="..\..\engines\mads\core\camera.h" />
+		<ClInclude Include="..\..\engines\mads\core\color.h" />
+		<ClInclude Include="..\..\engines\mads\core\concat.h" />
+		<ClInclude Include="..\..\engines\mads\core\config.h" />
+		<ClInclude Include="..\..\engines\mads\core\conv.h" />
+		<ClInclude Include="..\..\engines\mads\core\cursor.h" />
+		<ClInclude Include="..\..\engines\mads\core\cycle.h" />
+		<ClInclude Include="..\..\engines\mads\core\dialog.h" />
+		<ClInclude Include="..\..\engines\mads\core\echo.h" />
+		<ClInclude Include="..\..\engines\mads\core\env.h" />
+		<ClInclude Include="..\..\engines\mads\core\error.h" />
+		<ClInclude Include="..\..\engines\mads\core\fileio.h" />
+		<ClInclude Include="..\..\engines\mads\core\font.h" />
+		<ClInclude Include="..\..\engines\mads\core\game.h" />
+		<ClInclude Include="..\..\engines\mads\core\general.h" />
+		<ClInclude Include="..\..\engines\mads\core\global.h" />
+		<ClInclude Include="..\..\engines\mads\core\heap.h" />
+		<ClInclude Include="..\..\engines\mads\core\hspot.h" />
+		<ClInclude Include="..\..\engines\mads\core\image.h" />
+		<ClInclude Include="..\..\engines\mads\core\imath.h" />
+		<ClInclude Include="..\..\engines\mads\core\implode.h" />
+		<ClInclude Include="..\..\engines\mads\core\inter.h" />
+		<ClInclude Include="..\..\engines\mads\core\kernel.h" />
+		<ClInclude Include="..\..\engines\mads\core\keys.h" />
+		<ClInclude Include="..\..\engines\mads\core\lib.h" />
+		<ClInclude Include="..\..\engines\mads\core\loader.h" />
+		<ClInclude Include="..\..\engines\mads\core\mads.h" />
+		<ClInclude Include="..\..\engines\mads\core\magic.h" />
+		<ClInclude Include="..\..\engines\mads\core\matte.h" />
+		<ClInclude Include="..\..\engines\mads\core\mcga.h" />
+		<ClInclude Include="..\..\engines\mads\core\mem.h" />
+		<ClInclude Include="..\..\engines\mads\core\mouse.h" />
+		<ClInclude Include="..\..\engines\mads\core\mps_archive.h" />
+		<ClInclude Include="..\..\engines\mads\core\native_sound_timer.h" />
+		<ClInclude Include="..\..\engines\mads\core\object.h" />
+		<ClInclude Include="..\..\engines\mads\core\pack.h" />
+		<ClInclude Include="..\..\engines\mads\core\pack_dcl.h" />
+		<ClInclude Include="..\..\engines\mads\core\pal.h" />
+		<ClInclude Include="..\..\engines\mads\core\pcspk_pit.h" />
+		<ClInclude Include="..\..\engines\mads\core\pfab.h" />
+		<ClInclude Include="..\..\engines\mads\core\player.h" />
+		<ClInclude Include="..\..\engines\mads\core\popup.h" />
+		<ClInclude Include="..\..\engines\mads\core\qual.h" />
+		<ClInclude Include="..\..\engines\mads\core\quote.h" />
+		<ClInclude Include="..\..\engines\mads\core\rail.h" />
+		<ClInclude Include="..\..\engines\mads\core\room.h" />
+		<ClInclude Include="..\..\engines\mads\core\screen.h" />
+		<ClInclude Include="..\..\engines\mads\core\sort.h" />
+		<ClInclude Include="..\..\engines\mads\core\sound.h" />
+		<ClInclude Include="..\..\engines\mads\core\sound_manager.h" />
+		<ClInclude Include="..\..\engines\mads\core\speech.h" />
+		<ClInclude Include="..\..\engines\mads\core\sprite.h" />
+		<ClInclude Include="..\..\engines\mads\core\sprite_h.h" />
+		<ClInclude Include="..\..\engines\mads\core\text.h" />
+		<ClInclude Include="..\..\engines\mads\core\tile.h" />
+		<ClInclude Include="..\..\engines\mads\core\timer.h" />
+		<ClInclude Include="..\..\engines\mads\core\video.h" />
+		<ClInclude Include="..\..\engines\mads\core\vocab.h" />
+		<ClInclude Include="..\..\engines\mads\core\vocabh.h" />
+		<ClInclude Include="..\..\engines\mads\core\window.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\conv.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\inventory.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\quotes.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\sounds.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\mads\words.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room101.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room102.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room103.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room104.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room105.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room106.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room107.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room108.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room109.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room110.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room111.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room112.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room113.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room114.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room115.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room116.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room117.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room118.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room119.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room120.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room201.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room203.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room204.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room205.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room206.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room301.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room302.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room303.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room401.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room402.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room403.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room404.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room405.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room406.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room407.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room408.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room409.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room410.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room411.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room412.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room454.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room501.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room502.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room503.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room504.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room505.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room506.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room507.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room508.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room509.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room510.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room511.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room512.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room557.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room601.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room603.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room604.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room605.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room606.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room607.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room609.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room612.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room613.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room614.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\room909.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section1.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section2.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section3.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section4.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section5.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section6.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\rooms\section9.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\asound.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\asound_dragonsphere.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\gsound.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\gsound_dragonsphere.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\psound.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\psound_dragonsphere.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\rsound.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\rsound_dragonsphere.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\sound\sound.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\dragonsphere.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\global.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\main.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\main_menu.h" />
+		<ClInclude Include="..\..\engines\mads\dragonsphere\menus.h" />
+		<ClInclude Include="..\..\engines\mads\forest\mads\inventory.h" />
+		<ClInclude Include="..\..\engines\mads\forest\mads\quotes.h" />
+		<ClInclude Include="..\..\engines\mads\forest\mads\sounds.h" />
+		<ClInclude Include="..\..\engines\mads\forest\mads\words.h" />
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section1.h" />
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section2.h" />
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section3.h" />
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section4.h" />
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section5.h" />
+		<ClInclude Include="..\..\engines\mads\forest\rooms\section9.h" />
+		<ClInclude Include="..\..\engines\mads\forest\sound\digi.h" />
+		<ClInclude Include="..\..\engines\mads\forest\sound\midi.h" />
+		<ClInclude Include="..\..\engines\mads\forest\console.h" />
+		<ClInclude Include="..\..\engines\mads\forest\extra.h" />
+		<ClInclude Include="..\..\engines\mads\forest\forest.h" />
+		<ClInclude Include="..\..\engines\mads\forest\global.h" />
+		<ClInclude Include="..\..\engines\mads\forest\inventory.h" />
+		<ClInclude Include="..\..\engines\mads\forest\journal.h" />
+		<ClInclude Include="..\..\engines\mads\forest\main.h" />
+		<ClInclude Include="..\..\engines\mads\forest\menus.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\bonus.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\bonus_exe_data.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\bonus_text_ui.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\bonus\dos_text_screen.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mads\inventory.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mads\quotes.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mads\sounds.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mads\words.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\dialog.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\forcefield.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section1.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section2.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section3.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section4.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section5.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section6.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section7.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\section8.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\rooms\teleporter.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\asound.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\asound_nebular.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\isound.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\isound_nebular.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\mac_sound.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\psound.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\psound_nebular.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\rsound.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\rsound_nebular.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\sound\sound.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\console.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\copy.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\extra.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\global.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mac_dialogs.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mac_frontend.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mac_menus.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mac_nebular.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mac_resources.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\main.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\main_menu.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\menus.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\mps_installer.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\nebular.h" />
+		<ClInclude Include="..\..\engines\mads\nebular\popup.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\mads\conv.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\mads\inventory.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\mads\quotes.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\mads\sounds.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\mads\speeches.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\mads\text.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\mads\words.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room101.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room102.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room103.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room104.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room105.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room106.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room107.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room108.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room109.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room110.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room111.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room112.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room113.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room114.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room150.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room201.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room202.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room203.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room204.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room205.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room206.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room207.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room208.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room250.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room301.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room302.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room303.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room304.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room305.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room306.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room307.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room308.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room309.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room310.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room401.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room403.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room404.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room406.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room407.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room408.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room409.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room410.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room453.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room456.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room501.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room502.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room504.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room505.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\room506.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section1.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section2.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section3.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section4.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\rooms\section5.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\asound.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\asound_phantom.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\isound.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\isound_phantom.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\psound.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\psound_phantom.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\rsound.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\rsound_phantom.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\sound\sound.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\catacombs.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\global.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\main.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\main_menu.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\menus.h" />
+		<ClInclude Include="..\..\engines\mads\phantom\phantom.h" />
+		<ClInclude Include="..\..\engines\mads\textview\textview.h" />
+		<ClInclude Include="..\..\engines\mads\console.h" />
 		<ClInclude Include="..\..\engines\mads\detection.h" />
 		<ClInclude Include="..\..\engines\mads\detection_tables.h" />
-		<ClInclude Include="..\..\engines\mads\dialogs.h" />
-		<ClInclude Include="..\..\engines\mads\events.h" />
-		<ClInclude Include="..\..\engines\mads\font.h" />
-		<ClInclude Include="..\..\engines\mads\game.h" />
-		<ClInclude Include="..\..\engines\mads\game_data.h" />
-		<ClInclude Include="..\..\engines\mads\globals.h" />
-		<ClInclude Include="..\..\engines\mads\hotspots.h" />
-		<ClInclude Include="..\..\engines\mads\inventory.h" />
 		<ClInclude Include="..\..\engines\mads\mads.h" />
-		<ClInclude Include="..\..\engines\mads\menu_views.h" />
-		<ClInclude Include="..\..\engines\mads\messages.h" />
-		<ClInclude Include="..\..\engines\mads\mps_installer.h" />
-		<ClInclude Include="..\..\engines\mads\msurface.h" />
-		<ClInclude Include="..\..\engines\mads\palette.h" />
-		<ClInclude Include="..\..\engines\mads\player.h" />
-		<ClInclude Include="..\..\engines\mads\rails.h" />
-		<ClInclude Include="..\..\engines\mads\resources.h" />
-		<ClInclude Include="..\..\engines\mads\scene.h" />
-		<ClInclude Include="..\..\engines\mads\scene_data.h" />
-		<ClInclude Include="..\..\engines\mads\screen.h" />
-		<ClInclude Include="..\..\engines\mads\sequence.h" />
-		<ClInclude Include="..\..\engines\mads\sound.h" />
-		<ClInclude Include="..\..\engines\mads\sprites.h" />
-		<ClInclude Include="..\..\engines\mads\staticres.h" />
-		<ClInclude Include="..\..\engines\mads\user_interface.h" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="..\..\engines\mads\module.mk" />

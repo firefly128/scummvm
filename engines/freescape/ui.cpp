@@ -86,12 +86,13 @@ void FreescapeEngine::waitInLoop(int maxWait) {
 		if (_currentArea->isOutside())
 			farClipPlane *= 100;
 
-		float aspectRatio = isCastle() ? 1.6 : 2.18;
-		_gfx->updateProjectionMatrix(75.0, aspectRatio, _nearClipPlane, farClipPlane);
+		const float fov = _fieldOfView;
+		float aspectRatio = _viewAspectRatio;
+		_gfx->updateProjectionMatrix(fov, aspectRatio, _nearClipPlane, farClipPlane);
 		_gfx->positionCamera(_position, _position + _cameraFront, _roll);
 
 		drawBackground();
-		_currentArea->draw(_gfx, _ticks / 10, _position, _cameraFront, true);
+		_currentArea->draw(_gfx, _ticks / 10, _position, _cameraFront, _roll, true, fov, aspectRatio, _nearClipPlane, farClipPlane);
 		drawBorder();
 		drawUI();
 
@@ -226,11 +227,16 @@ void FreescapeEngine::borderScreen() {
 			lines.push_back(centerAndPadString("1: KEYBOARD ONLY   ", pad));
 			lines.push_back(centerAndPadString("2: IBM JOYSTICK    ", pad));
 			lines.push_back(centerAndPadString("3: AMSTRAD JOYSTICK", pad));
-			lines.push_back("");
+			if (isCastleMaster2()) {
+				// Castle Master 2 also offers mouse control here
+				lines.push_back(centerAndPadString("4: SERIAL MOUSE    ", pad));
+				lines.push_back(centerAndPadString("5: AMSTRAD MOUSE   ", pad));
+			} else
+				lines.push_back("");
 			lines.push_back("");
 			lines.push_back(centerAndPadString("SPACEBAR:  BEGIN MISSION", pad));
 			lines.push_back("");
-			lines.push_back(centerAndPadString("COPYRIGHT 1988 INCENTIVE", pad));
+			lines.push_back(centerAndPadString(isCastleMaster2() ? "COPYRIGHT 1990 INCENTIVE" : "COPYRIGHT 1988 INCENTIVE", pad));
 		} else if (isSpectrum() || isCPC()) {
 			if (isCastle())
 				pad = 22;
@@ -245,6 +251,26 @@ void FreescapeEngine::borderScreen() {
 				lines.push_back(centerAndPadString("4 JOYSTICK CURSOR  ", pad));
 				lines.push_back("");
 				lines.push_back(centerAndPadString("ENTER: EMPEZAR MISION", pad));
+				lines.push_back(centerAndPadString("(c) 1990 INCENTIVE", pad));
+			} else if (isCastle() && _language == Common::FR_FRA) {
+				lines.push_back(centerAndPadString("MENU CONFIGURATION", pad));
+				lines.push_back("");
+				lines.push_back(centerAndPadString("1 CLAVIER          ", pad));
+				lines.push_back(centerAndPadString("2 JOYSTICK SINCLAIR", pad));
+				lines.push_back(centerAndPadString("3 JOYSTICK KEMSTON ", pad));
+				lines.push_back(centerAndPadString("4 JOYSTICK CURSEUR ", pad));
+				lines.push_back("");
+				lines.push_back(centerAndPadString("RETURN: DEBUT MISSION", pad));
+				lines.push_back(centerAndPadString("(c) 1990 INCENTIVE", pad));
+			} else if (isCastle() && _language == Common::DE_DEU) {
+				lines.push_back(centerAndPadString("AUSWAHL-MENUE", pad));
+				lines.push_back("");
+				lines.push_back(centerAndPadString("1 TASTATUR         ", pad));
+				lines.push_back(centerAndPadString("2 SINCLAIR JOYSTICK", pad));
+				lines.push_back(centerAndPadString("3 KEMSTON JOYSTICK ", pad));
+				lines.push_back(centerAndPadString("4 CURSOR JOYSTICK  ", pad));
+				lines.push_back("");
+				lines.push_back(centerAndPadString("RETURN: MISSION START", pad));
 				lines.push_back(centerAndPadString("(c) 1990 INCENTIVE", pad));
 			} else {
 				lines.push_back(centerAndPadString("CONTROL OPTIONS", pad));
@@ -377,7 +403,7 @@ void FreescapeEngine::drawBorderScreenAndWait(Graphics::Surface *surface, int ma
 		delete compositedSurface;
 	}
 	pauseToken.clear();
-	playSound(_soundIndexMenu, false, _soundFxHandle);
+	playSound(_soundIndexMenu, false);
 	_gfx->clear(0, 0, 0, true);
 }
 

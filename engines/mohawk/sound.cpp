@@ -47,8 +47,22 @@ namespace Mohawk {
  * @param stream The stream to look for samples.
  */
 void scanAndFixAudioPops(DataChunk &dataChunk, uint32 &dataSize, Common::SeekableReadStream *stream) {
+
+	// Some assets declare more DATA payload bytes than remain in the current stream.
+	// Clamp dataSize to the bytes physically available before probing the final samples.
+	if (stream->size() != -1) {
+		int64 availableBytes = stream->size() - stream->pos();
+		if (availableBytes >= 0 && dataSize > (uint32)availableBytes) {
+			debug(1, "MOHAWK: Clamping declared dataSize %u to actual available bytes %u", dataSize, (uint32)availableBytes);
+			dataSize = (uint32)availableBytes;
+		}
+	}
+
+	if (dataSize < 4)
+		return;
+
 	const int PCM8_U_SILENCE = 0x80;
-	const int SQUELCH = 32; // Threshold of discontinuity before removing. Lower values = increased sensitivity.
+	const int SQUELCH = 8; // Threshold of discontinuity before removing. Lower values = increased sensitivity.
 	bool is_safe = false;
 
 	// Peek at the last 4 samples without permanently moving the stream pointer.
@@ -62,7 +76,7 @@ void scanAndFixAudioPops(DataChunk &dataChunk, uint32 &dataSize, Common::Seekabl
 	// any minor fluctuation is inaudible and the sound is considered safe.
 	bool is_stable_and_quiet = true;
 	for (int i = 0; i < 4; i++) {
-		if (abs(s[i] - PCM8_U_SILENCE) > SQUELCH) {
+		if (abs(s[i] - PCM8_U_SILENCE) >= SQUELCH) {
 			is_stable_and_quiet = false;
 			break;
 		}
@@ -95,13 +109,28 @@ void scanAndFixAudioPops(DataChunk &dataChunk, uint32 &dataSize, Common::Seekabl
 	}
 }
 
-Audio::RewindableAudioStream *makeMohawkWaveStream(Common::SeekableReadStream *stream, CueList *cueList) {
+/**
+ * Decode an MHWK/WAVE resource and optionally export a supported loop range.
+ *
+ * Loop metadata stays separate from the returned decoder stream so existing
+ * callers retain the public rewindable-stream contract.
+ * Zoombini playback always requests @p loopInfo and applies the exported
+ * infinite loop.
+ *
+ * @param stream The resource stream, which is consumed and deleted.
+ * @param cueList Optional destination for parsed Cue# entries.
+ * @param loopInfo Optional destination for a validated embedded-loop range.
+ * @return The decoded seekable stream, or nullptr when decoding fails.
+ */
+Audio::SeekableAudioStream *makeMohawkWaveStream(Common::SeekableReadStream *stream, CueList *cueList, MohawkWaveLoopInfo *loopInfo) {
 	uint32 tag = 0;
 	ADPCMStatus adpcmStatus;
 	DataChunk dataChunk;
 	uint32 dataSize = 0;
 
 	memset(&dataChunk, 0, sizeof(DataChunk));
+	if (loopInfo)
+		*loopInfo = MohawkWaveLoopInfo();
 
 	if (stream->readUint32BE() != ID_MHWK) // MHWK tag again
 		error ("Could not find tag 'MHWK'");
@@ -185,8 +214,10 @@ Audio::RewindableAudioStream *makeMohawkWaveStream(Common::SeekableReadStream *s
 				break;
 			case ID_DATA:
 				debug(2, "Found Tag DATA");
-				// We subtract 20 from the actual chunk size, which is the total size
-				// of the chunk's header
+				// The Data payload begins with a 20-byte big-endian format header.
+				// The declared chunk size includes this header.
+				// loopStart is inclusive and loopEnd is exclusive.
+				// Both loop positions use source sample frames rather than byte offsets.
 				dataSize = stream->readUint32BE() - 20;
 				dataChunk.sampleRate = stream->readUint16BE();
 				dataChunk.sampleCount = stream->readUint32BE();
@@ -197,21 +228,18 @@ Audio::RewindableAudioStream *makeMohawkWaveStream(Common::SeekableReadStream *s
 				dataChunk.loopStart = stream->readUint32BE();
 				dataChunk.loopEnd = stream->readUint32BE();
 
-			// For unsigned 8-bit PCM, check for and fix a potential pop/click at the end of the sample.
-			if (dataChunk.encoding == kCodecRaw && dataChunk.bitsPerSample == 8 && dataChunk.sampleCount >= 4) {
-				MohawkEngine *mohawkEngine = static_cast<MohawkEngine *>(g_engine);
-				const char *gameId = mohawkEngine->getGameId();
-				// Myst does not have pops and Riven does not have unsigned 8-bit PCM and so is ignored.
-				if (strcmp(gameId, "myst") != 0 && strcmp(gameId, "riven") != 0 && ConfMan.getBool("fix_audio_pops")) {
-					scanAndFixAudioPops(dataChunk, dataSize, stream);
+				// For unsigned 8-bit PCM, check for and fix a potential pop/click at the end of the sample.
+				if (dataChunk.encoding == kCodecRaw && dataChunk.bitsPerSample == 8 && dataChunk.sampleCount >= 4) {
+					MohawkEngine *mohawkEngine = static_cast<MohawkEngine *>(g_engine);
+					const char *gameId = mohawkEngine->getGameId();
+					// Myst does not have pops and Riven does not have unsigned 8-bit PCM and so is ignored.
+					if (strcmp(gameId, "myst") != 0 && strcmp(gameId, "riven") != 0 && ConfMan.getBool("fix_audio_pops"))
+						scanAndFixAudioPops(dataChunk, dataSize, stream);
 				}
-			}
 
-				// NOTE: We currently ignore all of the loop parameters here. Myst uses the
-				// loopCount variable but the loopStart and loopEnd are always 0 and the size of
-				// the sample. Myst ME doesn't use the Mohawk Sound format and just standard WAVE
-				// files and therefore does not contain any of this metadata and we have to specify
-				// whether or not to loop elsewhere.
+				// Myst uses the loopCount variable but the loopStart and loopEnd are always 0 and the size of the sample.
+				// Myst ME doesn't use the Mohawk Sound format and just standard WAVE files and therefore does not contain
+				// any of this metadata and we have to specify whether or not to loop elsewhere.
 
 				dataChunk.audioData = stream->readStream(dataSize);
 				break;
@@ -237,6 +265,18 @@ Audio::RewindableAudioStream *makeMohawkWaveStream(Common::SeekableReadStream *s
 		else
 			flags |= Audio::FLAG_UNSIGNED;
 
+		// Export only the raw 8-bit infinite loops used by Zoombini. Filter out finite loops.
+		// @ref Mohawk::Sound::playSound() passes the range to @ref Audio::SubLoopingAudioStream.
+		// - Mohawk infnite loop: head -> loop chunk (repeat until stopped by game logic)
+		// - Mohawk finite loop: head -> loop chunk (N times) -> tail -> EOF
+		// - @ref Audio::SubLoopingAudioStream finite: head -> loop chunk (N times) -> EOF
+		// @ref Audio::SubLoopingAudioStream does not support finite loop semantics, so filter them as a safeguard.
+		// Validate against sampleCount after the optional pop truncation.
+		if (loopInfo && dataChunk.loopCount == 0xFFFF && dataChunk.loopStart < dataChunk.loopEnd && dataChunk.loopEnd <= dataChunk.sampleCount) {
+			loopInfo->start = dataChunk.loopStart;
+			loopInfo->end = dataChunk.loopEnd;
+		}
+
 		return Audio::makeRawStream(dataChunk.audioData, dataChunk.sampleRate, flags);
 	} else if (dataChunk.encoding == kCodecADPCM) {
 		uint32 blockAlign = dataChunk.channels * dataChunk.bitsPerSample / 8;
@@ -254,7 +294,7 @@ Audio::RewindableAudioStream *makeMohawkWaveStream(Common::SeekableReadStream *s
 	return nullptr;
 }
 
-Sound::Sound(MohawkEngine* vm) :
+Sound::Sound(MohawkEngine *vm) :
 		_vm(vm) {
 }
 
@@ -262,12 +302,12 @@ Sound::~Sound() {
 	stopSound();
 }
 
-Audio::RewindableAudioStream *Sound::makeAudioStream(uint16 id, CueList *cueList) {
-	Audio::RewindableAudioStream *audStream = nullptr;
+Audio::SeekableAudioStream *Sound::makeAudioStream(uint16 id, CueList *cueList, MohawkWaveLoopInfo *loopInfo) {
+	Audio::SeekableAudioStream *audStream = nullptr;
 
 	switch (_vm->getGameType()) {
 	case GType_ZOOMBINI:
-		audStream = makeMohawkWaveStream(_vm->getResource(ID_SND, id));
+		audStream = makeMohawkWaveStream(_vm->getResource(ID_SND, id), cueList, loopInfo);
 		break;
 	case GType_LIVINGBOOKSV1:
 		audStream = makeLivingBooksWaveStream_v1(_vm->getResource(ID_WAV, id));
@@ -288,18 +328,30 @@ Audio::RewindableAudioStream *Sound::makeAudioStream(uint16 id, CueList *cueList
 Audio::SoundHandle *Sound::playSound(uint16 id, byte volume, bool loop, CueList *cueList) {
 	debug (0, "Playing sound %d", id);
 
-	Audio::RewindableAudioStream *rewindStream = makeAudioStream(id, cueList);
+	MohawkWaveLoopInfo loopInfo;
+	Audio::SeekableAudioStream *seekableStream = makeAudioStream(id, cueList, &loopInfo);
 
-	if (rewindStream) {
+	if (seekableStream) {
 		SndHandle *handle = getHandle();
 		handle->type = kUsedHandle;
 		handle->id = id;
-		handle->samplesPerSecond = rewindStream->getRate();
+		handle->samplesPerSecond = seekableStream->getRate();
 
-		// Set the stream to loop here if it's requested
-		Audio::AudioStream *audStream = rewindStream;
-		if (loop)
-			audStream = Audio::makeLoopingAudioStream(rewindStream, 0);
+		// Logical Journey of the Zoombinis make use of loop.
+		// Playback starts with the resource prefix from frame zero.
+		// Reaching the exported exclusive end then seeks to the inclusive start.
+		// @ref Audio::SubLoopingAudioStream uses zero iterations to mean an infinite loop.
+		// It takes ownership of the decoded seekable stream. The mixer owns the wrapper.
+		// The ordinary whole-resource loop policy remains the fallback
+		// only when the resource has no supported embedded loop.
+		Audio::AudioStream *audStream = seekableStream;
+		if (loopInfo.isValid()) {
+			audStream = new Audio::SubLoopingAudioStream(seekableStream, 0,
+				Audio::Timestamp(0, loopInfo.start, seekableStream->getRate()),
+				Audio::Timestamp(0, loopInfo.end, seekableStream->getRate()));
+		} else if (loop) { // Set the stream to loop here if it's requested
+			audStream = Audio::makeLoopingAudioStream(seekableStream, 0);
+		}
 
 		_vm->_mixer->playStream(Audio::Mixer::kPlainSoundType, &handle->handle, audStream, -1, volume);
 		return &handle->handle;
@@ -308,7 +360,7 @@ Audio::SoundHandle *Sound::playSound(uint16 id, byte volume, bool loop, CueList 
 	return nullptr;
 }
 
-Audio::RewindableAudioStream *Sound::makeLivingBooksWaveStream_v1(Common::SeekableReadStream *stream) {
+Audio::SeekableAudioStream *Sound::makeLivingBooksWaveStream_v1(Common::SeekableReadStream *stream) {
 	uint16 header = stream->readUint16BE();
 	uint16 rate = 0;
 	uint32 size = 0;
@@ -324,6 +376,14 @@ Audio::RewindableAudioStream *Sound::makeLivingBooksWaveStream_v1(Common::Seekab
 		size = stream->readUint32LE();
 	} else
 		error("Could not find Old Mohawk Sound header");
+
+	if (size >= 4 && ConfMan.getBool("fix_audio_pops")) {
+		DataChunk chunk;
+		memset(&chunk, 0, sizeof(DataChunk));
+		chunk.sampleCount = size;
+
+		scanAndFixAudioPops(chunk, size, stream);
+	}
 
 	Common::SeekableReadStream *dataStream = stream->readStream(size);
 	delete stream;

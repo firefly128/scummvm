@@ -30,8 +30,10 @@
  * https://github.com/angstsmurf/spatterlight/tree/master/terps/scott
  */
 
+#include "common/compression/unp64.h"
 #include "common/str.h"
 #include "common/scummsys.h"
+#include "common/ptr.h"
 #include "glk/scott/scott.h"
 #include "glk/scott/globals.h"
 #include "glk/scott/c64_checksums.h"
@@ -40,7 +42,6 @@
 #include "glk/scott/game_info.h"
 #include "glk/scott/resource.h"
 #include "glk/scott/saga_draw.h"
-#include "glk/scott/unp64/unp64_interface.h"
 
 namespace Glk {
 namespace Scott {
@@ -402,7 +403,7 @@ int detectC64(uint8_t **sf, size_t *extent) {
 	if (*extent > MAX_LENGTH || *extent < MIN_LENGTH)
 		return 0;
 
-	Common::String md5 = g_vm->getGameMD5();
+	const auto &md5 = g_vm->getGameMD5();
 	int index = _G(_md5Index)[md5];
 	if (g_C64Registry[index]._id == SAVAGE_ISLAND_C64) {
 		return savageIslandMenu(sf, extent, index);
@@ -413,31 +414,34 @@ int detectC64(uint8_t **sf, size_t *extent) {
 	}
 	if (g_C64Registry[index]._type == TYPE_D64) {
 		int newlength;
-		uint8_t *largest_file = getLargestFile(*sf, *extent, &newlength);
-		uint8_t *appendix = nullptr;
+		Common::ScopedPtr<uint8_t, Common::ArrayDeleter<uint8_t> > largestFile(getLargestFile(*sf, *extent, &newlength));
+		Common::ScopedPtr<uint8_t, Common::ArrayDeleter<uint8_t> > appendix;
 		int appendixlen = 0;
 
 		if (g_C64Registry[index]._appendFile != nullptr) {
-			appendix = getFileNamed(*sf, *extent, &appendixlen, g_C64Registry[index]._appendFile);
-			if (appendix == nullptr)
+			appendix.reset(getFileNamed(*sf, *extent, &appendixlen, g_C64Registry[index]._appendFile));
+			if (!appendix)
 				error("detectC64(): Appending file failed");
 			appendixlen -= 2;
 		}
 
-		uint8_t *megabuf = new uint8_t[newlength + appendixlen];
-		memcpy(megabuf, largest_file, newlength);
-		if (appendix != nullptr) {
-			memcpy(megabuf + newlength + g_C64Registry[index]._parameter, appendix + 2, appendixlen);
-			newlength += appendixlen;
-		}
-		delete[] appendix;
+		if (!largestFile)
+			error("detectC64(): Failed loading largest file");
 
-		if (largest_file) {
-			*sf = megabuf;
-			*extent = newlength;
+		size_t newExtent = newlength;
+		Common::ScopedPtr<uint8_t, Common::ArrayDeleter<uint8_t> > replacement;
+		if (appendix) {
+			replacement.reset(new uint8_t[newlength + appendixlen]);
+			memcpy(replacement.get(), largestFile.get(), newlength);
+			memcpy(replacement.get() + newlength + g_C64Registry[index]._parameter, appendix.get() + 2, appendixlen);
+			newExtent += appendixlen;
+		} else {
+			replacement.reset(largestFile.release());
 		}
-		delete[] largest_file;
 
+		delete[] *sf;
+		*sf = replacement.release();
+		*extent = newExtent;
 	} else if (g_C64Registry[index]._type == TYPE_T64) {
 		uint8_t *file_records = *sf + 64;
 		int number_of_records = READ_LE_UINT16(&(*sf)[36]);
@@ -449,10 +453,11 @@ int detectC64(uint8_t **sf, size_t *extent) {
 			size = *extent - offset;
 		else
 			size = end_addr - start_addr;
-		uint8_t *first_file = new uint8_t[size + 2];
-		memcpy(first_file + 2, *sf + offset, size);
-		memcpy(first_file, file_records + 2, 2);
-		*sf = first_file;
+		Common::ScopedPtr<uint8_t, Common::ArrayDeleter<uint8_t> > firstFile(new uint8_t[size + 2]);
+		memcpy(firstFile.get() + 2, *sf + offset, size);
+		memcpy(firstFile.get(), file_records + 2, 2);
+		delete[] *sf;
+		*sf = firstFile.release();
 		*extent = size + 2;
 	}
 	return decrunchC64(sf, extent, g_C64Registry[index]);
@@ -475,7 +480,7 @@ int decrunchC64(uint8_t **sf, size_t *extent, C64Rec record) {
 	uint8_t *uncompressed = nullptr;
 	_G(_fileLength) = *extent;
 
-	size_t decompressedLength = *extent;
+	uint32 decompressedLength = *extent;
 
 	uncompressed = new uint8_t[0xffff];
 
@@ -484,9 +489,9 @@ int decrunchC64(uint8_t **sf, size_t *extent, C64Rec record) {
 	for (int i = 1; i <= record._decompressIterations; i++) {
 		/* We only send switches on the iteration specified by parameter */
 		if (i == record._parameter && record._switches != nullptr) {
-			result = unp64(_G(_entireFile), _G(_fileLength), uncompressed, &decompressedLength, record._switches);
+			result = Common::Unp64::unp64(_G(_entireFile), _G(_fileLength), uncompressed, &decompressedLength, record._switches);
 		} else
-			result = unp64(_G(_entireFile), _G(_fileLength), uncompressed, &decompressedLength, nullptr);
+			result = Common::Unp64::unp64(_G(_entireFile), _G(_fileLength), uncompressed, &decompressedLength, nullptr);
 		if (result) {
 			if (_G(_entireFile) != nullptr)
 				delete[] _G(_entireFile);

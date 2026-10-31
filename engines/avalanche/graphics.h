@@ -95,6 +95,13 @@ public:
 	// Used in winning()
 	void drawWinningPic();
 
+	/* 
+	* Used in quitting(), the parameter is to accept different numbers (representing different scenarios). I put it here to 
+	* preserve some of the multi-purpose functionality of the original function.
+	*/
+
+	void drawQuittingPic();
+
 	// Ghostroom's functions:
 	void ghostDrawMonster(byte ***picture, uint16 destX, int16 destY, MonsterType type);
 	Graphics::Surface ghostLoadPicture(Common::File &file, Common::Point &coord);
@@ -124,7 +131,6 @@ public:
 	void menuRestoreScreen();
 	void menuLoadPictures();
 	void menuDrawBigText(FontType font, uint16 x, uint16 y, Common::String text, Color color);
-	void menuDrawIndicator(int x);
 
 	void clearAlso();
 	void clearTextBar();
@@ -160,6 +166,16 @@ public:
 	void restoreScreen();
 	void removeBackup();
 
+	Graphics::Surface loadPictureGraphic(Common::File &file); // Reads Graphic-planar EGA data.
+	void drawPicture(Graphics::Surface &target, const Graphics::Surface &picture, uint16 destX, uint16 destY);
+	// Taken from Free Pascal's Procedure InternalEllipseDefault. Used to replace Pascal's procedure arc.
+	// Returns the end point of the arc. (Needed in Clock.)
+	Common::Point drawArc(Graphics::Surface &surface, int16 x, int16 y, int16 stAngle, int16 endAngle, uint16 radius, Color color);
+	void drawText(Graphics::Surface &surface, const Common::String &text, FontType font, byte fontHeight, int16 x, int16 y, Color color);
+
+	Graphics::Surface &getSurface() { return _surface; }
+	Graphics::Surface &getMenuSurface() { return _menu; }
+
 private:
 	static const int16 kMouseSize = 134;
 	static const uint16 kBackgroundWidth = kScreenWidth;
@@ -193,16 +209,9 @@ private:
 	void skipDifference(int size, const Graphics::Surface &picture, Common::File &file);
 
 	// Further information about these two: https://moddingwiki.shikadi.net/wiki/Raw_EGA_data
-	Graphics::Surface loadPictureGraphic(Common::File &file); // Reads Graphic-planar EGA data.
 	Graphics::Surface loadPictureSign(Common::File &file, uint16 width, uint16 height); // Reads a tricky type of picture used for the "game over"/"about" scrolls and in the mini-game Nim.
 
-	void drawText(Graphics::Surface &surface, const Common::String &text, FontType font, byte fontHeight, int16 x, int16 y, Color color);
 	void drawBigText(Graphics::Surface &surface, const Common::String &text, FontType font, byte fontHeight, int16 x, int16 y, Color color);
-	void drawPicture(Graphics::Surface &target, const Graphics::Surface &picture, uint16 destX, uint16 destY);
-
-	// Taken from Free Pascal's Procedure InternalEllipseDefault. Used to replace Pascal's procedure arc.
-	// Returns the end point of the arc. (Needed in Clock.)
-	Common::Point drawArc(Graphics::Surface &surface, int16 x, int16 y, int16 stAngle, int16 endAngle, uint16 radius, Color color);
 };
 
 } // End of namespace Avalanche

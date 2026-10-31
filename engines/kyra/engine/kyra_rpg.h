@@ -62,12 +62,14 @@ struct OpenDoorState {
 };
 
 struct LevelTempData {
-	uint8 *wallsXorData;
-	uint16 *flags;
-	void *monsters;
-	void *flyingObjects;
-	void *wallsOfForce;
+	const uint8 *wallsXorData;
+	const uint16 *flags;
+	const void *monsters;
+	const void *flyingObjects;
+	const void *wallsOfForce;
 	uint8 monsterDifficulty;
+	// ScummVM extra feature for EOBI/II
+	const void *automapExploreState;
 };
 
 struct EoBFlyingObject {
@@ -315,15 +317,16 @@ protected:
 	bool checkSceneUpdateNeed(int block);
 	uint16 calcNewBlockPosition(uint16 curBlock, uint16 direction);
 
+	void setVcnFormat(int outputBPP, Common::RenderMode renderMode);
 	void drawVcnBlocks();
 	void vcnDraw_fw_4bit(uint8 *&dst, const uint8 *&src);
 	void vcnDraw_bw_4bit(uint8 *&dst, const uint8 *&src);
-	void vcnDraw_fw_trans_4bit(uint8 *&dst, const uint8 *&src);
-	void vcnDraw_bw_trans_4bit(uint8 *&dst, const uint8 *&src);
-	void vcnDraw_fw_hiCol(uint8 *&dst, const uint8 *&src);
-	void vcnDraw_bw_hiCol(uint8 *&dst, const uint8 *&src);
-	void vcnDraw_fw_trans_hiCol(uint8 *&dst, const uint8 *&src);
-	void vcnDraw_bw_trans_hiCol(uint8 *&dst, const uint8 *&src);
+	template<bool cga> void vcnDraw_fw_trans_4bit(uint8 *&dst, const uint8 *&src);
+	template<bool cga> void vcnDraw_bw_trans_4bit(uint8 *&dst, const uint8 *&src);
+	template<typename T> void vcnDraw_fw_hiCol(uint8 *&dst, const uint8 *&src);
+	template<typename T> void vcnDraw_bw_hiCol(uint8 *&dst, const uint8 *&src);
+	template<typename T> void vcnDraw_fw_trans_hiCol(uint8 *&dst, const uint8 *&src);
+	template<typename T> void vcnDraw_bw_trans_hiCol(uint8 *&dst, const uint8 *&src);
 	void vcnDraw_fw_planar(uint8 *&dst, const uint8 *&src);
 	void vcnDraw_bw_planar(uint8 *&dst, const uint8 *&src);
 	void vcnDraw_fw_trans_planar(uint8 *&dst, const uint8 *&src);
@@ -382,6 +385,7 @@ protected:
 	uint8 *_vcnShift;
 	uint8 _vcnShiftVal;
 	uint8 *_vcnColTable;
+	const void *_vcnHiColorPalette;
 	uint8 _vcnSrcBitsPerPixel;
 	uint8 _vcnBpp;
 	uint16 *_blockDrawingBuffer;
@@ -515,15 +519,18 @@ protected:
 	void generateTempData();
 	virtual void restoreBlockTempData(int levelIndex);
 	void releaseTempData();
-	virtual void *generateMonsterTempData(LevelTempData *tmp) = 0;
+	virtual const void *generateMonsterTempData(uint8 &monsterDifficulty) const = 0;
 	virtual void restoreMonsterTempData(LevelTempData *tmp) = 0;
 	virtual void releaseMonsterTempData(LevelTempData *tmp) = 0;
 	void restoreFlyingObjectTempData(LevelTempData *tmp);
-	void *generateFlyingObjectTempData(LevelTempData *tmp);
+	const void *generateFlyingObjectTempData() const;
 	void releaseFlyingObjectTempData(LevelTempData *tmp);
-	virtual void *generateWallOfForceTempData(LevelTempData *tmp) { return 0; }
+	virtual const void *generateWallOfForceTempData() const { return nullptr; }
 	virtual void restoreWallOfForceTempData(LevelTempData *tmp) {}
 	virtual void releaseWallOfForceTempData(LevelTempData *tmp) {}
+	virtual const void *generateAutoMapTempData() { return nullptr; }
+	virtual void restoreAutoMapTempData(LevelTempData *tmp) {}
+	virtual void releaseAutoMapTempData(LevelTempData *tmp) {}
 
 	LevelTempData *_lvlTempData[29];
 	const int _numFlyingObjects;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="music">
-			<UniqueIdentifier>69488375-7495-492C-B5B5-040F5CA0E1D9</UniqueIdentifier>
+			<UniqueIdentifier>7C3F03CB-48A1-42EA-A1F6-C14751980DD1</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
@@ -31,7 +31,9 @@
 		<ClCompile Include="..\..\engines\sky\disk.cpp" />
 		<ClCompile Include="..\..\engines\sky\grid.cpp" />
 		<ClCompile Include="..\..\engines\sky\hufftext.cpp" />
+		<ClCompile Include="..\..\engines\sky\ibasstext.cpp" />
 		<ClCompile Include="..\..\engines\sky\intro.cpp" />
+		<ClCompile Include="..\..\engines\sky\inventory.cpp" />
 		<ClCompile Include="..\..\engines\sky\logic.cpp" />
 		<ClCompile Include="..\..\engines\sky\metaengine.cpp" />
 		<ClCompile Include="..\..\engines\sky\mouse.cpp" />
@@ -65,6 +67,7 @@
 		<ClInclude Include="..\..\engines\sky\debug.h" />
 		<ClInclude Include="..\..\engines\sky\disk.h" />
 		<ClInclude Include="..\..\engines\sky\grid.h" />
+		<ClInclude Include="..\..\engines\sky\ibasstext.h" />
 		<ClInclude Include="..\..\engines\sky\intro.h" />
 		<ClInclude Include="..\..\engines\sky\logic.h" />
 		<ClInclude Include="..\..\engines\sky\mouse.h" />

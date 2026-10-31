@@ -22,15 +22,15 @@
 #ifndef NANCY_ACTION_SPIGOTPUZZLE_H
 #define NANCY_ACTION_SPIGOTPUZZLE_H
 
-#include "engines/nancy/action/actionrecord.h"
+#include "engines/nancy/action/puzzlerecord.h"
 
 namespace Nancy {
 namespace Action {
 
 // A puzzle in nancy7 where you pull spigots to input a password
-class SpigotPuzzle : public RenderActionRecord {
+class SpigotPuzzle : public PuzzleRecord {
 public:
-	SpigotPuzzle() : RenderActionRecord(7) {}
+	SpigotPuzzle() : PuzzleRecord(7) {}
 	virtual ~SpigotPuzzle() {}
 
 	void init() override;
@@ -40,11 +40,10 @@ public:
 	void execute() override;
 	void handleInput(NancyInput &input) override;
 
-protected:
-	Common::String getRecordTypeName() const override { return "SpigotPuzzle"; }
 	bool isViewportRelative() const override { return true; }
 
-	Common::Path _imageName;
+protected:
+	Common::String getRecordTypeName() const override { return "SpigotPuzzle"; }
 
 	uint _numSpigots = 0;
 	uint _numLetters = 0;
@@ -70,15 +69,6 @@ protected:
 	SoundDescription _buttonSound;
 	SoundDescription _letterSound;
 	SoundDescription _spigotSound;
-
-	SceneChangeWithFlag _solveScene;
-	uint16 _solveSoundDelay = 0;
-	SoundDescription _solveSound;
-
-	SceneChangeWithFlag _exitScene;
-	Common::Rect _exitHotspot;
-
-	Graphics::ManagedSurface _image;
 
 	Common::Array<uint16> _currentOrder;
 	Common::Array<uint16> _currentAnimOrder;

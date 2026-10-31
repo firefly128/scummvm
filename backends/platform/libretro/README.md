@@ -59,7 +59,7 @@ Operation status will be shown in the same dialog, while details will be given i
 
 ## Core options
 ### Cursor Movement
-  - **Exclusive cursor control with RetroPad**: allows the use of RetroPad only to control mouse cursor, excluding the other inputs (e.g. physical mouse, touch screen).
+  - **Pointer Device**: allows switching which device to use to move the cursor.
   - **Gamepad Cursor Speed**: sets the mouse cursor speed multiplier when moving the cursor with the RetroPad left analog stick or D-Pad. The default value of '1.0' is optimised for games that have a native resolution of '320x200' or '320x240'. When running 'high definition' games with a resolution of '640x400' or '640x480', a Gamepad Cursor Speed of '2.0' is recommended.
   - **Gamepad Cursor Acceleration**: the amount of time (In seconds) it takes for the cursor to reach full speed
   - **Analog Cursor Response**: determines how the speed of the cursor varies when tilting the RetroPad left analog stick. 'Linear': Speed is directly proportional to analog stick displacement. This is standard behaviour with which most users will be familiar. 'Quadratic': Speed increases quadratically with analog stick displacement. This allows for greater precision when making small movements without sacrificing maximum speed at full analog range. This mode may require practice for effective use.
@@ -75,3 +75,23 @@ Operation status will be shown in the same dialog, while details will be given i
   - **Sample rate**: set core sample rate. Reducing the rate will slightly improve the performance on lower end devices. Changing this setting will reset the core.
 ### RetroPad mapping
 Settings to map each RetroPad key to ScummVM controls.
+
+## Android storage access
+On modern Android versions apps can only access folders explicitly authorized by the user through the system file picker (Storage Access Framework, SAF).
+
+The core can browse both the standard local filesystem and the folders authorized through the frontend (e.g. RetroArch). The starting location of the ScummVM file browser is controlled by the **Browsing mode** core option.
+
+### Browsing mode
+Available under the frontend core options (e.g. RetroArch `Quick Menu > Core Options > System`):
+
+  - **Authorized storage**: the file browser starts from a virtual root listing only the folders authorized through the frontend. Default on Android.
+  - **Local filesystem**: the file browser starts from the standard local path.
+
+### Authorizing folders
+  - Open the frontend file browser (e.g. in RetroArch, "Load Content") and use the option to open/add a new folder; the system file picker will appear.
+  - Grant access to the folder(s) containing your games and exit the file browser (no need to actually select any content at this time). The authorization is persistent across reboots.
+  - Start the core; the authorized folders will be listed by the ScummVM file browser when **Browsing mode** is set to `Authorized storage`.
+
+### Notes
+  - The authorized folder list is read when the core starts. If you authorize new folders while the core is running, restart (reload) the core to make them available.
+  - If **Browsing mode** is `Authorized storage` but no folders have been authorized, the core falls back to the local filesystem and shows a notification.

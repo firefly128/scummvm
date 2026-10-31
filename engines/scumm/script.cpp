@@ -79,6 +79,8 @@ void ScummEngine::runScript(int script, bool freezeResistant, bool recursive, in
 		scriptOffs = _localScriptOffsets[script - _numGlobalScripts];
 		if (scriptOffs == 0)
 			error("Local script %d is not in room %d", script, _roomResource);
+		if (_scriptOverrides.contains(_roomResource * 100000 + script))
+			scriptOffs = 0;
 		scriptType = WIO_LOCAL;
 
 		debugC(DEBUG_SCRIPTS, "runScript(%d) from %d-%d", script,
@@ -441,6 +443,13 @@ void ScummEngine::getScriptBaseAddress() {
 			_scriptOrgPointer = getResourceAddress(rtRoom, _roomResource);
 			assert(_roomResource < _numRooms);
 			_lastCodePtr = &_res->_types[rtRoom][_roomResource]._address;
+
+			int cacheIdx = _roomResource * 100000 + ss->number;
+			if (_scriptOverrides.contains(cacheIdx)) {
+				_lastCodePtr = (const byte *const *)_scriptOverrides[cacheIdx];
+				// LSC2 block layout: [4 tag][4 BE size][4 LE script id][bytecode]
+				_scriptOrgPointer = (const byte *)_scriptOverrides[cacheIdx] + _resourceHeaderSize + 4;
+			}
 		}
 		break;
 
@@ -505,7 +514,7 @@ void ScummEngine::executeScript() {
 		_opcode = fetchScriptByte();
 		if (_game.version > 2) // V0-V2 games didn't use the didexec flag
 			vm.slot[_currentScript].didexec = true;
-		debugC(DEBUG_OPCODES, "Script %d, offset 0x%x: [%X] %s()",
+				debugC(DEBUG_OPCODES, "Script %d, offset 0x%x: [%X] %s()",
 				vm.slot[_currentScript].number,
 				(uint)(_scriptPointer - _scriptOrgPointer),
 				_opcode,
@@ -609,12 +618,6 @@ int ScummEngine::readVar(uint var) {
 				!(_currentRoom == 4 && (currentScriptSlotIs(2150) || currentScriptSlotIs(2208) || currentScriptSlotIs(2210)))) {
 				return 263;
 			}
-			// Mod for Backyard Baseball 2001 online competitive play: allow random bounces
-			// Normally they only happen offline; this script checks var399, here we tell this
-			// script that we're not in online play even if we are
-			if (_game.id == GID_BASEBALL2001 && currentScriptSlotIs(39) && var == 399) {
-				return 0;
-			}
 		}
 #endif
 		assertRange(0, var, _numVariables - 1, "variable (reading)");
@@ -625,18 +628,6 @@ int ScummEngine::readVar(uint var) {
 		if (_game.heversion >= 80) {
 			var &= 0xFFF;
 			assertRange(0, var, _numRoomVariables - 1, "room variable (reading)");
-
-#if defined(USE_ENET) && defined(USE_BASIC_NET)
-			if (_enableHECompetitiveOnlineMods) {
-				// Mod for Backyard Baseball 2001 online competitive play: don't give powerups for double plays
-				// Return true for this variable, which dictates whether powerups are disabled, but only in this script
-				// that detects double plays (among other things)
-				if (_game.id == GID_BASEBALL2001 && _currentRoom == 3 && currentScriptSlotIs(2099) && var == 32 && readVar(399) == 1) {
-					return 1;
-				}
-			}
-#endif
-
 			return _roomVars[var];
 
 		} else if (_game.version <= 3 && !(_game.id == GID_INDY3 && _game.platform == Common::kPlatformFMTowns) &&
@@ -677,32 +668,6 @@ int ScummEngine::readVar(uint var) {
 			assertRange(0, var, 25, "local variable (reading)");
 		else
 			assertRange(0, var, 20, "local variable (reading)");
-#if defined(USE_ENET) && defined(USE_BASIC_NET)
-		// Mod for Backyard Baseball 2001 online competitive play: change impact of
-		// batter's power stat on hit power
-		if (_enableHECompetitiveOnlineMods) {
-			if (_game.id == GID_BASEBALL2001 &&
-				_currentRoom == 4 && currentScriptSlotIs(2090)  // The script that calculates hit power
-				&& readVar(399) == 1  // Check that we're playing online
-				&& var == 2  // Local var for batter's hitting power stat
-			) {
-				int swingType = vm.localvar[_currentScript][0];
-				int powerStat, powerStatModified;
-				switch (swingType) {
-				case 2:  // Line drive or grounder swing
-					powerStat = vm.localvar[_currentScript][var];
-					powerStatModified = 20 + powerStat * 4 / 5;
-					return powerStatModified;
-				case 1:  // Power swing
-					powerStat = vm.localvar[_currentScript][var];
-					powerStatModified = 10 + powerStat * 17 / 20;;
-					return powerStatModified;
-				default:
-					break;
-				}
-			}
-		}
-#endif
 		return vm.localvar[_currentScript][var];
 	}
 
@@ -740,8 +705,16 @@ void ScummEngine::writeVar(uint var, int value) {
 			// value is likely to be bogus. See also bug #4008.
 			if (_currentRoom == 0 && ConfMan.hasKey("talkspeed", _targetName)) {
 				value = 9 - getTalkSpeed();
-			} else {
-				// Save the new talkspeed value to ConfMan
+			} else if (value >= 0 && value <= 9) {
+				// Save the new talkspeed value to ConfMan.
+				// UPDATE: Only do this if the value is in valid range
+				// (e. g. DOTT, right before showing the final credits,
+				// will repeatedly set a value of 255, which would get
+				// stored as -246 and thus corrupt the text display in
+				// the next game session). I don't know why we do this
+				// at all, in my understanding, the script should not
+				// really change the user setting? Also, readVar()
+				// does not have an equivalent counterpart for this.
 				setTalkSpeed(9 - value);
 			}
 		}
@@ -1188,6 +1161,9 @@ void ScummEngine::checkAndRunSentenceScript() {
 	_sentenceNum--;
 	SentenceTab &st = _sentence[_sentenceNum];
 
+	if (monkey1HermanNoteWorkaround(st))
+		return;
+
 	if (_game.version < 7)
 		if (st.preposition && st.objectB == st.objectA)
 			return;
@@ -1259,6 +1235,30 @@ void ScummEngine_v0::walkToActorOrObject(int object) {
 		a->stopActorMoving();
 		a->_newWalkBoxEntered = false;
 	}
+}
+
+bool ScummEngine::monkey1HermanNoteWorkaround(const SentenceTab &st) {
+	// WORKAROUND: Monkey Island 1 note/Herman bug #12010.
+	//
+	// This workaround fixes an issue where the scripts would get stuck in a loop
+	// if you tried to give a note to Herman while the note was still in the room
+	// and not in the inventory.
+	// This intercepts the specific note objects that appear in rooms where Herman
+	// can be present, consumes the invalid give, and queues a pickup instead.
+	if ((_game.id == GID_MONKEY || _game.id == GID_MONKEY_EGA || _game.id == GID_MONKEY_VGA) &&
+		enhancementEnabled(kEnhMinorBugFixes) &&
+		// Give(EGA 3, VGA 4)
+		st.verb == (_game.id == GID_MONKEY_EGA ? 3 : 4) &&
+		st.objectB == 7 && // Herman
+		getOwner(st.objectA) == OF_OWNER_ROOM && // Object in room, not inventory
+		// note (volcano beach VGA), note (dry pond VGA), note (volcano beach EGA), note (dry pond EGA)
+		(st.objectA == 27 || st.objectA == 545 || st.objectA == 296 || st.objectA == 297)) {
+		// Pick up(EGA 11, VGA 9)
+		doSentence(_game.id == GID_MONKEY_EGA ? 11 : 9, st.objectA, 0);
+		return true;
+	}
+
+	return false;
 }
 
 bool ScummEngine_v0::checkPendingWalkAction() {

@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="TMX">
-			<UniqueIdentifier>F33246E4-14BC-403E-9C0C-D8668AB35561</UniqueIdentifier>
+			<UniqueIdentifier>F00C97FC-043A-46AB-9E73-002493E6B62F</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ai">
-			<UniqueIdentifier>5583D815-D2CE-4F38-BAC0-5F0AE2E30C1A</UniqueIdentifier>
+			<UniqueIdentifier>1F3EF233-3232-469C-9450-D273D76CC633</UniqueIdentifier>
 		</Filter>
 		<Filter Include="animation">
-			<UniqueIdentifier>5BCF0C96-907D-4001-86DE-59BF096D586A</UniqueIdentifier>
+			<UniqueIdentifier>38D330BF-79DB-43AD-BE0C-BE7F184428B8</UniqueIdentifier>
 		</Filter>
 		<Filter Include="event">
-			<UniqueIdentifier>DCE621A6-2E28-4264-B3B0-7AEB67288CEE</UniqueIdentifier>
+			<UniqueIdentifier>1491E709-FACE-48BB-A21D-45228BCAB945</UniqueIdentifier>
 		</Filter>
 		<Filter Include="image">
-			<UniqueIdentifier>CF86045A-060E-4347-9315-019B83605CFD</UniqueIdentifier>
+			<UniqueIdentifier>915B43B7-5CF0-4736-8006-8636974DE4AC</UniqueIdentifier>
 		</Filter>
 		<Filter Include="input">
-			<UniqueIdentifier>3E7B0B49-2B07-400A-9434-13C7E2C70837</UniqueIdentifier>
+			<UniqueIdentifier>1F8ABC35-088B-45F4-950B-3DFC0D79680A</UniqueIdentifier>
 		</Filter>
 		<Filter Include="item">
-			<UniqueIdentifier>1DCFFAC9-63F2-46AF-91BC-FBDA9CAE9B04</UniqueIdentifier>
+			<UniqueIdentifier>4C21E5A8-3348-464A-92C1-585FF9CF2C37</UniqueIdentifier>
 		</Filter>
 		<Filter Include="level">
-			<UniqueIdentifier>50D2B0C0-4933-4135-9BFD-93325D7C4F90</UniqueIdentifier>
+			<UniqueIdentifier>7D54FA73-A405-4E6D-9DE9-4786FB560AFB</UniqueIdentifier>
 		</Filter>
 		<Filter Include="music">
-			<UniqueIdentifier>F7DA5014-757E-44DD-8471-CBAE72684EF8</UniqueIdentifier>
+			<UniqueIdentifier>CFF06397-9FD9-48BE-9177-27A19850D718</UniqueIdentifier>
 		</Filter>
 		<Filter Include="people">
-			<UniqueIdentifier>67162F0A-4500-4C30-AD0B-601487EA172D</UniqueIdentifier>
+			<UniqueIdentifier>D2D808CF-9058-421D-BF26-C11ABD24358C</UniqueIdentifier>
 		</Filter>
 		<Filter Include="stat">
-			<UniqueIdentifier>D5567593-50B5-4661-8DD4-ECFEFEED4311</UniqueIdentifier>
+			<UniqueIdentifier>0D5762C7-58D7-4EC3-B402-5CF95F18D365</UniqueIdentifier>
 		</Filter>
 		<Filter Include="text">
-			<UniqueIdentifier>20B40D97-BE74-452B-9DD5-A7ED98F2009C</UniqueIdentifier>
+			<UniqueIdentifier>4D30D3F4-05BB-416F-A3AA-320D2167A0A2</UniqueIdentifier>
 		</Filter>
 		<Filter Include="ui">
-			<UniqueIdentifier>7879FD3E-82D4-49A0-A69F-E898AFBE8144</UniqueIdentifier>
+			<UniqueIdentifier>C234671F-F468-451B-952C-E7FC8272EDEC</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>

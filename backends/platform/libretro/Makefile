@@ -88,15 +88,21 @@ else ifeq ($(platform), rpi4_64)
    HAVE_OPENGLES2 := 1
    HAVE_NEON := 1
 
-# webOS (32 bit)
+# webOS (32/64 bit)
 else ifeq ($(platform), webos)
    TARGET = $(TARGET_NAME)_libretro.so
-   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -marm -DARM
+   DEFINES += -fPIC -D_ARM_ASSEM_ -DUSE_CXX11 -DARM
    LDFLAGS += -shared -Wl,--version-script=$(ROOT_PATH)/link.T -fPIC -static-libgcc -static-libstdc++
-   CFLAGS += -fPIC -mcpu=cortex-a9 -mtune=cortex-a53 -mfloat-abi=softfp -fomit-frame-pointer -ffast-math
+   CFLAGS += -fPIC -fomit-frame-pointer -ffast-math
    CXXFLAGS = $(CFLAGS) -frtti -std=c++11
    HAVE_OPENGLES2 := 1
    HAVE_NEON := 1
+   ifneq (,$(findstring aarch64,$(CROSS_COMPILE)))
+      CFLAGS += -mcpu=cortex-a53 -mtune=cortex-a76
+   else
+      DEFINES += -marm
+      CFLAGS += -mcpu=cortex-a9 -mtune=cortex-a53 -mfloat-abi=softfp
+   endif
 
 # iOS
 else ifneq (,$(findstring ios,$(platform)))
@@ -176,7 +182,7 @@ else ifneq (,$(filter $(platform), ps3 psl1ght))
    CC = $(PS3DEV)/ppu/bin/ppu-$(COMMONLV)gcc$(EXE_EXT)
    CXX = $(PS3DEV)/ppu/bin/ppu-$(COMMONLV)g++$(EXE_EXT)
    AR = $(PS3DEV)/ppu/bin/ppu-$(COMMONLV)ar$(EXE_EXT) rcs
-   DEFINES := -DPLAYSTATION3 -D__PS3__ -DRETRO_IS_BIG_ENDIAN=1 -DRETRO_IS_LITTLE_ENDIAN=0 -DWORDS_BIGENDIAN=1 -mcpu=cell -mno-fp-in-toc -I$(PS3DEV)/ppu/include
+   DEFINES := -D__PS3__ -DRETRO_IS_BIG_ENDIAN=1 -DRETRO_IS_LITTLE_ENDIAN=0 -DWORDS_BIGENDIAN=1 -mcpu=cell -mno-fp-in-toc -I$(PS3DEV)/ppu/include
    ifeq ($(platform), psl1ght)
       DEFINES += -D__PSL1GHT__
       CFLAGS   += -mvsx -mvsx-timode
@@ -218,7 +224,7 @@ else ifeq ($(platform), wiiu)
    CXX = $(DEVKITPPC)/bin/powerpc-eabi-g++$(EXE_EXT)
    AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT) rcs
    AR_ALONE = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)
-   DEFINES += -mwup -mcpu=750 -meabi -mhard-float -D__POWERPC__ -D__ppc__ -DRETRO_IS_BIG_ENDIAN=1 -DRETRO_IS_LITTLE_ENDIAN=0 -DWORDS_BIGENDIAN=1
+   DEFINES += -D__wiiu__ -mcpu=750 -meabi -mhard-float -D__POWERPC__ -D__ppc__ -DRETRO_IS_BIG_ENDIAN=1 -DRETRO_IS_LITTLE_ENDIAN=0 -DWORDS_BIGENDIAN=1
    DEFINES += -U__INT32_TYPE__ -U __UINT32_TYPE__ -D__INT32_TYPE__=int
    DEFINES += -DHAVE_STRTOUL -DWIIU
    CXXFLAGS := -fpermissive

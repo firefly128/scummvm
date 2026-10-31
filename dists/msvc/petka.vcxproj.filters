@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<Filter Include="interfaces">
-			<UniqueIdentifier>40DA237B-E0B8-4BFD-AF62-855069454D2E</UniqueIdentifier>
+			<UniqueIdentifier>2B9EDCA0-D3D6-44FE-BCB2-ADD6BA9C5E16</UniqueIdentifier>
 		</Filter>
 		<Filter Include="objects">
-			<UniqueIdentifier>C0CA8487-AA56-4E5D-8AAB-2EBF81B03277</UniqueIdentifier>
+			<UniqueIdentifier>C95A9100-A01C-41DF-87F2-3D282FA8E3FC</UniqueIdentifier>
 		</Filter>
 	</ItemGroup>
 	<ItemGroup>
