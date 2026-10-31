@@ -174,6 +174,7 @@ SparcFbGraphicsManager::SparcFbGraphicsManager(SdlEventSource *sdlEventSource,
       _native_cursor_pixels(NULL),
       _native_cursor_w(0), _native_cursor_h(0),
       _native_cursor_hotx(0), _native_cursor_hoty(0),
+      _native_cursor_scale_x(FRAC_ONE), _native_cursor_scale_y(FRAC_ONE),
       _native_cursor_keycolor(0),
       _native_cursor_visible(false),
       _native_mouse_x(0), _native_mouse_y(0),
@@ -997,13 +998,19 @@ void SparcFbGraphicsManager::scaleAndBlit() {
             markTilesDirtyRect(_last_cursor_drawn_x, _last_cursor_drawn_y,
                                _last_cursor_drawn_w, _last_cursor_drawn_h);
         }
-        int cx = _native_mouse_x - _native_cursor_hotx;
-        int cy = _native_mouse_y - _native_cursor_hoty;
-        markTilesDirtyRect(cx, cy, _native_cursor_w, _native_cursor_h);
+        // Conservative native-space bounds for the physically scaled cursor.
+        const frac_t sx = _native_cursor_scale_x ? _native_cursor_scale_x * _scale_factor : FRAC_ONE;
+        const frac_t sy = _native_cursor_scale_y ? _native_cursor_scale_y * _scale_factor : FRAC_ONE;
+        const int denom = FRAC_ONE * _scale_factor;
+        const int cx = _native_mouse_x - (int)(((int64)_native_cursor_hotx * sx + denom - 1) / denom) - 1;
+        const int cy = _native_mouse_y - (int)(((int64)_native_cursor_hoty * sy + denom - 1) / denom) - 1;
+        const int cw = (int)(((int64)_native_cursor_w * sx + denom - 1) / denom) + 2;
+        const int ch = (int)(((int64)_native_cursor_h * sy + denom - 1) / denom) + 2;
+        markTilesDirtyRect(cx, cy, cw, ch);
         _last_cursor_drawn_x = cx;
         _last_cursor_drawn_y = cy;
-        _last_cursor_drawn_w = _native_cursor_w;
-        _last_cursor_drawn_h = _native_cursor_h;
+        _last_cursor_drawn_w = cw;
+        _last_cursor_drawn_h = ch;
     } else if (_was_cursor_visible) {
         markTilesDirtyRect(_last_cursor_drawn_x, _last_cursor_drawn_y,
                            _last_cursor_drawn_w, _last_cursor_drawn_h);
@@ -1436,6 +1443,7 @@ void SparcFbGraphicsManager::compositeNativeCursor() {
     if (!_native_cursor_visible || !_native_cursor_pixels || !_scaled_pixels)
         return;
 
+    if (_native_cursor_scale_x == FRAC_ONE && _native_cursor_scale_y == FRAC_ONE) {
     int scale = _scale_factor;
     int draw_x = (_native_mouse_x - _native_cursor_hotx) * scale;
     /* draw_y in scaled coords, accounting for any letterbox skip — the
@@ -1461,6 +1469,28 @@ void SparcFbGraphicsManager::compositeNativeCursor() {
                     _scaled_pixels[dy * _scaled_pitch + dx] = pixel;
                 }
             }
+        }
+    }
+        return;
+    }
+    const frac_t sx = _native_cursor_scale_x ? _native_cursor_scale_x * _scale_factor : FRAC_ONE;
+    const frac_t sy = _native_cursor_scale_y ? _native_cursor_scale_y * _scale_factor : FRAC_ONE;
+    if (sx <= 0 || sy <= 0) return;
+    const int width = (int)(((int64)_native_cursor_w * sx) / FRAC_ONE);
+    const int height = (int)(((int64)_native_cursor_h * sy) / FRAC_ONE);
+    const int draw_x = _native_mouse_x * _scale_factor - (int)(((int64)_native_cursor_hotx * sx) / FRAC_ONE);
+    const int draw_y = (_native_mouse_y - _lb_top_applied) * _scale_factor - (int)(((int64)_native_cursor_hoty * sy) / FRAC_ONE);
+    for (int row = 0; row < height; ++row) {
+        const int dy = draw_y + row;
+        if (dy < 0 || dy >= _scaled_height) continue;
+        const int sourceY = (int)(((int64)row * FRAC_ONE) / sy);
+        for (int col = 0; col < width; ++col) {
+            const int dx = draw_x + col;
+            if (dx < 0 || dx >= _scaled_width) continue;
+            const int sourceX = (int)(((int64)col * FRAC_ONE) / sx);
+            const byte pixel = _native_cursor_pixels[sourceY * _native_cursor_w + sourceX];
+            if ((uint32)pixel != _native_cursor_keycolor)
+                _scaled_pixels[dy * _scaled_pitch + dx] = pixel;
         }
     }
 }
@@ -1568,9 +1598,9 @@ bool SparcFbGraphicsManager::notifyMousePosition(Common::Point &mouse) {
 
 void SparcFbGraphicsManager::setMouseCursor(const void *buf, uint w, uint h,
                                               int hotspotX, int hotspotY,
-                                              uint32 keycolor, bool dontScale,
+                                              uint32 keycolor,
                                               const Graphics::PixelFormat *format,
-                                              const byte *mask) {
+                                              const byte *mask, frac_t scaleX, frac_t scaleY) {
     /* Store for native compositing */
     delete[] (_native_cursor_pixels);
     _native_cursor_w = w;
@@ -1578,6 +1608,8 @@ void SparcFbGraphicsManager::setMouseCursor(const void *buf, uint w, uint h,
     _native_cursor_hotx = hotspotX;
     _native_cursor_hoty = hotspotY;
     _native_cursor_keycolor = keycolor;
+    _native_cursor_scale_x = scaleX;
+    _native_cursor_scale_y = scaleY;
 
     int cursor_size = w * h;
     _native_cursor_pixels = new byte[cursor_size];
@@ -1586,5 +1618,5 @@ void SparcFbGraphicsManager::setMouseCursor(const void *buf, uint w, uint h,
 
     /* Also update parent for overlay mode */
     SurfaceSdlGraphicsManager::setMouseCursor(buf, w, h, hotspotX, hotspotY,
-                                                keycolor, dontScale, format, mask);
+                                                keycolor, format, mask, scaleX, scaleY);
 }

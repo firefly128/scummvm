@@ -55,9 +55,9 @@ public:
     bool notifyMousePosition(Common::Point &mouse) override;
     void setMouseCursor(const void *buf, uint w, uint h,
                         int hotspotX, int hotspotY, uint32 keycolor,
-                        bool dontScale = false,
                         const Graphics::PixelFormat *format = nullptr,
-                        const byte *mask = nullptr) override;
+                        const byte *mask = nullptr,
+                        frac_t scaleX = FRAC_ONE, frac_t scaleY = FRAC_ONE) override;
 
     /* Override palette queries */
     void grabPalette(byte *colors, uint start, uint num) const override;
@@ -105,6 +105,7 @@ private:
     int _native_cursor_h;
     int _native_cursor_hotx;
     int _native_cursor_hoty;
+    frac_t _native_cursor_scale_x, _native_cursor_scale_y;
     uint32 _native_cursor_keycolor;
     bool _native_cursor_visible;
 

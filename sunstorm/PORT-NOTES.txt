@@ -1,0 +1,56 @@
+ScummVM 2026.4.0 Solaris SPARC port
+
+Branch: sst/2026.4-port
+Upstream source: https://downloads.scummvm.org/frs/scummvm/2026.4.0/scummvm-2026.4.0.tar.gz
+Publisher SHA256 verified against the downloaded archive.
+
+Git checkpoints:
+  upstream/2026.2.0: pristine source release (branch and tag)
+  sst/2026.2-working: local tested source plus latest validated PCM/palette fixes
+  sst/indy-working-baseline: tag for that preserved source checkpoint
+  upstream/2026.4.0: pristine source release (branch and tag)
+  sst/2026.4-port: merged upgrade, with API fixes
+
+Scope:
+  Preserves Solaris/platform/BPP MIDI/native framebuffer changes; AGS indexed
+  rendering, caches and runtime improvements; DGDS Beamish sound/save/timing
+  fixes; SCI selector cache; Kyra clock waits; Towns PCM transform cache;
+  native/overlay palette synchronization; queued audio support.
+  Experimental TCX SCI transitions were absent from the working PCM candidate
+  and are not added by this migration. They remain separate research artifacts.
+  Source provenance is the actual tested 2026.2 tree plus the final transform
+  candidate, rather than only the older pipeline recipe.
+
+Manual merge resolutions:
+  audio/rate.cpp: use upstream 2026.4 converter. Upstream redesigned conversion
+    with sample/mix-mode templates, wider accumulators, silent specialization,
+    and partial-frame progress. The old 16-bit unrolled copy loop cannot be
+    inserted safely as-is. This is the one retired local optimization; measure
+    performance before deciding whether a new specialized loop is needed.
+    The independent Towns PCM transform cache is retained.
+  audio/mixer.cpp: retain upstream sample/frame and lazy-zero semantics while
+    preserving the opt-in local profiling counters.
+  base/plugins.cpp: retain upstream libretro conditional and BPP MIDI entry.
+  backends/timer/sdl/sdl-timer.cpp: retain upstream SDL1 fallback, local 50ms
+    interval for both registration paths.
+  engines/kyra/engine/eobcommon.cpp: combine upstream isMainLoop/save allowance
+    with local deadline-based waits.
+
+Post-merge API adaptation:
+  Native framebuffer cursor now accepts upstream fixed-point per-axis scales,
+  forwards them to the overlay backend, and supports scaled native compositing.
+  Standard game cursor scale retains the original integer replication loop.
+  Existing native indexed cursor format/mask limitations are not expanded here.
+
+Build:
+  cross-build.sh records the existing eob-cross-sdk:20261027 toolchain and
+  engine/feature flags. Mount this repository at /migration/source and the
+  parent output directory at /migration; mount the existing sun-mad directory
+  at /sun-mad. It configures afresh and builds without changing the old tree.
+  Uses Solaris 2.7 SPARC v8, SDL2, existing engine set, and libsolcompat.
+
+Deployment:
+  No replacement or restart of the user's running Indy session is part of
+  this source migration. Runtime validation is a separate next stage.
+  For future tests mute hardware gain, restore 104/255 afterward; preserve
+  user saves and use private config/save directories.
