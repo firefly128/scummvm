@@ -30,9 +30,31 @@
 
 namespace AGS3 {
 
+extern bool sst_cube_palette_active;
+
 void __my_setcolor(int *ctset, int newcol, int wantColDep) {
-	if (wantColDep == 8)
-		ctset[0] = newcol;
+	if (wantColDep == 8) {
+		/* SST: cube-palette + force-8bit.  Decode logical colour
+		 * names (col_lookups) or packed RGB565 to real RGB, then
+		 * bestfit to the active cube palette so GUI FgColor / BgColor
+		 * pick a usable palette index instead of an arbitrary cube
+		 * slot. */
+		if (sst_cube_palette_active && newcol != 0 && !(newcol & 0x40000000)) {
+			int r, g, b;
+			if (newcol < 32) {
+				r = col_lookups[newcol] >> 16;
+				g = (col_lookups[newcol] >> 8) & 0xff;
+				b = col_lookups[newcol] & 0xff;
+			} else {
+				r = getr16(newcol);
+				g = getg16(newcol);
+				b = getb16(newcol);
+			}
+			ctset[0] = makecol_depth(8, r, g, b);
+		} else {
+			ctset[0] = newcol;
+		}
+	}
 	else if (newcol & 0x40000000) // already calculated it
 		ctset[0] = newcol;
 	else if ((newcol >= 32) && (wantColDep > 16)) {

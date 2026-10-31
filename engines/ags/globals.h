@@ -26,6 +26,7 @@
 #define AGS_PLATFORM_DEFINES_PSP_VARS (AGS_PLATFORM_OS_IOS || AGS_PLATFORM_OS_ANDROID)
 
 #include "common/std/queue.h"
+#include "common/hashmap.h"
 #include "ags/shared/ac/game_version.h"
 #include "ags/shared/ac/keycode.h"
 #include "ags/shared/util/stdio_compat.h"
@@ -747,6 +748,11 @@ public:
 	RoomStatus *_troom; // used for non-saveable rooms, eg. intro
 
 	std::vector<AGS::Shared::GUIMain> *_guis;
+	struct GuiNameLookupEntry {
+		int id = -1;
+		Common::String name;
+	};
+	Common::HashMap<Common::String, GuiNameLookupEntry> _guiNameLookup;
 	CCGUIObject *_ccDynamicGUIObject;
 	CCCharacter *_ccDynamicCharacter;
 	CCHotspot *_ccDynamicHotspot;

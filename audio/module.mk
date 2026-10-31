@@ -6,6 +6,7 @@ MODULE_OBJS := \
 	adlib_hmisos.o \
 	adlib_ms.o \
 	audiostream.o \
+	prepared-pcm-cache.o \
 	casio.o \
 	chip.o \
 	cms.o \

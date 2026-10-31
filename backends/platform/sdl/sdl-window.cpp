@@ -469,6 +469,10 @@ bool SdlWindow::createOrUpdateWindow(int width, int height, uint32 flags) {
 	Common::Rect desktopRes = getDesktopResolution();
 	if (
 		!fullscreenFlags
+#if defined(SPARCFB_NATIVE_BACKEND)
+		// A supervised framebuffer has no desktop window decorations.
+		&& !(SDL_getenv("SPARCFB_MODE_FD") && (flags & SDL_WINDOW_BORDERLESS))
+#endif
 #if defined(MACOSX)
 		// On macOS a maximized window is borderless
 		&& !(flags & SDL_WINDOW_MAXIMIZED)

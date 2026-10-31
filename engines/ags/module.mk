@@ -39,6 +39,8 @@ MODULE_OBJS = \
 	shared/ac/keycode.o \
 	shared/ac/mouse_cursor.o \
 	shared/ac/sprite_cache.o \
+	shared/ac/sst_asset_cache.o \
+	shared/ac/sst_palette_gen.o \
 	shared/ac/sprite_file.o \
 	shared/ac/view.o \
 	shared/ac/words_dictionary.o \
@@ -181,6 +183,7 @@ MODULE_OBJS = \
 	engine/ac/slider.o \
 	engine/ac/speech.o \
 	engine/ac/sprite.o \
+	engine/sst_precompute_dialog.o \
 	engine/ac/string.o \
 	engine/ac/system.o \
 	engine/ac/sys_events.o \
@@ -265,6 +268,7 @@ MODULE_OBJS = \
 	engine/media/audio/clip_my_midi.o \
 	engine/media/audio/queued_audio_item.o \
 	engine/media/audio/sound.o \
+	engine/media/audio/sst_pcm_cache.o \
 	engine/media/audio/sound_clip.o \
 	engine/media/video/video.o \
 	engine/platform/base/ags_platform_driver.o \

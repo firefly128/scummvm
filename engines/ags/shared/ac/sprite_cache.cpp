@@ -33,6 +33,7 @@
 #include "ags/shared/ac/game_struct_defines.h"
 #include "ags/shared/debugging/out.h"
 #include "ags/shared/gfx/bitmap.h"
+#include "ags/shared/ac/sst_asset_cache.h"
 #include "ags/globals.h"
 
 namespace AGS3 {
@@ -364,7 +365,31 @@ size_t SpriteCache::LoadSprite(sprkey_t index, bool lock) {
 		return 0;
 	assert((_spriteData[index].Flags & SPRCACHEFLAG_ISASSET) != 0);
 
-	Bitmap *image;
+	Bitmap *image = nullptr;
+
+	/* SST: try the disk cache first.  Hit path skips both the .ags
+	 * file read and the initialize_sprite conversion pass — we just
+	 * register the cached 8bpp bitmap directly into the slot.  Miss
+	 * path falls through to the normal _file.LoadSprite below; the
+	 * initialize_sprite hook will write the result back to disk so
+	 * subsequent runs hit. */
+	{
+		uint32 sst_flags = _sprInfos[index].Flags;
+		Bitmap *sst_cached =
+			AGS::Shared::SSTAssetCache::TryLoad(index, &sst_flags);
+		if (sst_cached) {
+			_sprInfos[index].Flags = sst_flags;
+			_sprInfos[index].Width  = sst_cached->GetWidth();
+			_sprInfos[index].Height = sst_cached->GetHeight();
+			const size_t sst_size = sst_cached->GetWidth() * sst_cached->GetHeight();
+			FreeMem(sst_size);
+			_spriteData[index] = SpriteData(sst_cached, sst_size, SPRCACHEFLAG_ISASSET);
+			_spriteData[index].Flags |= (SPRCACHEFLAG_LOCKED * (lock || (index == 0)));
+			_cacheSize += sst_size;
+			_callbacks.PostInitSprite(index);
+			return sst_size;
+		}
+	}
 	HError err = _file.LoadSprite(index, image);
 	if (!image) {
 		Debug::Printf(kDbgGroup_SprCache, kDbgMsg_Warn,

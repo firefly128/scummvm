@@ -532,16 +532,9 @@ int KyraEngine_v1::resetGameFlag(int flag) {
 }
 
 void KyraEngine_v1::delayUntil(uint32 timestamp, bool updateTimers, bool update, bool isMainLoop) {
-	const uint32 curTime = _system->getMillis();
-	if (curTime > timestamp)
-		return;
-
-	uint32 del = timestamp - curTime;
-	while (del && !shouldQuit()) {
-		uint32 step = MIN<uint32>(del, _tickLength);
-		delay(step, update, isMainLoop);
-		del -= step;
-	}
+	const int32 remaining = static_cast<int32>(timestamp - _system->getMillis());
+	if (remaining > 0)
+		delay(static_cast<uint32>(remaining), update, isMainLoop);
 }
 
 void KyraEngine_v1::delay(uint32 amount, bool update, bool isMainLoop) {

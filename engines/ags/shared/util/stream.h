@@ -137,7 +137,8 @@ public:
 		if (whence == SEEK_END)
 			origin = kSeekEnd;
 
-		return _stream->Seek(offset, origin);
+		// AGS returns a position (zero is a successful rewind).
+		return _stream->Seek(offset, origin) >= 0;
 	}
 };
 
@@ -299,7 +300,8 @@ public:
 	}
 
 	soff_t Seek(soff_t offset, StreamSeek origin = kSeekCurrent) override {
-		return _stream->seek(offset, origin);
+		// Preserve the AGS position-or-minus-one contract.
+		return _stream->seek(offset, origin) ? _stream->pos() : -1;
 	}
 
 	bool GetError() const override {

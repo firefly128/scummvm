@@ -48,6 +48,9 @@
 #include "backends/mutex/sdl/sdl-mutex.h"
 #include "backends/timer/sdl/sdl-timer.h"
 #include "backends/graphics/surfacesdl/surfacesdl-graphics.h"
+#ifdef SPARCFB_NATIVE_BACKEND
+#include "backends/graphics/surfacesdl/sparcfb-graphics-noX.h"
+#endif
 #ifdef USE_OPENGL
 #include "backends/graphics/openglsdl/openglsdl-graphics.h"
 #endif
@@ -359,7 +362,11 @@ void OSystem_SDL::initBackend() {
 #endif
 
 		if (_graphicsManager == nullptr) {
+			#ifdef SPARCFB_NATIVE_BACKEND
+			_graphicsManager = new SparcFbGraphicsManager(_eventSource, _window);
+#else
 			_graphicsManager = new SurfaceSdlGraphicsManager(_eventSource, _window);
+#endif
 		}
 	}
 
@@ -876,8 +883,29 @@ Common::MutexInternal *OSystem_SDL::createMutex() {
 	return createSdlMutexInternal();
 }
 
+#ifdef SST_GETMILLIS_SCALE
+#include <stdio.h>
+#include <stdlib.h>
+#endif
+
 uint32 OSystem_SDL::getMillis(bool skipRecord) {
 	uint32 millis = SDL_GetTicks();
+
+#ifdef SST_GETMILLIS_SCALE
+	{
+		static int sst_div = -1;
+		static uint32 sst_epoch = 0;
+		if (sst_div < 0) {
+			const char *e = getenv("SST_GETMILLIS_DIV");
+			sst_div = e ? atoi(e) : 1;
+			if (sst_div < 1) sst_div = 1;
+			sst_epoch = millis;
+			fprintf(stderr, "sst_getMillis: SST_GETMILLIS_DIV=%d epoch=%u\n", sst_div, sst_epoch);
+			fflush(stderr);
+		}
+		millis = sst_epoch + (millis - sst_epoch) / (uint32)sst_div;
+	}
+#endif
 
 #ifdef ENABLE_EVENTRECORDER
 	g_eventRec.processMillis(millis, skipRecord);
@@ -887,6 +915,12 @@ uint32 OSystem_SDL::getMillis(bool skipRecord) {
 }
 
 void OSystem_SDL::delayMillis(uint msecs) {
+	/* SST: pump SDL audio queue from the main thread.  No-op unless
+	 * SCUMM_AUDIO_QUEUE=1 was set at startup.  Cost is ~10us when queue
+	 * is full, up to ~400us when refilling (8 chunks of mixer work). */
+	if (_mixerManager)
+		_mixerManager->pump();
+
 #ifdef ENABLE_EVENTRECORDER
 	if (g_eventRec.processDelayMillis())
 #endif

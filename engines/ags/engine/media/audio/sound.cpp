@@ -27,6 +27,7 @@
 
 #include "ags/engine/media/audio/audio_defines.h"
 #include "ags/engine/media/audio/sound.h"
+#include "ags/engine/media/audio/sst_pcm_cache.h"
 #include "ags/engine/media/audio/sound_clip.h"
 #include "ags/engine/media/audio/clip_my_midi.h"
 #include "ags/shared/core/asset_manager.h"
@@ -37,10 +38,44 @@
 #include "audio/decoders/vorbis.h"
 #include "audio/decoders/wave.h"
 #include "ags/globals.h"
+#include "common/textconsole.h"
+#include "common/bufferedstream.h"
+#include "ags/shared/util/stream.h"
 
 namespace AGS3 {
 
+// SST: asset preparation retains AGS asset identifiers but replaces compressed
+// payloads with PCM WAV. Probe the payload before choosing the declared codec.
+template<int SoundType>
+static SOUNDCLIP *sst_load_pcm_asset(const AssetPath &asset_name, bool loop) {
+ Common::SeekableReadStream *cached = AGS::Engine::OpenSSTCachedAudio(asset_name);
+ if (cached) {
+  Audio::AudioStream *stream = Audio::makeWAVStream(cached, DisposeAfterUse::YES);
+  if (stream) return new SoundClipWave<SoundType>(stream, loop);
+ }
+ AGS::Shared::Stream *asset = _GP(AssetMgr)->OpenAsset(asset_name.Name, asset_name.Filter);
+ if (!asset) return nullptr;
+ // Keep long PCM music bounded: OpenAssetStream materializes the entire clip.
+ Common::SeekableReadStream *data = Common::wrapBufferedSeekableReadStream(
+  new AGS::Shared::ScummVMReadStream(asset), 65536, DisposeAfterUse::YES);
+ const uint32 magic = data->readUint32BE();
+ data->skip(4);
+ const uint32 type = data->readUint32BE();
+ data->seek(0);
+ if (magic != MKTAG('R','I','F','F') || type != MKTAG('W','A','V','E')) {
+  delete data;
+  return nullptr;
+ }
+ Audio::AudioStream *stream = Audio::makeWAVStream(data, DisposeAfterUse::YES);
+ if (!stream) return nullptr;
+ static int logged = 0;
+ if (logged++ < 12)
+  warning("[sst-pcm] %s:%s rate=%d stereo=%d", asset_name.Filter.GetCStr(), asset_name.Name.GetCStr(), stream->getRate(), stream->isStereo());
+ return new SoundClipWave<SoundType>(stream, loop);
+}
+
 SOUNDCLIP *my_load_wave(const AssetPath &asset_name, bool loop) {
+	if (SOUNDCLIP *pcm = sst_load_pcm_asset<MUS_WAVE>(asset_name, loop)) return pcm;
 	Common::SeekableReadStream *data = _GP(AssetMgr)->OpenAssetStream(asset_name.Name, asset_name.Filter);
 	if (data) {
 		Audio::AudioStream *audioStream = Audio::makeWAVStream(data, DisposeAfterUse::YES);
@@ -51,6 +86,7 @@ SOUNDCLIP *my_load_wave(const AssetPath &asset_name, bool loop) {
 }
 
 SOUNDCLIP *my_load_static_mp3(const AssetPath &asset_name, bool loop) {
+	if (SOUNDCLIP *pcm = sst_load_pcm_asset<MUS_MP3>(asset_name, loop)) return pcm;
 #ifdef USE_MAD
 	Common::SeekableReadStream *data = _GP(AssetMgr)->OpenAssetStream(asset_name.Name, asset_name.Filter);
 	if (data) {
@@ -69,6 +105,7 @@ SOUNDCLIP *my_load_mp3(const AssetPath &asset_name, bool loop) {
 }
 
 SOUNDCLIP *my_load_static_ogg(const AssetPath &asset_name, bool loop) {
+	if (SOUNDCLIP *pcm = sst_load_pcm_asset<MUS_OGG>(asset_name, loop)) return pcm;
 #ifdef USE_VORBIS
 	Common::SeekableReadStream *data = _GP(AssetMgr)->OpenAssetStream(asset_name.Name, asset_name.Filter);
 	if (data) {

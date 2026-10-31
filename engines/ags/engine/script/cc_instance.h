@@ -69,18 +69,13 @@ struct ScriptInstruction {
 
 struct ScriptOperation {
 	ScriptInstruction   Instruction;
-	RuntimeScriptValue  Args[MAX_SCMD_ARGS];
+	const ::intptr      *Args = nullptr;
 	int                 ArgCount = 0;
 
-	// Helper functions for clarity of intent:
-	// returns argN, 1-based
-	inline const RuntimeScriptValue &Arg1() const { return Args[0]; }
-	inline const RuntimeScriptValue &Arg2() const { return Args[1]; }
-	inline const RuntimeScriptValue &Arg3() const { return Args[2]; }
-	// returns argN as a integer literal
-	inline int Arg1i() const { return Args[0].IValue; }
-	inline int Arg2i() const { return Args[1].IValue; }
-	inline int Arg3i() const { return Args[2].IValue; }
+	// Borrow immutable relocated code; convert to script integers only when used.
+	inline int Arg1i() const { return static_cast<int32_t>(Args[0]); }
+	inline int Arg2i() const { return static_cast<int32_t>(Args[1]); }
+	inline int Arg3i() const { return static_cast<int32_t>(Args[2]); }
 };
 
 struct ScriptVariable {
@@ -121,9 +116,9 @@ public:
 	char *globaldata;
 	int32_t globaldatasize;
 	// Executed byte-code. Unlike ccScript's code array which is int32_t, the one
-	// in ccInstance must be intptr_t to accommodate real pointers placed after
+	// in ccInstance must be machine-pointer-sized to accommodate real pointers after
 	// performing fixups.
-	intptr_t *code;
+	::intptr *code;
 	ccInstance *runningInst;  // might point to another instance if in far call
 	int32_t codesize;
 	char *strings;

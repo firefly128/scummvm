@@ -82,6 +82,116 @@ static bool blitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, S
 }
 #endif
 
+/* SST: fast inline RGB555 → RGB565 blit. SDL's generic format-converting
+ * blit costs ~134 ms/frame on 85 MHz SPARC for 320x240 (FM-TOWNS source on
+ * RGB565 _hwScreen). This shortcut handles that exact case in ~5 ms via a
+ * per-pixel shift+mask. Falls through to SDL_BlitSurface for everything
+ * else. */
+static int g_sst_fast_n = 0, g_sst_slow_n = 0;
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+static inline bool sst_fast_blit(SDL_Surface *src, const SDL_Rect *srcrect,
+                                 SDL_Surface *dst, SDL_Rect *dstrect) {
+	/* Fast INDEX8 → RGB565 via precomputed 256-entry LUT.
+	 * Indy3 (VGA), MI1, MI2, INDY4, Sam&Max, DOTT — all SCUMM games with
+	 * INDEX8 _screen and RGB565 _hwScreen hit this path. SDL's generic
+	 * blit does per-pixel palette lookup + RGB565 packing (~134 ms/frame
+	 * for 320x240 on 85 MHz SPARC). LUT path: ~3 ms/frame.
+	 * LUT is rebuilt only when src palette pointer changes. */
+	if (src->format->BitsPerPixel == 8 && dst->format->BitsPerPixel == 16 &&
+	    src->format->palette && dst->format->Gmask == 0x07E0) {
+		static const SDL_Palette *s_lut_pal = NULL;
+		static uint32 s_lut_pal_ver = 0;
+		static uint16 s_lut[256];
+		const SDL_Palette *pal = src->format->palette;
+		/* Cache by palette pointer + version. SDL_Palette keeps the colors
+		 * pointer stable across SDL_SetPaletteColors() calls (modifies in
+		 * place), but bumps `version` on every change. SCI updates palette
+		 * after our first call; pointer-only caching locked us on a stale
+		 * boot-time LUT. */
+		if (pal != s_lut_pal || pal->version != s_lut_pal_ver) {
+			int n = pal->ncolors > 256 ? 256 : pal->ncolors;
+			for (int i = 0; i < n; i++) {
+				const SDL_Color c = pal->colors[i];
+				s_lut[i] = (uint16)(((c.r & 0xF8) << 8) |
+				                    ((c.g & 0xFC) << 3) |
+				                    ((c.b & 0xF8) >> 3));
+			}
+			s_lut_pal = pal;
+			s_lut_pal_ver = pal->version;
+		}
+		int sx = srcrect ? srcrect->x : 0;
+		int sy = srcrect ? srcrect->y : 0;
+		int w  = srcrect ? srcrect->w : src->w;
+		int h  = srcrect ? srcrect->h : src->h;
+		int dx = dstrect ? dstrect->x : 0;
+		int dy = dstrect ? dstrect->y : 0;
+		int srcPitch = src->pitch;
+		int dstStride = dst->pitch >> 1;
+		const uint8 *sp = (const uint8 *)src->pixels + sy * srcPitch + sx;
+		uint16 *dp = (uint16 *)dst->pixels + dy * dstStride + dx;
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				dp[x] = s_lut[sp[x]];
+			}
+			sp += srcPitch;
+			dp += dstStride;
+		}
+		if (++g_sst_fast_n >= 100) {
+			warning("sst_blit: fast=%d slow=%d", g_sst_fast_n, g_sst_slow_n);
+			g_sst_fast_n = g_sst_slow_n = 0;
+		}
+		return true;
+	}
+	/* Fast RGB555 → RGB565 (FM-TOWNS engines): keep R/G/B fields, shift
+	 * high 11 bits left by 1. Falls through if not 16/16. */
+	if (src->format->BytesPerPixel == 2 && dst->format->BytesPerPixel == 2 &&
+	    src->format->Gmask == 0x03E0 && dst->format->Gmask == 0x07E0) {
+		int sx = srcrect ? srcrect->x : 0;
+		int sy = srcrect ? srcrect->y : 0;
+		int w  = srcrect ? srcrect->w : src->w;
+		int h  = srcrect ? srcrect->h : src->h;
+		int dx = dstrect ? dstrect->x : 0;
+		int dy = dstrect ? dstrect->y : 0;
+		int srcStride = src->pitch >> 1;
+		int dstStride = dst->pitch >> 1;
+		const uint16 *sp = (const uint16 *)src->pixels + sy * srcStride + sx;
+		uint16 *dp = (uint16 *)dst->pixels + dy * dstStride + dx;
+		for (int y = 0; y < h; y++) {
+			for (int x = 0; x < w; x++) {
+				uint16 p = sp[x];
+				dp[x] = ((p & 0x7FE0) << 1) | (p & 0x001F);
+			}
+			sp += srcStride;
+			dp += dstStride;
+		}
+		if (++g_sst_fast_n >= 100) {
+			warning("sst_blit: fast=%d slow=%d", g_sst_fast_n, g_sst_slow_n);
+			g_sst_fast_n = g_sst_slow_n = 0;
+		}
+		return true;
+	}
+	{
+		static int s_dumped = 0;
+		if (!s_dumped) {
+			warning("sst_fast_blit FALLBACK FIRST: src bpp=%d Rmask=%x Gmask=%x Bmask=%x palette=%p; dst bpp=%d Rmask=%x Gmask=%x Bmask=%x",
+				src->format->BitsPerPixel, src->format->Rmask, src->format->Gmask, src->format->Bmask,
+				(void*)src->format->palette,
+				dst->format->BitsPerPixel, dst->format->Rmask, dst->format->Gmask, dst->format->Bmask);
+			s_dumped = 1;
+		}
+	}
+	if (++g_sst_slow_n >= 100) {
+		warning("sst_blit: fast=%d slow=%d", g_sst_fast_n, g_sst_slow_n);
+		g_sst_fast_n = g_sst_slow_n = 0;
+	}
+	return blitSurface(src, srcrect, dst, dstrect);
+}
+#else
+static inline bool sst_fast_blit(SDL_Surface *src, SDL_Rect *srcrect,
+                                 SDL_Surface *dst, SDL_Rect *dstrect) {
+	return blitSurface(src, srcrect, dst, dstrect);
+}
+#endif
 
 static bool lockSurface(SDL_Surface *surface) {
 #if SDL_VERSION_ATLEAST(3, 0, 0)
@@ -218,7 +328,7 @@ SurfaceSdlGraphicsManager::SurfaceSdlGraphicsManager(SdlEventSource *sdlEventSou
 #endif
 
 #if defined(USE_ASPECT)
-	_videoMode.aspectRatioCorrection = ConfMan.getBool("aspect_ratio");
+	_videoMode.aspectRatioCorrection = false; /* SST: disabled for SPARC perf */
 	_videoMode.desiredAspectRatio = getDesiredAspectRatio();
 #else // for small screen platforms
 	_videoMode.aspectRatioCorrection = false;
@@ -228,7 +338,7 @@ SurfaceSdlGraphicsManager::SurfaceSdlGraphicsManager(SdlEventSource *sdlEventSou
 	_maxExtraPixels = ScalerMan.getMaxExtraPixels();
 
 	_videoMode.fullscreen = ConfMan.getBool("fullscreen");
-	_videoMode.filtering = ConfMan.getBool("filtering");
+	_videoMode.filtering = false; /* SST: nearest-neighbor for SPARC perf */
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	_videoMode.stretchMode = STRETCH_FIT;
 #endif
@@ -1203,6 +1313,12 @@ void SurfaceSdlGraphicsManager::updateScreen(SDL_Rect *dirtyRectList, int actual
 	SDL_UpdateRects(_hwScreen, actualDirtyRects, dirtyRectList);
 }
 
+#ifdef SST_PROFILE_SURFACE
+static uint32 g_sst_sf_total = 0, g_sst_sf_blits = 0, g_sst_sf_scale = 0,
+              g_sst_sf_post  = 0, g_sst_sf_present = 0;
+static int    g_sst_sf_calls = 0, g_sst_sf_rects = 0;
+#endif
+
 void SurfaceSdlGraphicsManager::internUpdateScreen() {
 	SDL_Surface *srcSurf, *origSurf;
 	int height, width;
@@ -1373,6 +1489,11 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 	bool doPresent = false;
 #endif
 	if (actualDirtyRects > 0 || _cursorNeedsRedraw) {
+#ifdef SST_PROFILE_SURFACE
+		uint32 sst_t0, sst_t1, sst_t2, sst_t3, sst_t4;
+		sst_t0 = SDL_GetTicks();
+		g_sst_sf_rects += actualDirtyRects;
+#endif
 		SDL_Rect *r;
 		SDL_Rect dst;
 		uint32 bpp, srcPitch, dstPitch;
@@ -1380,13 +1501,21 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 
 		for (r = _dirtyRectList; r != lastRect; ++r) {
 			dst = *r;
-			dst.x += _maxExtraPixels;	// Shift rect since some scalers need to access the data around
-			dst.y += _maxExtraPixels;	// any pixel to scale it, and we want to avoid mem access crashes.
+			/* SST: skip _screen->_tmpscreen blit when extraPixels==0 (Normal
+			 * scaler) AND formats match.  RGB555 _screen != RGB565 _hwScreen
+			 * (FM-TOWNS) needs the SDL_BlitSurface for format conversion. */
+			bool _sst_fmt_match = (origSurf->format->format == _hwScreen->format->format);
+			bool _sst_skip_blit = !_overlayVisible && (_extraPixels == 0) && _sst_fmt_match;
+			if (!_sst_skip_blit) { dst.x += _maxExtraPixels; dst.y += _maxExtraPixels; }
 
-			if (!blitSurface(origSurf, r, srcSurf, &dst))
+			if (!_sst_skip_blit && !sst_fast_blit(origSurf, r, srcSurf, &dst))
 				error("SDL_BlitSurface failed: %s", SDL_GetError());
 		}
+#ifdef SST_PROFILE_SURFACE
+		sst_t1 = SDL_GetTicks();
+#endif
 
+		if (!_overlayVisible && _extraPixels == 0 && origSurf->format->format == _hwScreen->format->format) srcSurf = origSurf;
 		SDL_LockSurface(srcSurf);
 		SDL_LockSurface(_hwScreen);
 
@@ -1445,7 +1574,8 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 				if (_videoMode.aspectRatioCorrection && !_overlayVisible)
 					dst_y = real2Aspect(dst_y);
 
-				_scaler->scale((byte *)srcSurf->pixels + (src_x + _maxExtraPixels) * bpp + (src_y + _maxExtraPixels) * srcPitch, srcPitch,
+				int _srcExtra = (!_overlayVisible && (_extraPixels == 0) && (origSurf->format->format == _hwScreen->format->format)) ? 0 : _maxExtraPixels;
+				_scaler->scale((byte *)srcSurf->pixels + (src_x + _srcExtra) * bpp + (src_y + _srcExtra) * srcPitch, srcPitch,
 						(byte *)_hwScreen->pixels + dst_x * bpp + dst_y * dstPitch, dstPitch, dst_w, dst_h, src_x, src_y);
 
 				r->x = dst_x;
@@ -1461,6 +1591,9 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 		}
 		SDL_UnlockSurface(srcSurf);
 		SDL_UnlockSurface(_hwScreen);
+#ifdef SST_PROFILE_SURFACE
+		sst_t2 = SDL_GetTicks();
+#endif
 
 		// Readjust the dirty rect list in case we are doing a full update.
 		// This is necessary if shaking is active.
@@ -1566,6 +1699,9 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 		}
 #endif
 
+#ifdef SST_PROFILE_SURFACE
+		sst_t3 = SDL_GetTicks();
+#endif
 		// Finally, blit all our changes to the screen
 		if (!_displayDisabled) {
 			updateScreen(_dirtyRectList, actualDirtyRects);
@@ -1573,6 +1709,22 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 			doPresent = true;
 #endif
 		}
+#ifdef SST_PROFILE_SURFACE
+		sst_t4 = SDL_GetTicks();
+		g_sst_sf_blits   += sst_t1 - sst_t0;
+		g_sst_sf_scale   += sst_t2 - sst_t1;
+		g_sst_sf_post    += sst_t3 - sst_t2;
+		g_sst_sf_present += sst_t4 - sst_t3;
+		g_sst_sf_total   += sst_t4 - sst_t0;
+		if (++g_sst_sf_calls >= 100) {
+			warning("surface: calls=%d rects=%d total=%ums blits=%ums scale=%ums post=%ums present=%ums",
+				g_sst_sf_calls, g_sst_sf_rects, g_sst_sf_total,
+				g_sst_sf_blits, g_sst_sf_scale, g_sst_sf_post, g_sst_sf_present);
+			g_sst_sf_calls = g_sst_sf_rects = 0;
+			g_sst_sf_total = g_sst_sf_blits = g_sst_sf_scale = 0;
+			g_sst_sf_post  = g_sst_sf_present = 0;
+		}
+#endif
 	}
 
 	// Set up the old scale factor
@@ -1590,7 +1742,7 @@ void SurfaceSdlGraphicsManager::internUpdateScreen() {
 #endif
 
 	if (doPresent) {
-		SDL_RenderPresent(_renderer);
+		/* SST: skip — using window surface path */ (void)_renderer;
 	}
 #else
 	if (_isDoubleBuf)
@@ -3051,6 +3203,27 @@ void SurfaceSdlGraphicsManager::recreateScreenTexture() {
 SDL_Surface *SurfaceSdlGraphicsManager::SDL_SetVideoMode(int width, int height, int bpp, Uint32 flags) {
 	deinitializeRenderer();
 
+#if defined(SPARCFB_NATIVE_BACKEND) && SDL_VERSION_ATLEAST(2, 0, 0) && !SDL_VERSION_ATLEAST(3, 0, 0)
+	if (SDL_getenv("SPARCFB_MODE_FD")) {
+		// No window manager exists on this supervised framebuffer. A desktop-
+		// fullscreen window would force SDL's startup desktop size back over
+		// every game mode request. Use an undecorated physical-size window.
+		const char *dw = SDL_GetHint("SDL_SPARCFB_DISPLAY_WIDTH");
+		const char *dh = SDL_GetHint("SDL_SPARCFB_DISPLAY_HEIGHT");
+		const int displayW = dw ? SDL_atoi(dw) : width;
+		const int displayH = dh ? SDL_atoi(dh) : height;
+		if (displayW <= 0 || displayH <= 0) return nullptr;
+		_allowWindowSizeReset = true;
+		if (!createOrUpdateWindow(displayW, displayH, SDL_WINDOW_BORDERLESS) ||
+		    !SDL_GetWindowSurface(_window->getSDLWindow())) return nullptr;
+		getWindowSizeFromSdl(&_windowWidth, &_windowHeight);
+		handleResize(_windowWidth, _windowHeight);
+		// SDL_UpdateRects already presents dirty rectangles to the window
+		// surface. Keep a separate owned surface for normal unload/free.
+		return SDL_CreateRGBSurfaceWithFormat(0, width, height, 16, SDL_PIXELFORMAT_RGB565);
+	}
+#endif
+
 	uint32 createWindowFlags = SDL_WINDOW_RESIZABLE;
 	if ((flags & SDL_FULLSCREEN) != 0) {
 #if SDL_VERSION_ATLEAST(3, 0, 0)
@@ -3157,7 +3330,117 @@ SDL_Surface *SurfaceSdlGraphicsManager::SDL_SetVideoMode(int width, int height, 
 }
 
 void SurfaceSdlGraphicsManager::SDL_UpdateRects(SDL_Surface *screen, int numrects, SDL_Rect *rects) {
-	SDL_UpdateTexture(_screenTexture, nullptr, screen->pixels, screen->pitch);
+	/* SST: bypass texture — copy dirty rects from _hwScreen to window surface,
+     * then present via SDL_UpdateWindowSurfaceRects. */
+    {
+        SDL_Surface *ws = SDL_GetWindowSurface(_window->getSDLWindow());
+        if (ws) {
+#if defined(SPARCFB_NATIVE_BACKEND) && !SDL_VERSION_ATLEAST(3, 0, 0)
+            if (_overlayVisible && SDL_GetHintBoolean("SDL_SPARCFB_NATIVE_OVERLAY",SDL_FALSE) &&
+                ws->format->BytesPerPixel==2 && screen->format->BytesPerPixel==2 &&
+                _overlayDrawRect.width()>0 && _overlayDrawRect.height()>0) {
+                // Match the existing overlay input geometry. Every pixel must
+                // be re-encoded when the physical DAC switches to the GUI cube.
+                const Common::Rect &area=_overlayDrawRect;
+                const bool integerScale=area.width()%screen->w==0 && area.height()%screen->h==0;
+                const bool full=SDL_GetHintBoolean("SDL_SPARCFB_NATIVE_OVERLAY_FULL",SDL_FALSE) ||
+                    !integerScale || numrects>256;
+                if(full) {
+                    SDL_FillRect(ws,nullptr,0);
+                    SDL_Rect dst={area.left,area.top,area.width(),area.height()};
+                    if(SDL_BlitScaled(screen,nullptr,ws,&dst)<0)
+                        error("Native overlay scaling failed: %s",SDL_GetError());
+                    if(SDL_UpdateWindowSurface(_window->getSDLWindow())<0)
+                        error("Native overlay presentation failed: %s",SDL_GetError());
+                    SDL_SetHint("SDL_SPARCFB_NATIVE_OVERLAY_FULL","0");
+                } else {
+                    SDL_Rect changed[256];int count=0;
+                    const int sx=area.width()/screen->w,sy=area.height()/screen->h;
+                    SDL_Rect bounds={0,0,screen->w,screen->h};
+                    for(int i=0;i<numrects;i++) {
+                        SDL_Rect src;
+                        if(!SDL_IntersectRect(&rects[i],&bounds,&src))continue;
+                        SDL_Rect dst={area.left+src.x*sx,area.top+src.y*sy,src.w*sx,src.h*sy};
+                        if(SDL_BlitScaled(screen,&src,ws,&dst)<0)
+                            error("Native overlay dirty scaling failed: %s",SDL_GetError());
+                        changed[count++]=dst;
+                    }
+                    if(count && SDL_UpdateWindowSurfaceRects(_window->getSDLWindow(),changed,count)<0)
+                        error("Native overlay dirty presentation failed: %s",SDL_GetError());
+                }
+                return;
+            }
+#endif
+            /* SST: when ws is INDEX8 (sparcfb SPARCFB_INDEX8=1) keep its
+             * palette in sync so the RGB565 -> INDEX8 blit color-matches
+             * against meaningful colors instead of the all-white default.
+             * Three cases:
+             *   1) screen (= _hwScreen) is INDEX8: copy its palette.
+             *   2) _screen (game surface) is INDEX8 (most LucasArts SCUMM
+             *      games): copy that — _hwScreen is RGB565 but _screen is
+             *      the engine\'s 256-color paletted surface.
+             *   3) Fallback: 6x6x6 cube + grays so any RGB565 pixel finds
+             *      a near neighbor (for FM-TOWNS-style 16-bit engines). */
+            if (ws->format && ws->format->palette) {
+                static SDL_Color sst_cube[256];
+                static bool sst_cube_init = false;
+                if (!sst_cube_init) {
+                    static const Uint8 lvl[6] = {0,51,102,153,204,255};
+                    for (int i = 0; i < 216; i++) {
+                        sst_cube[i].r = lvl[i/36];
+                        sst_cube[i].g = lvl[(i/6)%6];
+                        sst_cube[i].b = lvl[i%6];
+                        sst_cube[i].a = 255;
+                    }
+                    for (int i = 216; i < 232; i++) {
+                        Uint8 g = (Uint8)(((i - 216) * 255) / 15);
+                        sst_cube[i].r = sst_cube[i].g = sst_cube[i].b = g;
+                        sst_cube[i].a = 255;
+                    }
+                    for (int i = 232; i < 256; i++) {
+                        sst_cube[i].r = sst_cube[i].g = sst_cube[i].b = 0;
+                        sst_cube[i].a = 255;
+                    }
+                    sst_cube_init = true;
+                }
+                if (screen && screen->format && screen->format->palette) {
+                    SDL_SetPaletteColors(ws->format->palette,
+                                         screen->format->palette->colors, 0, 256);
+                } else if (_screen && _screen->format && _screen->format->palette) {
+                    SDL_SetPaletteColors(ws->format->palette,
+                                         _screen->format->palette->colors, 0, 256);
+                } else {
+                    SDL_SetPaletteColors(ws->format->palette, sst_cube, 0, 256);
+                }
+            }
+#ifdef SST_PROFILE_BYPASS
+            static unsigned int g_sst_byp_blits = 0, g_sst_byp_pres = 0;
+            static int g_sst_byp_calls = 0;
+            unsigned int sst_b0 = SDL_GetTicks();
+#endif
+            int i;
+            for (i = 0; i < numrects; i++)
+                SDL_BlitSurface(screen, &rects[i], ws, &rects[i]);
+#ifdef SST_PROFILE_BYPASS
+            unsigned int sst_b1 = SDL_GetTicks();
+#endif
+            SDL_UpdateWindowSurfaceRects(_window->getSDLWindow(), rects, numrects);
+#ifdef SST_PROFILE_BYPASS
+            unsigned int sst_b2 = SDL_GetTicks();
+            g_sst_byp_blits += sst_b1 - sst_b0;
+            g_sst_byp_pres  += sst_b2 - sst_b1;
+            if (++g_sst_byp_calls >= 100) {
+                warning("bypass: calls=%d blits=%ums updates=%ums",
+                        g_sst_byp_calls, g_sst_byp_blits, g_sst_byp_pres);
+                g_sst_byp_calls = 0;
+                g_sst_byp_blits = g_sst_byp_pres = 0;
+            }
+#endif
+        }
+    }
+    return;
+    /* original texture path disabled: */
+    if (0) SDL_UpdateTexture(_screenTexture, nullptr, screen->pixels, screen->pitch);
 
 	SDL_Rect viewport;
 

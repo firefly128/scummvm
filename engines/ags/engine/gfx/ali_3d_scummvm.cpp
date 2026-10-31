@@ -714,7 +714,12 @@ void ScummVMRendererGraphicsDriver::highcolor_fade_in(Bitmap *vs, void(*draw_cal
 
 	Bitmap *bmp_buff = new Bitmap(bmp_orig->GetWidth(), bmp_orig->GetHeight(), col_depth);
 	SetMemoryBackBuffer(bmp_buff);
-	for (int a = 0; a < 256; a += speed) {
+	TransitionClock transition;
+	const int steps = (255 / speed) + 1;
+	for (int step = 0; step < steps; ++step) {
+		step = transition.Step(step, steps);
+		if (step >= steps) break;
+		const int a = step * speed;
 		bmp_buff->Fill(clearColor);
 		set_trans_blender(0, 0, 0, a);
 		bmp_buff->TransBlendBlt(bmp_orig, 0, 0);
@@ -728,7 +733,7 @@ void ScummVMRendererGraphicsDriver::highcolor_fade_in(Bitmap *vs, void(*draw_cal
 		if (_pollingCallback)
 			_pollingCallback();
 
-		WaitForNextFrame();
+		transition.Wait(step + 1);
 	}
 	delete bmp_buff;
 
@@ -748,7 +753,12 @@ void ScummVMRendererGraphicsDriver::highcolor_fade_out(Bitmap *vs, void(*draw_ca
 
 	Bitmap *bmp_buff = new Bitmap(bmp_orig->GetWidth(), bmp_orig->GetHeight(), col_depth);
 	SetMemoryBackBuffer(bmp_buff);
-	for (int a = 255 - speed; a > 0; a -= speed) {
+	TransitionClock transition;
+	const int steps = MAX(0, (254 / speed));
+	for (int step = 0; step < steps; ++step) {
+		step = transition.Step(step, steps);
+		if (step >= steps) break;
+		const int a = 255 - (step + 1) * speed;
 		bmp_buff->Fill(clearColor);
 		set_trans_blender(0, 0, 0, a);
 		bmp_buff->TransBlendBlt(bmp_orig, 0, 0);
@@ -762,7 +772,7 @@ void ScummVMRendererGraphicsDriver::highcolor_fade_out(Bitmap *vs, void(*draw_ca
 		if (_pollingCallback)
 			_pollingCallback();
 
-		WaitForNextFrame();
+		transition.Wait(step + 1);
 	}
 	delete bmp_buff;
 
@@ -793,21 +803,28 @@ void ScummVMRendererGraphicsDriver::__fade_from_range(PALETTE source, PALETTE de
 	for (c = 0; c < PAL_SIZE; c++)
 		temp[c] = source[c];
 
-	for (c = 0; c < 64; c += speed) {
+	if (speed <= 0) speed = 1;
+	TransitionClock transition;
+	const int steps = (63 / speed) + 1;
+	for (int step = 0; step < steps; ++step) {
+		step = transition.Step(step, steps);
+		if (step >= steps) break;
+		c = step * speed;
 		fade_interpolate(source, dest, temp, c, from, to);
 		set_palette_range(temp, from, to, TRUE);
 
 		RenderToBackBuffer();
 		Present();
 
-		g_system->delayMillis(5);
+		if (!transition.Enabled()) g_system->delayMillis(5);
 		sys_evt_process_pending();
 		if (_pollingCallback)
 			_pollingCallback();
-		WaitForNextFrame();
+		transition.Wait(step + 1);
 	}
 
 	set_palette_range(dest, from, to, TRUE);
+	if (transition.Enabled()) { RenderToBackBuffer(); Present(); }
 }
 
 void ScummVMRendererGraphicsDriver::__fade_out_range(int speed, int from, int to, int targetColourRed, int targetColourGreen, int targetColourBlue) {
@@ -841,15 +858,19 @@ void ScummVMRendererGraphicsDriver::FadeIn(int speed, PALETTE p, int targetColou
 
 void ScummVMRendererGraphicsDriver::BoxOutEffect(bool blackingOut, int speed, int delay, uint32_t /*batch_skip_filter*/) {
 	if (blackingOut) {
+		if (speed <= 0) speed = 1;
 		int yspeed = _srcRect.GetHeight() / (_srcRect.GetWidth() / speed);
 		int boxwid = speed, boxhit = yspeed;
 		Bitmap *bmp_orig = virtualScreen;
 		Bitmap *bmp_buff = new Bitmap(bmp_orig->GetWidth(), bmp_orig->GetHeight(), bmp_orig->GetColorDepth());
 		SetMemoryBackBuffer(bmp_buff);
 
-		while (boxwid < _srcRect.GetWidth()) {
-			boxwid += speed;
-			boxhit += yspeed;
+		TransitionClock transition(MAX(1, delay));
+		const int steps = MAX(1, (_srcRect.GetWidth() - 1) / speed);
+		for (int step = 0; step < steps; ++step) {
+			step = MIN(transition.Step(step, steps), steps - 1);
+			boxwid = (step + 2) * speed;
+			boxhit = (step + 2) * yspeed;
 			int vcentre = _srcRect.GetHeight() / 2;
 			bmp_orig->FillRect(Rect(_srcRect.GetWidth() / 2 - boxwid / 2, vcentre - boxhit / 2,
 			                        _srcRect.GetWidth() / 2 + boxwid / 2, vcentre + boxhit / 2), 0);
@@ -865,7 +886,8 @@ void ScummVMRendererGraphicsDriver::BoxOutEffect(bool blackingOut, int speed, in
 			if (_pollingCallback)
 				_pollingCallback();
 
-			_G(platform)->Delay(delay);
+			if (transition.Enabled()) transition.Wait(step + 1);
+			else _G(platform)->Delay(delay);
 		}
 		delete bmp_buff;
 		SetMemoryBackBuffer(bmp_orig);

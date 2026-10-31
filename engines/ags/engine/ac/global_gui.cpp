@@ -48,17 +48,37 @@ int IsGUIOn(int guinum) {
 
 // This is an internal script function, and is undocumented.
 // It is used by the editor's automatic macro generation.
+static bool GuiNameMatches(const GUIMain &gui, const char *name) {
+ return !gui.Name.IsEmpty() && (gui.Name == name ||
+        (gui.Name[0u] == 'g' && ags_stricmp(gui.Name.GetCStr() + 1, name) == 0));
+}
+
 int FindGUIID(const char *GUIName) {
-	for (int ii = 0; ii < _GP(game).numgui; ii++) {
-		if (_GP(guis)[ii].Name.IsEmpty())
-			continue;
-		if (_GP(guis)[ii].Name == GUIName)
-			return ii;
-		if ((_GP(guis)[ii].Name[0u] == 'g') && (ags_stricmp(_GP(guis)[ii].Name.GetCStr() + 1, GUIName) == 0))
-			return ii;
-	}
-	quit("FindGUIID: No matching GUI found: GUI may have been deleted");
-	return -1;
+ // Generated script macros look up the same GUI names on every access.
+ // GUI names are read-only to scripts; cache resolved requests per engine.
+ // Validate against the current GUI table so a save restore cannot reuse
+ // an invalid index or a changed name.
+ auto &cache = _G(guiNameLookup);
+ const Common::String key(GUIName);
+ auto found = cache.find(key);
+ if (found != cache.end()) {
+  const auto &entry = found->_value;
+  // The exact request key already matched. Only its resolved GUI name needs
+  // validation; avoid folding the same alias again on every script access.
+  if (entry.id >= 0 && entry.id < _GP(game).numgui &&
+      _GP(guis)[entry.id].Name == entry.name.c_str())
+   return entry.id;
+ }
+ for (int ii = 0; ii < _GP(game).numgui; ++ii) {
+  if (GuiNameMatches(_GP(guis)[ii], GUIName)) {
+   auto &entry = cache[key];
+   entry.id = ii;
+   entry.name = _GP(guis)[ii].Name.GetCStr();
+   return ii;
+  }
+ }
+ quit("FindGUIID: No matching GUI found: GUI may have been deleted");
+ return -1;
 }
 
 void InterfaceOn(int ifn) {

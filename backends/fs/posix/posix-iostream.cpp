@@ -29,18 +29,5 @@ PosixIoStream::PosixIoStream(void *handle) :
 		StdioStream(handle) {
 }
 
-int64 PosixIoStream::size() const {
-	int fd = fileno((FILE *)_handle);
-	if (fd == -1) {
-		return StdioStream::size();
-	}
-
-	// Using fstat to obtain the file size is generally faster than fseek / ftell
-	// because it does not affect the IO buffer.
-	struct stat st;
-	if (fstat(fd, &st) == -1) {
-		return StdioStream::size();
-	}
-
-	return st.st_size;
+int64 PosixIoStream::size() const { return StdioStream::size();
 }

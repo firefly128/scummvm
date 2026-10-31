@@ -1007,16 +1007,16 @@ Common::Error DgdsEngine::syncGame(Common::Serializer &s) {
 
 	// sync engine play time to ensure various events run correctly.
 	s.syncAsUint32LE(_thisFrameMs);
-	setTotalPlayTime(_thisFrameMs);
+	if (s.isLoading())
+		setTotalPlayTime(_thisFrameMs);
 
 	s.syncString(_backgroundFile);
 	if (s.isLoading()) {
 		Image(_resource, _decompressor).drawScreen(_backgroundFile, _backgroundBuffer);
 		_storedAreaBuffer.fillRect(Common::Rect(SCREEN_WIDTH, SCREEN_HEIGHT), 0);
+		debug(1, "%s", _scene->dump("").c_str());
+		_scene->runEnterSceneOps();
 	}
-
-	debug(1, "%s", _scene->dump("").c_str());
-	_scene->runEnterSceneOps();
 
 	return Common::kNoError;
 }

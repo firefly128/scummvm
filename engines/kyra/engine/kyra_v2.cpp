@@ -191,9 +191,10 @@ void KyraEngine_v2::delay(uint32 amount, bool updateGame, bool isMainLoop) {
 			updateInput();
 		}
 
-		if (amount > 0)
-			_system->delayMillis(amount > 10 ? 10 : amount);
-	} while (!skipFlag() && _system->getMillis() < start + amount && !shouldQuit());
+		const int32 remaining = static_cast<int32>((start + amount) - _system->getMillis());
+		if (remaining > 0 && !skipFlag() && !shouldQuit())
+			_system->delayMillis(MIN<uint32>(remaining, 10));
+	} while (!skipFlag() && static_cast<int32>((start + amount) - _system->getMillis()) > 0 && !shouldQuit());
 }
 
 bool KyraEngine_v2::checkSpecialSceneExit(int num, int x, int y) {

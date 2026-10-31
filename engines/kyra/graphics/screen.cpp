@@ -3709,9 +3709,10 @@ void Screen::crossFadeRegion(int x1, int y1, int x2, int y2, int w, int h, int s
 	uint8 *s = _pagePtrs[srcPage];
 	uint8 *d = _pagePtrs[dstPage];
 
+	uint32 deadline = _system->getMillis();
 	for (int i = 0; i < h; i++) {
 		int iH = i;
-		uint32 end = _system->getMillis() + 3;
+		deadline += 3;
 		for (int ii = 0; ii < w; ii++) {
 			int sX = (x1 + wB[ii]);
 			int sY = (y1 + hB[iH]);
@@ -3736,9 +3737,9 @@ void Screen::crossFadeRegion(int x1, int y1, int x2, int y2, int w, int h, int s
 		if (!(i % 10))
 			updateScreen();
 
-		uint32 cur = _system->getMillis();
-		if (end > cur)
-			_system->delayMillis(end - cur);
+		const int32 remaining = static_cast<int32>(deadline - _system->getMillis());
+		if (remaining > 0)
+			_system->delayMillis(static_cast<uint32>(remaining));
 	}
 
 	updateScreen();

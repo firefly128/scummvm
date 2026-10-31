@@ -1764,19 +1764,15 @@ void SeqPlayer_HOF::updateDemoAdText(int bottom, int top) {
 }
 
 void SeqPlayer_HOF::delayTicks(uint32 ticks) {
-	uint32 len = ticks * _tickLength / 1000;
-	while (len && !_vm->shouldQuit() && !checkAbortPlayback()) {
-		uint32 step = (len >= 10) ? 10 : len;
-		_system->delayMillis(step);
-		len -= step;
-	}
+	delayUntil(_system->getMillis() + ticks * _tickLength / 1000);
 }
 
 void SeqPlayer_HOF::delayUntil(uint32 dest) {
-	for (uint32 ct = _system->getMillis(); ct < dest && !_vm->shouldQuit() && !checkAbortPlayback(); ) {
-		uint32 step = (dest - ct >= 10) ? 10 : (dest - ct);
-		_system->delayMillis(step);
-		ct = _system->getMillis();
+	while (!_vm->shouldQuit()) {
+		const int32 remaining = static_cast<int32>(dest - _system->getMillis());
+		if (remaining <= 0 || checkAbortPlayback())
+			break;
+		_system->delayMillis(MIN<uint32>(remaining, 10));
 	}
 }
 

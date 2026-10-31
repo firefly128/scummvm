@@ -41,6 +41,12 @@ public:
 	 */
 	void init() override;
 
+	/**
+	 * SST: pump the SDL audio queue when SCUMM_AUDIO_QUEUE=1.  No-op
+	 * otherwise.  See pump() in MixerManager base class for rationale.
+	 */
+	virtual void pump() override;
+
 	// Used by Event recorder
 
 	/**
@@ -91,6 +97,12 @@ protected:
 #if SDL_VERSION_ATLEAST(3, 0, 0)
 	SDL_AudioStream *_stream = nullptr;
 #endif
+
+	/* SST: queue mode state.  Active iff _queueMode is true.  */
+	bool _queueMode;
+	SDL_AudioDeviceID _queueDevId;
+	byte *_queueBuf;
+	int _queueBufSize;
 };
 
 #endif

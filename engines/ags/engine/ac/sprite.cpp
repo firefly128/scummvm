@@ -28,6 +28,8 @@
 #include "ags/plugins/ags_plugin_evts.h"
 #include "ags/plugins/plugin_engine.h"
 #include "ags/shared/gfx/bitmap.h"
+#include "ags/shared/ac/sst_asset_cache.h"
+#include "ags/shared/ac/sst_palette_gen.h"
 #include "ags/engine/gfx/graphics_driver.h"
 
 namespace AGS3 {
@@ -116,6 +118,19 @@ Bitmap *initialize_sprite(sprkey_t index, Bitmap *image, uint32_t &sprite_flags)
 		delete image;
 	}
 
+	/* SST: when SSTPaletteGen is active (precompute sample pass), feed
+	 * the raw high-bpp pixels into the palette histogram BEFORE
+	 * PrepareSpriteForUse downgrades the bitmap to game depth.  No-op
+	 * once sampling completes and palette generation has run. */
+	if (AGS::Shared::SSTPaletteGen::IsActive() &&
+	    use_bmp && use_bmp->GetColorDepth() > 8) {
+		AGS::Shared::SSTPaletteGen::SamplePixels(use_bmp);
+		/* This exclusive pass immediately discards the sprite; quantizing
+		 * its full image against a temporary palette is wasted work. */
+		set_our_eip(oldeip);
+		return use_bmp;
+	}
+
 	use_bmp = PrepareSpriteForUse(use_bmp, (sprite_flags & SPF_ALPHACHANNEL) != 0);
 	if (_GP(game).GetColorDepth() < 32) {
 		sprite_flags &= ~SPF_ALPHACHANNEL;
@@ -125,6 +140,18 @@ Bitmap *initialize_sprite(sprkey_t index, Bitmap *image, uint32_t &sprite_flags)
 	}
 
 	set_our_eip(oldeip);
+
+	/* SST: after the full conversion pipeline (PrepareSpriteForUse +
+	 * potential 32->8 Blit because we forced game.color_depth = 1),
+	 * use_bmp is the final 8bpp bitmap that gets stored in the sprite
+	 * cache.  Persist it to disk so the next launch can skip everything
+	 * above.  We pass the *current* sprite_flags (post-conversion: the
+	 * SPF_HADALPHACHANNEL bit reflects the original asset and is what
+	 * we'll want back on cache hit). */
+	if (use_bmp && use_bmp->GetColorDepth() == 8) {
+		AGS::Shared::SSTAssetCache::Store(index, use_bmp, sprite_flags);
+	}
+
 	return use_bmp;
 }
 

@@ -47,6 +47,8 @@
 #include "ags/shared/ac/sprite_cache.h"
 #include "ags/engine/ac/translation.h"
 #include "ags/engine/ac/view_frame.h"
+#include "ags/shared/ac/sst_asset_cache.h"
+#include "ags/engine/sst_precompute_dialog.h"
 #include "ags/engine/ac/dynobj/script_object.h"
 #include "ags/engine/ac/dynobj/script_system.h"
 #include "ags/shared/core/asset_manager.h"
@@ -505,6 +507,17 @@ int engine_init_sprites() {
 	if (_GP(usetup).SpriteCacheSize > 0)
 		_GP(spriteset).SetMaxCacheSize(_GP(usetup).SpriteCacheSize * 1024);
 	Debug::Printf("Sprite cache set: %zu KB", _GP(spriteset).GetMaxCacheSize() / 1024);
+
+	/* SST: open the disk cache directory under the game path, then run
+	 * the precompute pass.  If every sprite is already on disk the pass
+	 * is a no-op (no dialog shown).  If anything is missing it pops a
+	 * modal progress dialog and converts each sprite once; the
+	 * conversion bytes get written by initialize_sprite's hook, and the
+	 * next launch hits the cache from the very first sprite. */
+	AGS::Shared::SSTAssetCache::Init();
+	if (AGS::Engine::RunPrecomputePass())
+		Debug::Printf("SSTAssetCache: precompute pass complete");
+
 	return 0;
 }
 

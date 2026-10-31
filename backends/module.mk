@@ -20,6 +20,7 @@ MODULE_OBJS := \
 	midi/alsa.o \
 	midi/dmedia.o \
 	midi/seq.o \
+	midi/bppmidi.o \
 	midi/sndio.o \
 	midi/stmidi.o \
 	midi/timidity.o \
@@ -215,6 +216,7 @@ MODULE_OBJS += \
 	events/sdl/sdl-common-events.o \
 	graphics/sdl/sdl-graphics.o \
 	graphics/surfacesdl/surfacesdl-graphics.o \
+	graphics/surfacesdl/sparcfb-graphics-noX.o \
 	mixer/sdl/sdl-mixer.o \
 	mixer/null/null-mixer.o \
 	mutex/sdl/sdl-mutex.o \

@@ -101,6 +101,9 @@ public:
 		// static/dynamic plugin, like it's done for the engines
 		LINK_PLUGIN(AUTO)
 		LINK_PLUGIN(NULL)
+		#if defined(USE_BPPMIDI)
+		LINK_PLUGIN(BPPMIDI)
+		#endif
 
 		#if defined(__LIBRETRO__)
 		LINK_PLUGIN(LIBRETRO_MIDI)

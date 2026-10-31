@@ -24,6 +24,7 @@
 //
 
 #include "common/std/limits.h"
+#include "common/config-manager.h"
 #include "ags/engine/ac/button.h"
 #include "ags/shared/ac/common.h"
 #include "ags/engine/ac/character.h"
@@ -755,7 +756,7 @@ static void game_loop_update_fps() {
 	auto frames = _G(loopcounter) - _G(lastcounter);
 
 	if (duration >= std::chrono::milliseconds(1000) && frames > 0) {
-		_G(fps) = 1000.0f * frames / duration.count();
+		_G(fps) = 1000.0f * frames / static_cast<uint32>(duration);
 		_G(t1) = t2;
 		_G(lastcounter) = _G(loopcounter);
 	}
@@ -781,7 +782,29 @@ void set_loop_counter(unsigned int new_counter) {
 	_G(fps) = std::numeric_limits<float>::quiet_NaN();
 }
 
+// Opt-in stage timings; nested blocking game loops are charged to their caller.
+class SSTLoopProfile {
+ struct Totals { uint32 start; uint32 ms[9]; unsigned ticks, depth; Totals() : start(0), ms{}, ticks(0), depth(0) {} };
+ static Totals &TotalsForRun() { static Totals t; return t; }
+ bool _enabled, _active; int _phase; uint32 _last;
+public:
+ SSTLoopProfile() : _enabled(ConfMan.hasKey("sst_ags_profile") && ConfMan.getBool("sst_ags_profile")), _active(false), _phase(0), _last(0) {
+  if (_enabled) { Totals &t = TotalsForRun(); _active = (t.depth++ == 0); if (_active) { _last = g_system->getMillis(); if (!t.start) t.start = _last; } }
+ }
+ void Phase(int next) { if (!_active) return; uint32 now = g_system->getMillis(); TotalsForRun().ms[_phase] += now - _last; _last = now; _phase = next; }
+ ~SSTLoopProfile() {
+  if (!_enabled) return; Totals &t = TotalsForRun(); --t.depth;
+  if (!_active) return; Phase(_phase); ++t.ticks;
+  uint32 elapsed = _last - t.start;
+  if (elapsed >= 5000) {
+   warning("SST AGS stages: %u ms, %u ticks; input=%u early-script=%u controls=%u update=%u late-script=%u audio=%u render=%u events=%u tail/wait=%u", elapsed, t.ticks, t.ms[0],t.ms[1],t.ms[2],t.ms[3],t.ms[4],t.ms[5],t.ms[6],t.ms[7],t.ms[8]);
+   memset(t.ms, 0, sizeof(t.ms)); t.ticks = 0; t.start = _last;
+  }
+ }
+};
+
 void UpdateGameOnce(bool checkControls, IDriverDependantBitmap *extraBitmap, int extraX, int extraY) {
+	SSTLoopProfile profile;
 
 	int res;
 
@@ -808,6 +831,7 @@ void UpdateGameOnce(bool checkControls, IDriverDependantBitmap *extraBitmap, int
 
 	set_our_eip(1004);
 
+	profile.Phase(1);
 	game_loop_do_early_script_update();
 	// run this immediately to make sure it gets done before fade-in
 	// (player enters screen)
@@ -837,6 +861,7 @@ void UpdateGameOnce(bool checkControls, IDriverDependantBitmap *extraBitmap, int
 	// relies on remembering which control was focused by the cursor prior
 	update_cursor_over_gui();
 	// handle actual input (keys, mouse, and so forth)
+	profile.Phase(2);
 	game_loop_check_controls(checkControls);
 
 	if (_G(abort_engine))
@@ -845,10 +870,12 @@ void UpdateGameOnce(bool checkControls, IDriverDependantBitmap *extraBitmap, int
 	set_our_eip(2);
 
 	// do the overall game state update
+	profile.Phase(3);
 	game_loop_do_update();
 
 	game_loop_update_animated_buttons();
 
+	profile.Phase(4);
 	game_loop_do_late_script_update();
 
 	// historically room object and character scaling was updated
@@ -857,14 +884,19 @@ void UpdateGameOnce(bool checkControls, IDriverDependantBitmap *extraBitmap, int
 	update_cursor_over_location(mwasatx, mwasaty);
 	update_cursor_view();
 
+	profile.Phase(5);
 	update_audio_system_on_game_loop();
 
+	profile.Phase(6);
 	// Only render if we are not skipping a cutscene
-	if (!_GP(play).fast_forward)
+	if (!_GP(play).fast_forward && ShouldRenderGameFrame()) {
 		render_graphics(extraBitmap, extraX, extraY);
+		RecordGameFrameRendered();
+	}
 
 	set_our_eip(6);
 
+	profile.Phase(7);
 	game_loop_update_events();
 
 	if (_G(abort_engine))
@@ -876,6 +908,7 @@ void UpdateGameOnce(bool checkControls, IDriverDependantBitmap *extraBitmap, int
 	if (_G(abort_engine))
 		return;
 
+	profile.Phase(8);
 	game_loop_update_background_animation();
 
 	game_loop_update_loop_counter();

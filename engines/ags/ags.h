@@ -71,6 +71,7 @@ class AGSEngine : public Engine {
 private:
 	const AGSGameDescription *_gameDescription;
 	Common::RandomSource _randomSource;
+    bool _sstMaskWords, _sstVerifyMaskWords;
 public:
 	EventsManager *_events;
 	Music *_music;
@@ -90,6 +91,8 @@ public:
 	}
 
 	uint32 getFeatures() const;
+    bool useMaskWordScan() const { return _sstMaskWords; }
+    bool verifyMaskWordScan() const { return _sstVerifyMaskWords; }
 
 	const PluginVersion *getNeededPlugins() const;
 

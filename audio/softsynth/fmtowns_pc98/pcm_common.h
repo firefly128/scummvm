@@ -27,7 +27,9 @@
 // The SegaCD and the FM-Towns have (almost) the same PCM sound chip. And while each platform has low-level driver
 // stuff going on top of that it still makes sense to identify and abstract some commmon code.
 
+namespace Audio { class PreparedPCMCache; }
 class PCMChannel_Base {
+friend class PCMDevice_Base;
 public:
 	PCMChannel_Base();
 	virtual ~PCMChannel_Base();
@@ -44,7 +46,7 @@ public:
 	void deactivate();
 
 protected:
-	void setData(const int8 *data, uint32 dataEnd, uint32 dataStart = 0);
+	void setData(const int8 *data, uint32 dataEnd, uint32 dataStart = 0, bool immutable = false);
 	void setVolume(uint8 vol);
 	void setPanPos(uint8 setPanPos);
 	void setupLoop(uint32 loopStart, uint32 loopLen);
@@ -64,6 +66,9 @@ private:
 	uint32 _pos;
 	uint16 _step;
 	const int8 *_data;
+	uint32 _sourceLength;
+ bool _sourceImmutable;
+	byte _sourceDigest[16];
 };
 
 class PCMDevice_Base {
@@ -79,6 +84,9 @@ public:
 	void readBuffer(int32 *buffer, uint32 bufferSize);
 
 private:
+	void readBufferOriginal(int32 *buffer,uint32 bufferSize);
+	void readPrepared(int32 *buffer,uint32 bufferSize,const int32 **waves);
+	Audio::PreparedPCMCache *_prepared;
 	const uint32 _intRate;
 	const uint32 _extRate;
 	const int _deviceVolume;

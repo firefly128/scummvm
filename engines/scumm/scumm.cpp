@@ -1,3 +1,5 @@
+/* SST profiling: scoped timers around waitForTimer's inner loop. */
+#define FORBIDDEN_SYMBOL_ALLOW_ALL
 /* ScummVM - Graphic Adventure Engine
  *
  * ScummVM is the legal property of its developers, whose names
@@ -1488,11 +1490,17 @@ Common::Error ScummEngine::init() {
 			screenHeight *= _textSurfaceMultiplier;
 		}
 
-		if (_game.features & GF_16BIT_COLOR
+		/* SST: v3 FM-TOWNS games (Indy3, LOOM, MI1) have a working 8-bit
+		 * code path (towns_drawStripToScreen 8-bit branch).  Use it: the
+		 * sparcfb native backend writes 8-bit indices to the BT458 RAMDAC
+		 * and cannot consume 16-bit pixels. */
+		bool sst_force_8bit_towns = (_game.platform == Common::kPlatformFMTowns
+		                              && _game.version == 3);
+		if ((_game.features & GF_16BIT_COLOR
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
 			|| _game.platform == Common::kPlatformFMTowns
 #endif
-			) {
+			) && !sst_force_8bit_towns) {
 #ifdef USE_RGB_COLOR
 			_outputPixelFormat = Graphics::PixelFormat(2, 5, 5, 5, 0, 10, 5, 0, 0);
 
@@ -2929,6 +2937,34 @@ Common::Error ScummEngine::go() {
 
 		// Run the main loop
 		if (!isPaused()) {
+#ifdef SST_DELTACAP
+			{
+				static int sst_dc_max = -1;
+				static int sst_dc_calls = 0;
+				static int sst_dc_last_in = 0;
+				static int sst_dc_last_out = 0;
+				static int sst_dc_n_capped = 0;
+				if (sst_dc_max < 0) {
+					const char *e = getenv("SST_DELTACAP_MAX");
+					sst_dc_max = e ? atoi(e) : 0;
+					fprintf(stderr, "deltacap: SST_DELTACAP_MAX=%d (0=disabled)\n", sst_dc_max);
+					fflush(stderr);
+				}
+				sst_dc_last_in = delta;
+				if (sst_dc_max > 0 && delta > sst_dc_max) {
+					delta = sst_dc_max;
+					sst_dc_n_capped++;
+				}
+				sst_dc_last_out = delta;
+				if (++sst_dc_calls == 100) {
+					fprintf(stderr, "deltacap: 100 calls last_in=%d last_out=%d n_capped=%d\n",
+						sst_dc_last_in, sst_dc_last_out, sst_dc_n_capped);
+					fflush(stderr);
+					sst_dc_calls = 0;
+					sst_dc_n_capped = 0;
+				}
+			}
+#endif
 			scummLoop(delta);
 
 			// The Mac GUI is updated after the engine has had a
@@ -2955,6 +2991,16 @@ Common::Error ScummEngine::go() {
 	return Common::kNoError;
 }
 
+
+
+#ifdef SST_PROFILE_WFTLOOP
+#include <stdio.h>
+#include <time.h>
+long long g_sst_t_cd = 0, g_sst_t_pe = 0, g_sst_t_shake = 0, g_sst_t_towns = 0,
+     g_sst_t_us = 0, g_sst_t_dly = 0, g_sst_t_total = 0;
+int  g_sst_iter = 0, g_sst_call = 0;
+#endif
+
 void ScummEngine::waitForTimer(int quarterFrames, bool freezeMacGui) {
 	uint32 endTime, cur;
 	uint32 msecDelay = getIntegralTime(quarterFrames * (1000 / getTimerFrequency()));
@@ -2972,34 +3018,88 @@ void ScummEngine::waitForTimer(int quarterFrames, bool freezeMacGui) {
 	if (VAR_LAST_FRAME_BURN_TIME != 0xFF)
 		VAR(VAR_LAST_FRAME_BURN_TIME) = msecDelay;
 
+	{
+#ifdef SST_PROFILE_WFTLOOP
+		extern long long g_sst_t_cd, g_sst_t_pe, g_sst_t_shake, g_sst_t_towns,
+		            g_sst_t_us, g_sst_t_dly, g_sst_t_total;
+		extern int  g_sst_iter, g_sst_call;
+		struct timespec ts_a, ts_b, ts_call_a, ts_call_b;
+		clock_gettime(CLOCK_REALTIME, &ts_call_a);
+#endif
 	while (!shouldQuit()) {
+#ifdef SST_PROFILE_WFTLOOP
+		g_sst_iter++;
+		clock_gettime(CLOCK_REALTIME, &ts_a);
+#endif
 		_sound->updateCD(); // Loop CD Audio if needed
+#ifdef SST_PROFILE_WFTLOOP
+		clock_gettime(CLOCK_REALTIME, &ts_b);
+		g_sst_t_cd += (ts_b.tv_sec-ts_a.tv_sec)*1000000000LL + (ts_b.tv_nsec-ts_a.tv_nsec);
+		clock_gettime(CLOCK_REALTIME, &ts_a);
+#endif
 		parseEvents();
+#ifdef SST_PROFILE_WFTLOOP
+		clock_gettime(CLOCK_REALTIME, &ts_b);
+		g_sst_t_pe += (ts_b.tv_sec-ts_a.tv_sec)*1000000000LL + (ts_b.tv_nsec-ts_a.tv_nsec);
+		clock_gettime(CLOCK_REALTIME, &ts_a);
+#endif
 
 		updateScreenShakeEffect();
+#ifdef SST_PROFILE_WFTLOOP
+		clock_gettime(CLOCK_REALTIME, &ts_b);
+		g_sst_t_shake += (ts_b.tv_sec-ts_a.tv_sec)*1000000000LL + (ts_b.tv_nsec-ts_a.tv_nsec);
+		clock_gettime(CLOCK_REALTIME, &ts_a);
+#endif
 
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
-		uint32 screenUpdateTimerStart = _system->getMillis();
-		towns_updateGfx();
+		uint32 screenUpdateTimerStart = 0;
+		if (_townsScreen) {
+			screenUpdateTimerStart = _system->getMillis();
+			towns_updateGfx();
+		}
+#endif
+#ifdef SST_PROFILE_WFTLOOP
+		clock_gettime(CLOCK_REALTIME, &ts_b);
+		g_sst_t_towns += (ts_b.tv_sec-ts_a.tv_sec)*1000000000LL + (ts_b.tv_nsec-ts_a.tv_nsec);
+		clock_gettime(CLOCK_REALTIME, &ts_a);
 #endif
 
 		if (_macGui && !freezeMacGui)
 			_macGui->updateWindowManager();
 
 		_system->updateScreen();
+#ifdef SST_PROFILE_WFTLOOP
+		clock_gettime(CLOCK_REALTIME, &ts_b);
+		g_sst_t_us += (ts_b.tv_sec-ts_a.tv_sec)*1000000000LL + (ts_b.tv_nsec-ts_a.tv_nsec);
+		clock_gettime(CLOCK_REALTIME, &ts_a);
+#endif
 		cur = _system->getMillis();
 
 #ifndef DISABLE_TOWNS_DUAL_LAYER_MODE
-		// These measurements are used to determine whether the FM-Towns smooth scrolling is likely to fall behind and need to catch
-		// up (becoming more sloppy than smooth). Calls to _system->updateScreen() can require way longer than a 60Hz tick, depending
-		// on the hardware and the filter setting. In fact, these calls can take way over 100ms for some unfortunate configs.
 		_refreshDuration[_refreshArrayPos] = (int)(cur - screenUpdateTimerStart);
 		_refreshArrayPos = (_refreshArrayPos + 1) % ARRAYSIZE(_refreshDuration);
 #endif
 		if (cur >= endTime)
 			break;
 		_system->delayMillis(MIN<uint32>(10, endTime - cur));
+#ifdef SST_PROFILE_WFTLOOP
+		clock_gettime(CLOCK_REALTIME, &ts_b);
+		g_sst_t_dly += (ts_b.tv_sec-ts_a.tv_sec)*1000000000LL + (ts_b.tv_nsec-ts_a.tv_nsec);
+#endif
 	}
+#ifdef SST_PROFILE_WFTLOOP
+		clock_gettime(CLOCK_REALTIME, &ts_call_b);
+		g_sst_t_total += (ts_call_b.tv_sec-ts_call_a.tv_sec)*1000000000LL + (ts_call_b.tv_nsec-ts_call_a.tv_nsec);
+		if (++g_sst_call == 100) {
+			fprintf(stderr, "wftloop: calls=100 iters=%d total=%lldms cd=%lldms pe=%lldms shake=%lldms towns=%lldms us=%lldms dly=%lldms\n",
+			        g_sst_iter, g_sst_t_total/1000000, g_sst_t_cd/1000000, g_sst_t_pe/1000000,
+			        g_sst_t_shake/1000000, g_sst_t_towns/1000000, g_sst_t_us/1000000, g_sst_t_dly/1000000);
+			fflush(stderr);
+			g_sst_iter = g_sst_call = 0;
+			g_sst_t_cd = g_sst_t_pe = g_sst_t_shake = g_sst_t_towns = g_sst_t_us = g_sst_t_dly = g_sst_t_total = 0;
+		}
+	}
+#endif
 
 	// Set the last wait time as the expected end time, which may be different
 	// from the actual time. This helps the main loop maintain consistent timing.

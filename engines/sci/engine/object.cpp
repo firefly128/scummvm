@@ -20,6 +20,7 @@
  */
 
 
+#include "common/config-manager.h"
 #include "sci/engine/kernel.h"
 #include "sci/engine/object.h"
 #include "sci/engine/script.h"
@@ -33,6 +34,7 @@ namespace Sci {
 extern bool relocateBlock(Common::Array<reg_t> &block, int block_location, SegmentId segment, int location, uint32 heapOffset);
 
 void Object::init(const Script &owner, reg_t obj_pos, bool initVariables) {
+	_selectorIndexCache.clear();
 	const SciSpan<const byte> buf = owner.getSpan(0);
 	const SciSpan<const byte> data = owner.getSpan(obj_pos.getOffset());
 	_baseObj = data;
@@ -175,27 +177,38 @@ const Object *Object::getClass(SegManager *segMan) const {
 }
 
 int Object::locateVarSelector(SegManager *segMan, Selector slc) const {
-	const Common::Array<uint16> *buf;
-	uint varCount;
-
+	const Object *owner;
 #ifdef ENABLE_SCI32
-	if (getSciVersion() == SCI_VERSION_3) {
-		buf = &_baseVars;
-		varCount = getVarCount();
-	} else {
-#else
-	{
+	if (getSciVersion() == SCI_VERSION_3)
+		owner = this;
+	else
 #endif
-		const Object *obj = getClass(segMan);
-		buf = &obj->_baseVars;
-		varCount = obj->getVarCount();
+		owner = getClass(segMan);
+	const Common::Array<uint16> &vars = owner->_baseVars;
+	const uint count = owner->getVarCount();
+	static const bool enabled = ConfMan.hasKey("sst_sci_selector_cache") && ConfMan.getBool("sst_sci_selector_cache");
+	static const bool verify = ConfMan.hasKey("sst_sci_selector_verify") && ConfMan.getBool("sst_sci_selector_verify");
+	static const bool stats = ConfMan.hasKey("sst_sci_selector_stats") && ConfMan.getBool("sst_sci_selector_stats");
+	static unsigned long calls = 0, hits = 0;
+	int index = -1;
+	const bool hit = enabled && owner->_selectorIndexCache.find(slc, index);
+	if (!hit || verify) {
+		int scanned = -1;
+		for (uint i = 0; i < count; ++i) {
+			if (vars[i] == slc) { scanned = i; break; }
+		}
+		if (hit && index != scanned)
+			error("SCI selector cache mismatch: selector %d cached %d scanned %d", slc, index, scanned);
+		index = scanned;
+		if (enabled) owner->_selectorIndexCache.store(slc, index);
 	}
-
-	for (uint i = 0; i < varCount; i++)
-		if ((*buf)[i] == slc) // Found it?
-			return i; // report success
-
-	return -1; // Failed
+	if (stats) {
+		++calls;
+		if (hit) ++hits;
+		if ((calls & 262143UL) == 0)
+			warning("SST SCI selector lookups=%lu hits=%lu cache=%d verify=%d", calls, hits, enabled, verify);
+	}
+	return index;
 }
 
 bool Object::relocateSci0Sci21(SegmentId segment, int location, uint32 heapOffset) {
@@ -377,6 +390,7 @@ bool Object::mustSetViewVisible(int index, const bool fromPropertyOp) const {
 }
 
 void Object::initSelectorsSci3(const SciSpan<const byte> &buf, const bool initVariables) {
+	_selectorIndexCache.clear();
 	enum {
 		kObjectHeaderSize = 16,
 		kSelectorBankSize = 256,

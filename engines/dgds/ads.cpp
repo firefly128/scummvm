@@ -1128,11 +1128,16 @@ Common::Error ADSInterpreter::syncState(Common::Serializer &s) {
 		}
 	}
 
-	for (const Common::String &name : scriptNames) {
-		load(name);
+	// Saving must not reload live scripts: that resets their execution state.
+	if (s.isLoading()) {
+		for (const Common::String &name : scriptNames) {
+			load(name);
+		}
 	}
 
 	s.syncString(activeScript);
+	if (s.isSaving())
+		return Common::kNoError;
 
 	if (s.getVersion() >= 3 && !activeScript.empty()) {
 		load(activeScript);

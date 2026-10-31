@@ -370,9 +370,9 @@ uint16 KyraRpgEngine::processDialogue() {
 }
 
 void KyraRpgEngine::delayUntil(uint32 time, bool, bool doUpdate, bool isMainLoop) {
-	uint32 curTime = _system->getMillis();
-	if (time > curTime)
-		delay(time - curTime, doUpdate, isMainLoop);
+	const int32 remaining = static_cast<int32>(time - _system->getMillis());
+	if (remaining > 0)
+		delay(static_cast<uint32>(remaining), doUpdate, isMainLoop);
 }
 
 int KyraRpgEngine::rollDice(int times, int pips, int inc) {

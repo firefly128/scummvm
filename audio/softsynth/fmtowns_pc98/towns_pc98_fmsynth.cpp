@@ -30,6 +30,13 @@ public:
 		const uint8 *attackDecayTable, const uint32 *frqTable, const uint32 *sineTable, const int32 *tlevelOut, const int32 *detuneTable);
 	~TownsPC98_FmSynthOperator() {}
 
+	/* SST: true iff this operator's envelope is in kEnvReady (idle).  In
+	 * that state generateOutput() short-circuits, so a whole channel's
+	 * per-sample inner loop in nextTick() can be skipped when all four
+	 * operators are idle.  Major win on slow hardware where the FM synth
+	 * inner loop dominates mix time even when no FM voice is sounding. */
+	bool isIdle() const { return _state == kEnvReady; }
+
 	void keyOn();
 	void keyOff();
 	void frequencyHi(uint8 frqH);
@@ -1586,6 +1593,21 @@ void TownsPC98_FmSynth::nextTick(int32 *buffer, uint32 bufferSize) {
 			_chanInternal[i].updateEnvelopeParameters = false;
 			for (int ii = 0; ii < 4 ; ii++)
 				o[ii]->updatePhaseIncrement();
+		}
+
+		/* SST: skip the per-sample inner loop entirely when every
+		 * operator on this channel is idle (kEnvReady).  Each
+		 * generateOutput() would short-circuit anyway in that case, so
+		 * the channel contributes silence; running the loop just burns
+		 * algorithm-dispatch + pointer-setup cycles per sample.  Zero
+		 * the channel's feedbuf so when a key-on later wakes the
+		 * operators, they start from a clean state (matches what would
+		 * happen if the loop ran while all four were idle).  */
+		if (o[0]->isIdle() && o[1]->isIdle() && o[2]->isIdle() && o[3]->isIdle()) {
+			_chanInternal[i].feedbuf[0] = 0;
+			_chanInternal[i].feedbuf[1] = 0;
+			_chanInternal[i].feedbuf[2] = 0;
+			continue;
 		}
 
 		for (uint32 ii = 0; ii < bufferSize ; ii++) {

@@ -43,6 +43,15 @@
 #include "ags/shared/util/string_utils.h" // linux strnicmp definition
 #include "ags/detection.h"
 #include "ags/globals.h"
+#if defined(SPARCFB_NATIVE_BACKEND)
+#include "common/config-manager.h"
+#include "ags/ags.h"
+#include "ags/shared/ac/game_setup_struct.h"
+#include "ags/engine/ac/global_gui.h"
+#include "ags/engine/ac/global_button.h"
+#include "ags/engine/ac/gui_control.h"
+#endif
+
 
 namespace AGS3 {
 
@@ -542,8 +551,127 @@ inline bool FixupArgument(RuntimeScriptValue &arg, const int fixup, const uintpt
 	}
 }
 
+#if defined(SPARCFB_NATIVE_BACKEND) && !DEBUG_CC_EXEC
+// Execute adjacent PUSHREG/POPREG without a structure-return round trip.
+// Keep the stack-space assertion at the call site and preserve size promotion
+// plus tail invalidation. Data slots and a popped SP retain the general path.
+static inline __attribute__((always_inline)) bool FoldPushedRegisterPair(
+        RuntimeScriptValue *regs, RuntimeScriptValue *stack, int source, int dest) {
+    if (static_cast<unsigned>(source) >= CC_NUM_REGISTERS ||
+        static_cast<unsigned>(dest) >= CC_NUM_REGISTERS || dest == SREG_SP)
+        return false;
+    RuntimeScriptValue &sp = regs[SREG_SP];
+    if (sp.Type != kScValStackPtr) return false;
+    RuntimeScriptValue *tail = sp.RValue;
+    if (tail < stack || tail >= stack + CC_STACK_SIZE || tail->Type == kScValData)
+        return false;
+    if (source != dest) regs[dest] = regs[source];
+    regs[dest].Size = sizeof(int32_t);
+    tail->Invalidate();
+    return true;
+}
+#endif
+
+#if defined(SPARCFB_NATIVE_BACKEND) && !DEBUG_CC_EXEC
+// Opt-in shortcut for the exact Heroine's Quest weather bytecode.
+// Execute the final particle in the VM so its registers and loop exit state
+// are produced by the original instructions. No particle or tick is skipped.
+extern RuntimeScriptValue Sc_FindGUIID(const RuntimeScriptValue *, int32_t);
+extern RuntimeScriptValue Sc_SetButtonPic(const RuntimeScriptValue *, int32_t);
+extern RuntimeScriptValue Sc_Rand(const RuntimeScriptValue *, int32_t);
+extern RuntimeScriptValue Sc_GUI_GetiControls(void *, const RuntimeScriptValue *, int32_t);
+extern RuntimeScriptValue Sc_GUIControl_GetX(void *, const RuntimeScriptValue *, int32_t);
+extern RuntimeScriptValue Sc_GUIControl_SetX(void *, const RuntimeScriptValue *, int32_t);
+extern RuntimeScriptValue Sc_GUIControl_GetY(void *, const RuntimeScriptValue *, int32_t);
+extern RuntimeScriptValue Sc_GUIControl_SetY(void *, const RuntimeScriptValue *, int32_t);
+static uint32 HQSnowHashWord(uint32 hash, uint32 word) {
+ for (int shift=0; shift<32; shift+=8) hash=(hash ^ ((word>>shift)&255))*16777619U;
+ return hash;
+}
+static bool HQSnowScriptMatches(const PScript &script) {
+ static PScript owner;
+ static bool matches=false;
+ if (owner == script) return matches;
+ owner=script; matches=false;
+ if (!script || script->codesize!=112544 || script->numimports<=1754 ||
+     script->stringssize<54621 || strcmp(script->strings+54615,"SNOWY")) return false;
+ uint32 hash=2166136261U;
+ for (int i=90662;i<91569;++i) hash=HQSnowHashWord(hash,script->code[i]);
+ // Hash fixups in ascending location order, independently of file ordering.
+ uint8 fixups[91569-90662] = {};
+ for (int i=0;i<script->numfixups;++i) {
+  const int pos=script->fixups[i];
+  if (pos>=90662 && pos<91569) fixups[pos-90662]=(uint8)script->fixuptypes[i];
+ }
+ for (int pos=90662;pos<91569;++pos) if (fixups[pos-90662]) {
+  hash=HQSnowHashWord(hash,pos); hash=HQSnowHashWord(hash,fixups[pos-90662]);
+ }
+ matches=(hash==0x5a906e21U);
+ return matches;
+}
+static bool HQSnowBindingsMatch(const ccInstance &inst) {
+ struct StaticBinding { int index; const char *name; ScriptAPIFunction *function; };
+ const StaticBinding statics[]={
+  {525,"FindGUIID",Sc_FindGUIID},{460,"Random",Sc_Rand},{547,"SetButtonPic",Sc_SetButtonPic}
+ };
+ struct ObjectBinding { int index; const char *name; ScriptAPIObjectFunction *function; };
+ const ObjectBinding objects[]={
+  {714,"GUI::geti_Controls",Sc_GUI_GetiControls},
+  {589,"GUIControl::get_X",Sc_GUIControl_GetX},{590,"GUIControl::set_X",Sc_GUIControl_SetX},
+  {591,"GUIControl::get_Y",Sc_GUIControl_GetY},{592,"GUIControl::set_Y",Sc_GUIControl_SetY}
+ };
+ // Forks borrow the resolved table but leave their own numimports at zero.
+ if (!inst.resolved_imports || !inst.instanceof || inst.instanceof->numimports<=1754) return false;
+ for (const auto &b:statics) {
+  if (!inst.instanceof->imports[b.index] || strcmp(inst.instanceof->imports[b.index],b.name)) return false;
+  const auto *import=_GP(simp).getByIndex(inst.resolved_imports[b.index]);
+  if (!import || import->Value.Type!=kScValStaticFunction || import->Value.SPfn!=b.function) return false;
+ }
+ for (const auto &b:objects) {
+  if (!inst.instanceof->imports[b.index] || strcmp(inst.instanceof->imports[b.index],b.name)) return false;
+  const auto *import=_GP(simp).getByIndex(inst.resolved_imports[b.index]);
+  if (!import || import->Value.Type!=kScValObjectFunction || import->Value.ObjPfn!=b.function) return false;
+ }
+ const auto *gui=_GP(simp).getByIndex(inst.resolved_imports[1754]);
+ return gui && gui->Value.Type==kScValStaticArray && !_GP(scrGui).empty()
+     && gui->Value.Ptr==&_GP(scrGui)[0] && gui->Value.MgrPtr==&_GP(StaticGUIArray);
+}
+static bool HQSnowUpdate29(const ccInstance &inst) {
+ if ((_G(new_line_hook) && (_G(new_line_hook)!=scriptDebugHook || _G(pluginsWantingDebugHooks)>0 ||
+      _G(break_on_next_script_step) || !_G(breakpoints).empty())) ||
+     !HQSnowScriptMatches(inst.instanceof) || !HQSnowBindingsMatch(inst)) return false;
+ const int gui=FindGUIID("SNOWY");
+ if (gui<0 || gui>=50 || gui>=_GP(game).numgui || _GP(guis)[gui].GetControlCount()<30) return false;
+ // Validate everything before applying any updates, so fallback is atomic.
+ for (int i=0;i<30;++i) {
+  if (_GP(guis)[gui].GetControlType(i)!=kGUIButton) return false;
+  auto *control=_GP(guis)[gui].GetControl(i);
+  const int x=GUIControl_GetX(control), y=GUIControl_GetY(control);
+  if (x<0 || x>321 || y<0 || y>=200) return false;
+ }
+ for (int i=0;i<29;++i) {
+  GUIObject *control=_GP(guis)[gui].GetControl(i);
+  if (GUIControl_GetX(control)>=319) {
+   GUIControl_SetX(control,0);
+   GUIControl_SetY(control,::AGS::g_vm->getRandomNumber(195));
+   SetButtonPic(gui,i,1,5760+::AGS::g_vm->getRandomNumber(9));
+  } else {
+   const int step=::AGS::g_vm->getRandomNumber(2)+1;
+   GUIControl_SetX(control,GUIControl_GetX(control)+step);
+   GUIControl_SetY(control,(GUIControl_GetY(control)+1)%200);
+  }
+ }
+ return true;
+}
+
+
+#endif
+
 #define MAXNEST 50  // number of recursive function calls allowed
 int ccInstance::Run(int32_t curpc) {
+#if defined(SPARCFB_NATIVE_BACKEND) && !DEBUG_CC_EXEC
+ const bool hqNativeSnow = ConfMan.hasKey("sst_hq_native_snow") && ConfMan.getBool("sst_hq_native_snow");
+#endif
 	pc = curpc;
 	returnValue = -1;
 
@@ -596,21 +724,8 @@ int ccInstance::Run(int32_t curpc) {
 							"unexpected end of code data (%d; %d)", pc + codeOp.ArgCount, codeInst->codesize);
 
 
-		// Read arguments; use switch as it proved to be faster than the loop
-
-		switch (codeOp.ArgCount) {
-		case 3:
-			codeOp.Args[2].SetInt32(static_cast<int32_t>(codeInst->code[pc + 3]));
-			/* fall-through */
-		case 2:
-			codeOp.Args[1].SetInt32(static_cast<int32_t>(codeInst->code[pc + 2]));
-			/* fall-through */
-		case 1:
-			codeOp.Args[0].SetInt32(static_cast<int32_t>(codeInst->code[pc + 1]));
-			break;
-		default:
-			break;
-		}
+		// Bounds were checked above; operands remain valid for this instruction.
+		codeOp.Args = codeInst->code + pc + 1;
 		//---------------------------------------------------------------------
 		/* End read operation */
 		//=====================================================================
@@ -625,6 +740,16 @@ int ccInstance::Run(int32_t curpc) {
 		//=====================================================================
 		switch (codeOp.Instruction.Code) {
 		case SCMD_LINENUM:
+#if defined(SPARCFB_NATIVE_BACKEND) && !DEBUG_CC_EXEC
+            if (hqNativeSnow && pc == 90691 && codeInst->codesize == 112544 &&
+                HQSnowUpdate29(*codeInst)) {
+                GetStackPtrOffsetRw(428).WriteInt32(29);
+                pc = 90700;
+                static bool reported = false;
+                if (!reported) { warning("HQ native snow active (30 particles)"); reported = true; }
+                continue;
+            }
+#endif
 			line_number = codeOp.Arg1i();
 			_G(currentline) = line_number;
 			if (_G(new_line_hook))
@@ -692,9 +817,21 @@ int ccInstance::Run(int32_t curpc) {
 			// be only up to 4 bytes large;
 			// I guess that's an obsolete way to do WRITE, WRITEW and WRITEB
 			const auto arg_size = codeOp.Arg1i();
-			FixupArgument(codeOp.Args[1], codeInst->code_fixups[pc + 2], codeInst->code[pc + 2], this->stack, codeInst->strings);
+			const int fixup = codeInst->code_fixups[pc + 2];
+			if (fixup == FIXUP_NOFIXUP || fixup == FIXUP_FUNCTION) {
+				// Integer literals need no temporary tagged value or pointer fixup.
+				ASSERT_CC_ERROR();
+				switch (arg_size) {
+				case sizeof(char): registers[SREG_MAR].WriteByte(codeOp.Arg2i()); break;
+				case sizeof(int16_t): registers[SREG_MAR].WriteInt16(codeOp.Arg2i()); break;
+				case sizeof(int32_t): registers[SREG_MAR].WriteInt32(codeOp.Arg2i()); break;
+				default: warning("unexpected data size for WRITELIT op: %d", arg_size); break;
+				}
+				break;
+			}
+			RuntimeScriptValue arg_value(codeOp.Arg2i());
+			FixupArgument(arg_value, codeInst->code_fixups[pc + 2], codeInst->code[pc + 2], this->stack, codeInst->strings);
 			ASSERT_CC_ERROR();
-			const auto &arg_value = codeOp.Arg2();
 			switch (arg_size) {
 			case sizeof(char):
 				registers[SREG_MAR].WriteByte(arg_value.IValue);
@@ -729,9 +866,15 @@ int ccInstance::Run(int32_t curpc) {
 		}
 		case SCMD_LITTOREG: {
 			auto &reg1 = registers[codeOp.Arg1i()];
-			FixupArgument(codeOp.Args[1], codeInst->code_fixups[pc + 2], codeInst->code[pc + 2], this->stack, codeInst->strings);
+			const int fixup = codeInst->code_fixups[pc + 2];
+			if (fixup == FIXUP_NOFIXUP || fixup == FIXUP_FUNCTION) {
+				ASSERT_CC_ERROR();
+				reg1.SetInt32(codeOp.Arg2i());
+				break;
+			}
+			RuntimeScriptValue arg_value(codeOp.Arg2i());
+			FixupArgument(arg_value, codeInst->code_fixups[pc + 2], codeInst->code[pc + 2], this->stack, codeInst->strings);
 			ASSERT_CC_ERROR();
-			const auto &arg_value = codeOp.Arg2();
 			reg1 = arg_value;
 			break;
 		}
@@ -935,6 +1078,14 @@ int ccInstance::Run(int32_t curpc) {
 			// Push reg[arg1] value to the stack
 			const auto &reg1 = registers[codeOp.Arg1i()];
 			ASSERT_STACK_SPACE_VALS(1);
+#if defined(SPARCFB_NATIVE_BACKEND) && !DEBUG_CC_EXEC
+            if (pc + 3 < codeInst->codesize && codeInst->code[pc + 2] == SCMD_POPREG &&
+                FoldPushedRegisterPair(registers, stack, codeOp.Arg1i(),
+                    static_cast<int32_t>(codeInst->code[pc + 3]))) {
+                pc += 2; // consume the following POPREG and its register operand
+                break;
+            }
+#endif
 			PushValueToStack(reg1);
 			break;
 		}
@@ -1161,12 +1312,12 @@ int ccInstance::Run(int32_t curpc) {
 			int32_t instId = codeOp.Instruction.InstanceId;
 			// determine the offset into the code of the instance we want
 			runningInst = _G(loadedInstances)[instId];
-			uintptr_t callAddr = reg1.PtrU8 - reinterpret_cast<uint8_t *>(&runningInst->code[0]);
-			if (callAddr % sizeof(uintptr_t) != 0) {
+			::uintptr callAddr = reg1.PtrU8 - reinterpret_cast<uint8_t *>(&runningInst->code[0]);
+			if (callAddr % sizeof(*runningInst->code) != 0) {
 				cc_error("call address not aligned");
 				return -1;
 			}
-			callAddr /= sizeof(uintptr_t); // size of ccScript::code elements
+			callAddr /= sizeof(*runningInst->code); // size of relocated instruction words
 
 			if (Run(static_cast<int32_t>(callAddr)))
 				return -1;
@@ -1318,7 +1469,7 @@ int ccInstance::Run(int32_t curpc) {
 		case SCMD_NEWARRAY: {
 			auto &reg1 = registers[codeOp.Arg1i()];
 			const auto arg_elsize = codeOp.Arg2i();
-			const auto arg_managed = codeOp.Arg3().GetAsBool();
+			const auto arg_managed = (codeOp.Arg3i() != 0);
 			int numElements = reg1.IValue;
 			if (numElements < 1) {
 				cc_error("invalid size for dynamic array; requested: %d, range: 1..%d", numElements, INT32_MAX);
@@ -1509,7 +1660,7 @@ void ccInstance::DumpInstruction(const ScriptOperation &op) const {
 	static int line_num = 0;
 
 	if (op.Instruction.Code == SCMD_LINENUM) {
-		line_num = op.Args[0].IValue;
+		line_num = op.Arg1i();
 		return;
 	}
 
@@ -1523,9 +1674,9 @@ void ccInstance::DumpInstruction(const ScriptOperation &op) const {
 			debugN(",");
 		}
 		if (cmd_info.ArgIsReg[i]) {
-			debugN(" %s", regnames[op.Args[i].IValue]);
+			debugN(" %s", regnames[static_cast<int32_t>(op.Args[i])]);
 		} else {
-			RuntimeScriptValue arg = op.Args[i];
+			RuntimeScriptValue arg(static_cast<int32_t>(op.Args[i]));
 			if (arg.Type == kScValStackPtr || arg.Type == kScValGlobalVar) {
 				arg = *arg.RValue;
 			}
@@ -1612,9 +1763,9 @@ bool ccInstance::_Create(PScript scri, const ccInstance *joined) {
 		codesize = scri->codesize;
 		code = nullptr;
 		if (codesize > 0) {
-			code = static_cast<intptr_t *>(malloc(codesize * sizeof(intptr_t)));
-			// 64 bit: Read code into 8 byte array, necessary for being able to perform
-			// relocations on the references.
+			code = static_cast<::intptr *>(malloc(codesize * sizeof(*code)));
+			// Relocated code words must hold native pointers; 32-bit hosts need only
+			// four bytes per word, while 64-bit hosts retain eight.
 			for (int i = 0; i < codesize; ++i)
 				code[i] = scri->code[i];
 		}
@@ -1669,7 +1820,7 @@ bool ccInstance::_Create(PScript scri, const ccInstance *joined) {
 		if (etype == EXPORT_FUNCTION) {
 			// NOTE: unfortunately, there seems to be no way to know if
 			// that's an extender function that expects object pointer
-			exports[i].SetCodePtr(reinterpret_cast<uint8_t *>(&code[0]) + (static_cast<uintptr_t>(eaddr) * sizeof(uintptr_t)));
+			exports[i].SetCodePtr(reinterpret_cast<uint8_t *>(&code[0]) + (static_cast<::uintptr>(eaddr) * sizeof(*code)));
 		} else if (etype == EXPORT_DATA) {
 			ScriptVariable *gl_var = FindGlobalVar(eaddr);
 			if (gl_var) {
@@ -1915,7 +2066,7 @@ bool ccInstance::CreateRuntimeCodeFixups(const ccScript *scri) {
 				cc_error_fixups(scri, fixup, "cannot resolve global variable (bytecode pos %d, key %d)", fixup, static_cast<int32_t>(code[fixup]));
 				return false;
 			}
-			code[fixup] = (intptr_t)gl_var;
+			code[fixup] = reinterpret_cast<::intptr>(gl_var);
 		}
 		break;
 		case FIXUP_FUNCTION:
@@ -1969,6 +2120,10 @@ void ccInstance::PushDataToStack(const int32_t num_bytes) {
 	registers[SREG_SP].RValue++;
 }
 
+// Avoid a temporary structure-return buffer on the 32-bit SPARC ABI.
+#if defined(SPARCFB_NATIVE_BACKEND) && defined(__GNUC__)
+__attribute__((always_inline)) inline
+#endif
 RuntimeScriptValue ccInstance::PopValueFromStack() {
 	// rewind stack ptr to the last valid value, decrement stack data ptr if needed and invalidate the stack tail
 	registers[SREG_SP].RValue--;

@@ -58,14 +58,14 @@ SdlTimerManager::SdlTimerManager() {
 #endif
 
 	// Creates the timer callback
-	_timerID = SDL_AddTimer(10, &timer_handler, this);
+	_timerID = SDL_AddTimer(50, &timer_handler, this);
 
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 	// SDL 1.2 built without thread support cannot create multiple
 	// timers but still provides the single legacy timer.
 	if (!_timerID) {
 		s_singleTimerManager = this;
-		if (SDL_SetTimer(10, &single_timer_handler) == -1)
+		if (SDL_SetTimer(50, &single_timer_handler) == -1)
 			error("Could not create SDL timer: %s", SDL_GetError());
 	}
 #endif

@@ -25,6 +25,7 @@
 
 #include "backends/events/sdl/sdl-events.h"
 #include "backends/platform/sdl/sdl.h"
+#include "backends/mixer/mixer.h"
 #include "backends/graphics/graphics.h"
 #include "common/config-manager.h"
 #include "common/textconsole.h"
@@ -630,6 +631,11 @@ void SdlEventSource::preprocessFingerMotion(SDL_Event *event) {
 }
 
 bool SdlEventSource::pollEvent(Common::Event &event) {
+	// A CPU-bound engine may never call delayMillis. Refill queued audio
+	// during its normal input polling too, including render catch-up ticks.
+	MixerManager *mixer = dynamic_cast<OSystem_SDL *>(g_system)->getMixerManager();
+	if (mixer) mixer->pump();
+
 	finishSimulatedMouseClicks();
 
 	// In case we still need to send a key up event for a key down from a

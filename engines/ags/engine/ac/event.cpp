@@ -251,9 +251,12 @@ void process_event(const EventHappened *evp) {
 				const int speed = get_fixed_pixel_size(16);
 				const int yspeed = viewport.GetHeight() / (viewport.GetWidth() / speed);
 				int boxwid = speed, boxhit = yspeed;
-				while (boxwid < temp_scr->GetWidth()) {
-					boxwid += speed;
-					boxhit += yspeed;
+				TransitionClock transition;
+				const int steps = MAX(1, (temp_scr->GetWidth() - 1) / speed);
+				for (int step = 0; step < steps; ++step) {
+					step = MIN(transition.Step(step, steps), steps - 1);
+					boxwid = (step + 2) * speed;
+					boxhit = (step + 2) * yspeed;
 					boxwid = Math::Clamp(boxwid, 0, viewport.GetWidth());
 					boxhit = Math::Clamp(boxhit, 0, viewport.GetHeight());
 					int lxp = viewport.GetWidth() / 2 - boxwid / 2;
@@ -261,13 +264,15 @@ void process_event(const EventHappened *evp) {
 					temp_scr->Blit(saved_backbuf, lxp, lyp, lxp, lyp,
 					               boxwid, boxhit);
 					render_to_screen();
-					WaitForNextFrame();
+					update_polled_stuff();
+					transition.Wait(step + 1);
 				}
 				_G(gfxDriver)->SetMemoryBackBuffer(saved_backbuf);
+				delete temp_scr;
 			}
 		} else if (theTransition == FADE_CROSSFADE) {
-			if (_GP(game).color_depth == 1)
-				quit("!Cannot use crossfade screen transition in 256-colour games");
+			/* SST: 8-bit crossfade unimplementable - fall back to FADE_NORMAL. */
+			if (_GP(game).color_depth == 1) { fadein_impl(_G(palette), 5); return; }
 
 			const bool fullredraw = _G(gfxDriver)->RequiresFullRedrawEachFrame();
 			const SpriteTransform spr_trans = _GP(play).GetGlobalTransform(fullredraw);
@@ -276,7 +281,10 @@ void process_event(const EventHappened *evp) {
 			// see comment to drawing opaque sprite in SDLRendererGraphicsDriver!
 			IDriverDependantBitmap *ddb = prepare_screen_for_transition_in(false /* transparent */);
 
-			for (int alpha = 254; alpha > 0; alpha -= 16) {
+			TransitionClock transition;
+			for (int step = 0; step < 16; ++step) {
+				step = MIN(transition.Step(step, 16), 15);
+				const int alpha = 254 - step * 16;
 				// do the crossfade
 				ddb->SetAlpha(alpha);
 				invalidate_screen();
@@ -290,7 +298,7 @@ void process_event(const EventHappened *evp) {
 				}
 				render_to_screen();
 				update_polled_stuff();
-				WaitForNextFrame();
+				transition.Wait(step + 1);
 			}
 
 			delete _G(saved_viewport_bitmap);
@@ -305,7 +313,10 @@ void process_event(const EventHappened *evp) {
 			const bool fullredraw = _G(gfxDriver)->RequiresFullRedrawEachFrame();
 			const SpriteTransform spr_trans = _GP(play).GetGlobalTransform(fullredraw);
 			IDriverDependantBitmap *ddb = prepare_screen_for_transition_in(false /* transparent */);
+			TransitionClock transition;
 			for (aa = 0; aa < 16; aa++) {
+				const int targetStep = MIN(transition.Step(aa, 16), 15);
+				for (; aa <= targetStep; ++aa) {
 				// merge the palette while dithering
 				if (_GP(game).color_depth == 1) {
 					fade_interpolate(_G(old_palette), _G(palette), interpal, aa * 4, 0, 255);
@@ -318,6 +329,8 @@ void process_event(const EventHappened *evp) {
 						_G(saved_viewport_bitmap)->PutPixel(bb + pattern[aa] / 4, cc + pattern[aa] % 4, maskCol);
 					}
 				}
+				} // apply every cumulative mask, including skipped images
+				--aa;
 				_G(gfxDriver)->UpdateDDBFromBitmap(ddb, _G(saved_viewport_bitmap), false);
 				construct_game_scene(true);
 				construct_game_screen_overlay(false);
@@ -326,7 +339,7 @@ void process_event(const EventHappened *evp) {
 				_G(gfxDriver)->EndSpriteBatch();
 				render_to_screen();
 				update_polled_stuff();
-				WaitForNextFrame();
+				transition.Wait(aa + 1);
 			}
 
 			delete _G(saved_viewport_bitmap);

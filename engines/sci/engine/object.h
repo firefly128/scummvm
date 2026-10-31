@@ -30,6 +30,8 @@
 #include "sci/util.h"
 #include "sci/version.h"
 
+#include "sci/engine/sst-selector-index-cache.h"
+
 namespace Sci {
 
 class SegManager;
@@ -92,6 +94,7 @@ public:
 		_offset = other._offset;
 		_pos = other._pos;
 		_baseVars = other._baseVars;
+		_selectorIndexCache.clear();
 
 #ifdef ENABLE_SCI32
 		if (getSciVersion() == SCI_VERSION_3) {
@@ -286,6 +289,7 @@ public:
 		_baseObj = obj ? obj->_baseObj : SciSpan<const byte>();
 		_baseMethod = obj ? obj->_baseMethod : Common::Array<uint32>();
 		_baseVars = obj ? obj->_baseVars : Common::Array<uint16>();
+		_selectorIndexCache.clear();
 #ifdef ENABLE_SCI32
 		if (getSciVersion() == SCI_VERSION_3) {
 			_mustSetViewVisible = obj ? obj->_mustSetViewVisible : Common::Array<bool>();
@@ -328,6 +332,7 @@ private:
 	 * number.
 	 */
 	Common::Array<uint16> _baseVars;
+	mutable SSTSelectorIndexCache _selectorIndexCache;
 
 	/**
 	 * A lookup table from a method index to its corresponding selector number

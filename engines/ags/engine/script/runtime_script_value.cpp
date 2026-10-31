@@ -23,10 +23,28 @@
 #include "ags/engine/script/runtime_script_value.h"
 #include "ags/engine/ac/dynobj/cc_script_object.h"
 #include "ags/shared/util/memory.h"
+#include "common/hashmap.h"
 
 namespace AGS3 {
 
 using namespace AGS::Shared;
+
+// Plugin methods are registered by name. Keep those immutable names for the
+// process lifetime so ordinary runtime values need no string ownership at all.
+const Common::String *InternScriptPluginMethodName(const Common::String &name) {
+	struct NamePool {
+		Common::HashMap<Common::String, Common::String *> names;
+		~NamePool() {
+			for (auto it = names.begin(); it != names.end(); ++it) delete it->_value;
+		}
+	};
+	static NamePool pool;
+	auto found = pool.names.find(name);
+	if (found != pool.names.end()) return found->_value;
+	Common::String *owned = new Common::String(name);
+	pool.names[name] = owned;
+	return owned;
+}
 
 //
 // NOTE to future optimizers: I am using 'this' ptr here to better

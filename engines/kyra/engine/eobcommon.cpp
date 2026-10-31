@@ -1962,13 +1962,17 @@ bool EoBCoreEngine::restParty_extraAbortCondition() {
 }
 
 void EoBCoreEngine::delay(uint32 millis, bool, bool isMainLoop) {
+	const uint32 deadline = _system->getMillis() + millis;
 	while (millis && !shouldQuit() && !(_allowSkip && skipFlag())) {
 		_isSaveAllowed = isMainLoop;
 		updateInput();
 		_isSaveAllowed = false;
-		uint32 step = MIN<uint32>(millis, (_tickLength / 5));
-		_system->delayMillis(step);
-		millis -= step;
+		if (shouldQuit() || (_allowSkip && skipFlag()))
+			break;
+		const int32 remaining = static_cast<int32>(deadline - _system->getMillis());
+		if (remaining <= 0)
+			break;
+		_system->delayMillis(MIN<uint32>(remaining, _tickLength / 5));
 	}
 }
 
