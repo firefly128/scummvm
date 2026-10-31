@@ -1,0 +1,8 @@
+{
+  "audio/module.mk": true,
+  "audio/softsynth/fmtowns_pc98/pcm_common.cpp": true,
+  "audio/softsynth/fmtowns_pc98/pcm_common.h": true,
+  "audio/softsynth/fmtowns_pc98/towns_audio.cpp": true,
+  "audio/prepared-pcm-cache.cpp": true,
+  "audio/prepared-pcm-cache.h": true
+}
