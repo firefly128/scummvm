@@ -296,6 +296,13 @@ bool SdlWindow::getSDLWMInformation(SDL_SysWMinfo *info) const {
 #endif
 
 Common::Rect SdlWindow::getDesktopResolution() {
+#if defined(SPARCFB_NATIVE_BACKEND)
+	// The SS4 guardian validates the console at 1152x900. SDL's cached
+	// desktop can instead contain its temporary 640x480 startup window.
+	// Do not clamp a supervised launcher window to that temporary mode.
+	if (SDL_getenv("SPARCFB_MODE_FD"))
+		return Common::Rect(1152, 900);
+#endif
 #if SDL_VERSION_ATLEAST(3, 0, 0)
 	const SDL_DisplayMode* pDisplayMode = SDL_GetDesktopDisplayMode(getDisplayIndex());
 	if (pDisplayMode) {

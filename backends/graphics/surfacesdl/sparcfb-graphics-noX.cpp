@@ -40,6 +40,7 @@
 
 #include <string.h>
 #include <sys/time.h>
+#include <dlfcn.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sched.h>
@@ -218,8 +219,11 @@ SparcFbGraphicsManager::SparcFbGraphicsManager(SdlEventSource *sdlEventSource,
 
     if (sparc_fb_init(&(*_sparcfb_ctx)) == 0) {
         _sparcfb_initialized = true;
-        _launcher_width = _sparcfb_ctx->fb_width;
-        _launcher_height = _sparcfb_ctx->fb_height;
+        // The SS4 guardian validates a 1152x900 console before launching.
+        // SDL may create its initial 640x480 window before this manager is
+        // constructed, so the current mode is no longer the desktop size.
+        _launcher_width = getenv("SPARCFB_MODE_FD") ? 1152 : _sparcfb_ctx->fb_width;
+        _launcher_height = getenv("SPARCFB_MODE_FD") ? 900 : _sparcfb_ctx->fb_height;
 
         /* Defensive: allow runtime override of fb_linebytes if the
          * kernel reports a stride that doesn't match the visible width.
@@ -853,8 +857,21 @@ void SparcFbGraphicsManager::updateScreen() {
 
     repaintNativeMargins();
 
+    /* Optional in-memory harness timing for this native path, which bypasses
+     * SDL_UpdateWindowSurface. No file or network work happens here. */
+    typedef void (*HarnessPresent)(uint32);
+    static HarnessPresent harnessPresent = NULL;
+    static bool harnessChecked = false;
+    if (!harnessChecked) {
+        harnessChecked = true;
+        if (getenv("SST_HARNESS_STATE"))
+            harnessPresent = (HarnessPresent)dlsym(RTLD_DEFAULT, "sst_harness_present");
+    }
+    const uint32 harnessStart = harnessPresent ? SDL_GetTicks() : 0;
     /* Scale + blit */
     scaleAndBlit();
+    if (harnessPresent)
+        harnessPresent((SDL_GetTicks() - harnessStart) * 1000);
 }
 
 void SparcFbGraphicsManager::showOverlay(bool inGUI) {
